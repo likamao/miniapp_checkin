@@ -1,0 +1,71 @@
+<view class="container">
+  <view class="card">
+    <view class="title">打卡记录</view>
+    
+    <!-- 筛选控件 -->
+    <view class="filter-section">
+      <view class="filter-mode">
+        <button class="filter-btn {{filterMode === 'year' ? 'active' : ''}}" bindtap="switchFilterMode" data-mode="year">年视图</button>
+        <button class="filter-btn {{filterMode === 'month' ? 'active' : ''}}" bindtap="switchFilterMode" data-mode="month">月视图</button>
+      </view>
+      <view class="date-picker">
+        <picker mode="date" fields="{{filterMode === 'year' ? 'year' : 'month'}}" start="2026-03" bindchange="bindDateChange" value="{{selectedDate}}">
+          <view class="picker">
+            {{selectedDate}} 打卡记录
+          </view>
+        </picker>
+      </view>
+    </view>
+    
+    <!-- 打卡记录列表 -->
+    <view wx:if="{{records.length > 0}}">
+      <!-- 年视图：按月份分组 -->
+      <view wx:if="{{filterMode === 'year'}}">
+        <view wx:for="{{groupedRecords}}" wx:key="month" class="month-group">
+          <view class="month-header">{{item.month}}月</view>
+          <view wx:for="{{item.records}}" wx:key="id" class="list-item" bindtap="showRecordDetail" data-record="{{item}}">
+            <view class="record-time">{{item.checkinTime}}</view>
+            <view class="record-title">{{item.title}}</view>
+            <view class="record-content">{{item.content}}</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 月视图：显示当月所有记录 -->
+      <view wx:else>
+        <view wx:for="{{records}}" wx:key="id" class="list-item" bindtap="showRecordDetail" data-record="{{item}}">
+          <view class="record-time">{{item.checkinTime}}</view>
+          <view class="record-title">{{item.title}}</view>
+          <view class="record-content">{{item.content}}</view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view wx:else class="empty">暂无打卡记录</view>
+    
+    <!-- 加载更多 -->
+    <view wx:if="{{loadingMore}}" class="loading-more">
+      <view class="loading-spinner small"></view>
+      <view class="loading-text">加载中...</view>
+    </view>
+    
+    <!-- 底部提示 -->
+    <view wx:if="{{!loadingMore && records.length > 0 && !hasMoreData}}" class="bottom-tip">
+      我是有底线的(｡•ㅅ•｡)♡
+    </view>
+  </view>
+  
+  <!-- 记录详情弹窗 -->
+  <view wx:if="{{showDetailModal}}" class="modal-overlay" catchtap="closeDetailModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <view class="modal-title">{{selectedRecord.title}}</view>
+        <view class="modal-time">{{selectedRecord.checkinTime}}</view>
+      </view>
+      <view class="modal-body">
+        <view class="modal-content-text">{{selectedRecord.content}}</view>
+      </view>
+    </view>
+  </view>
+</view>

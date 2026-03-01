@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/checkin/checkin",
+    "pages/records/records",
+    "pages/statistics/statistics"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "打卡系统",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#1989fa",
+    "backgroundColor": "#fff",
+    "borderStyle": "white",
+    "list": [
+  {
+    "pagePath": "pages/checkin/checkin",
+
+    "iconPath": "icons/navigation/checkin.png",
+    "selectedIconPath": "icons/navigation/checkin-active.png"
+  },
+  {
+    "pagePath": "pages/records/records",
+
+    "iconPath": "icons/navigation/records.png",
+    "selectedIconPath": "icons/navigation/records-active.png"
+  },
+  {
+    "pagePath": "pages/statistics/statistics",
+    "iconPath": "icons/navigation/statistics.png",
+    "selectedIconPath": "icons/navigation/statistics-active.png"
+  }
+]
+  },
+  "sitemapLocation": "sitemap.json"
+}

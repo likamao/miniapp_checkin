@@ -1,0 +1,5 @@
+/checkin-backend/target/
+/checkin-backend/docker-compose.yml
+/checkin-backend/Dockerfile
+/checkin-backend/src/main/resources/application-dev.yml
+/checkin-backend/src/main/resources/application-pro.yml

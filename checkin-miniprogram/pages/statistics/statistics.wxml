@@ -1,0 +1,27 @@
+<view class="container">
+  <view class="card">
+    <view class="title">打卡统计</view>
+    <view class="month-info">{{currentMonth}}</view>
+    <view class="week-info">{{currentWeekInfo}}</view>
+    <view class="stat-cards">
+      <view class="stat-card">
+        <view class="stat-value">{{recent7DaysCount}}</view>
+        <view class="stat-label">最近7天打卡次数</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-value">{{monthlyCount}}</view>
+        <view class="stat-label">本月打卡次数</view>
+      </view>
+    </view>
+    <view class="progress-section">
+      <view class="progress-title">本月进度</view>
+      <view class="progress-bar">
+        <view class="progress-bar-fill" style="width: {{monthlyProgress}}%"></view>
+      </view>
+      <view class="progress-text">{{monthlyProgress}}%</view>
+    </view>
+    <view class="stat-info">
+      <view class="stat-desc">坚持打卡，养成良好习惯！</view>
+    </view>
+  </view>
+</view>
