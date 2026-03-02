@@ -18,6 +18,16 @@
         <text>打卡内容</text>
         <textarea class="textarea" name="content" placeholder="请输入打卡内容（500字以内）" maxlength="500" required bindinput="onContentInput" />
       </view>
+      <view class="form-item">
+        <text>选择主题</text>
+        <view class="topic-selector">
+          <view wx:for="{{topics}}" wx:key="id" class="topic-item" bindtap="selectTopic" data-topic-id="{{item.id}}">
+            <view class="topic-item-content" style="border-color: {{selectedTopicId == item.id ? '#1989fa' : '#e4e4e4'}}; background-color: {{selectedTopicId == item.id ? '#f0f9ff' : 'white'}};">
+              <text style="color: {{selectedTopicId == item.id ? '#1989fa' : '#333'}};">{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
       <button class="btn btn-primary" form-type="submit">提交打卡</button>
     </form>
     <!-- 已打卡状态 -->

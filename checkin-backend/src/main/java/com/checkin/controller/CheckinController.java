@@ -2,9 +2,11 @@ package com.checkin.controller;
 
 import com.checkin.entity.CheckinRecord;
 import com.checkin.entity.CheckinStatistics;
+import com.checkin.entity.CheckinTopic;
 import com.checkin.entity.User;
 import com.checkin.repository.UserRepository;
 import com.checkin.service.CheckinService;
+import com.checkin.service.PermissionService;
 import com.checkin.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,14 +32,15 @@ public class CheckinController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/create")
-    public Map<String, Object> createCheckin(@RequestBody Map<String, String> request, @RequestHeader("Authorization") String token) {
-        Long userId = jwtUtil.getUserIdFromToken(token.replace("Bearer ", ""));
-        User user = userRepository.findById(userId).orElse(null);
+    @Autowired
+    private PermissionService permissionService;
 
-        if (user == null) {
+    @PostMapping("/create")
+    public Map<String, Object> createCheckin(@RequestBody Map<String, String> request, @RequestAttribute("user") User user) {
+        // 检查用户是否有打卡创建权限
+        if (!permissionService.hasPermission(user, "checkin:create")) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "User not found");
+            errorResponse.put("error", "权限不足：没有打卡创建权限");
             return errorResponse;
         }
 
@@ -54,17 +57,15 @@ public class CheckinController {
 
     @GetMapping("/records")
     public Map<String, Object> getCheckinRecords(
-            @RequestHeader("Authorization") String token,
+            @RequestAttribute("user") User user,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
-        Long userId = jwtUtil.getUserIdFromToken(token.replace("Bearer ", ""));
-        User user = userRepository.findById(userId).orElse(null);
-
-        if (user == null) {
+        // 检查用户是否有打卡查询权限
+        if (!permissionService.hasPermission(user, "checkin:read")) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "User not found");
+            errorResponse.put("error", "权限不足：没有打卡查询权限");
             return errorResponse;
         }
 
@@ -104,13 +105,11 @@ public class CheckinController {
     }
 
     @GetMapping("/statistics")
-    public Map<String, Object> getCheckinStatistics(@RequestHeader("Authorization") String token) {
-        Long userId = jwtUtil.getUserIdFromToken(token.replace("Bearer ", ""));
-        User user = userRepository.findById(userId).orElse(null);
-
-        if (user == null) {
+    public Map<String, Object> getCheckinStatistics(@RequestAttribute("user") User user) {
+        // 检查用户是否有打卡统计权限
+        if (!permissionService.hasPermission(user, "checkin:statistics")) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "User not found");
+            errorResponse.put("error", "权限不足：没有打卡统计权限");
             return errorResponse;
         }
 
@@ -123,13 +122,11 @@ public class CheckinController {
     }
 
     @GetMapping("/check-today")
-    public Map<String, Object> checkTodayCheckin(@RequestHeader("Authorization") String token) {
-        Long userId = jwtUtil.getUserIdFromToken(token.replace("Bearer ", ""));
-        User user = userRepository.findById(userId).orElse(null);
-
-        if (user == null) {
+    public Map<String, Object> checkTodayCheckin(@RequestAttribute("user") User user) {
+        // 检查用户是否有打卡查询权限
+        if (!permissionService.hasPermission(user, "checkin:read")) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "User not found");
+            errorResponse.put("error", "权限不足：没有打卡查询权限");
             return errorResponse;
         }
 
@@ -137,6 +134,125 @@ public class CheckinController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("hasCheckedInToday", hasCheckedInToday);
+
+        return response;
+    }
+
+    // 主题相关接口
+    @GetMapping("/topics")
+    public Map<String, Object> getTopics(@RequestAttribute("user") User user) {
+        // 检查用户是否有打卡查询权限
+        if (!permissionService.hasPermission(user, "checkin:read")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "权限不足：没有打卡查询权限");
+            return errorResponse;
+        }
+
+        List<Map<String, Object>> topics = checkinService.getAllTopics().stream().map(topic -> {
+            Map<String, Object> topicMap = new HashMap<>();
+            topicMap.put("id", topic.getId());
+            topicMap.put("title", topic.getTitle());
+            topicMap.put("description", topic.getDescription());
+            topicMap.put("startDate", checkinService.formatDateTime(topic.getStartDate()));
+            topicMap.put("endDate", checkinService.formatDateTime(topic.getEndDate()));
+            return topicMap;
+        }).toList();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("topics", topics);
+
+        return response;
+    }
+
+    @PostMapping("/create-with-topic")
+    public Map<String, Object> createCheckinWithTopic(@RequestBody Map<String, Object> request, @RequestAttribute("user") User user) {
+        // 检查用户是否有打卡创建权限
+        if (!permissionService.hasPermission(user, "checkin:create")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "权限不足：没有打卡创建权限");
+            return errorResponse;
+        }
+
+        String title = (String) request.get("title");
+        String content = (String) request.get("content");
+        Long topicId = request.get("topicId") != null ? Long.valueOf(request.get("topicId").toString()) : null;
+
+        CheckinRecord record = checkinService.createCheckinRecordWithTopic(user, title, content, topicId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("record", record);
+
+        return response;
+    }
+
+    @GetMapping("/topic-checkin-count/{topicId}")
+    public Map<String, Object> getTopicCheckinCount(@PathVariable Long topicId, @RequestAttribute("user") User user) {
+        // 检查用户是否有打卡查询权限
+        if (!permissionService.hasPermission(user, "checkin:read")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "权限不足：没有打卡查询权限");
+            return errorResponse;
+        }
+
+        long count = checkinService.getTopicCheckinCount(topicId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("count", count);
+
+        return response;
+    }
+
+    @GetMapping("/check-topic/{topicId}")
+    public Map<String, Object> checkTopicCheckin(@PathVariable Long topicId, @RequestAttribute("user") User user) {
+        // 检查用户是否有打卡查询权限
+        if (!permissionService.hasPermission(user, "checkin:read")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "权限不足：没有打卡查询权限");
+            return errorResponse;
+        }
+
+        boolean hasCheckedInTopic = checkinService.hasUserCheckedInTopic(user, topicId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("hasCheckedInTopic", hasCheckedInTopic);
+
+        return response;
+    }
+
+    @PostMapping("/topics")
+    public Map<String, Object> createTopic(@RequestBody Map<String, String> request, @RequestAttribute("user") User user) {
+        // 检查用户是否有主题创建权限
+        if (!permissionService.hasPermission(user, "checkin:create")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "权限不足：没有主题创建权限");
+            return errorResponse;
+        }
+
+        String title = request.get("title");
+        String description = request.get("description");
+
+        if (title == null || title.isEmpty()) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "主题标题不能为空");
+            return errorResponse;
+        }
+
+        if (title.length() < 10) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "主题标题至少需要10个字符");
+            return errorResponse;
+        }
+
+        CheckinTopic topic = checkinService.createTopic(title, description);
+
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> topicMap = new HashMap<>();
+        topicMap.put("id", topic.getId());
+        topicMap.put("title", topic.getTitle());
+        topicMap.put("description", topic.getDescription());
+        topicMap.put("startDate", checkinService.formatDateTime(topic.getStartDate()));
+        topicMap.put("endDate", checkinService.formatDateTime(topic.getEndDate()));
+        response.put("topic", topicMap);
 
         return response;
     }

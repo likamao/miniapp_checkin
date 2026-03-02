@@ -2,11 +2,14 @@ package com.checkin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.checkin.config.PermissionInterceptor;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
@@ -31,9 +34,12 @@ public class CheckinApplication {
         }));
     }
     
-    // 添加 CORS 配置
+    @Autowired
+    private PermissionInterceptor permissionInterceptor;
+
+    // 添加 CORS 配置和权限拦截器
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
+    public WebMvcConfigurer webMvcConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
@@ -48,6 +54,14 @@ public class CheckinApplication {
                         .exposedHeaders("Authorization")
                         .allowCredentials(true)
                         .maxAge(3600);
+            }
+
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                // 添加权限拦截器，拦截所有API请求
+                registry.addInterceptor(permissionInterceptor)
+                        .addPathPatterns("/api/**")
+                        .excludePathPatterns("/api/auth/login"); // 登录接口不需要权限验证
             }
         };
     }

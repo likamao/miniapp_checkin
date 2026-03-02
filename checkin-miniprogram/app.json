@@ -3,7 +3,8 @@
     "pages/login/login",
     "pages/checkin/checkin",
     "pages/records/records",
-    "pages/statistics/statistics"
+    "pages/statistics/statistics",
+    "pages/square/square"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -19,18 +20,25 @@
     "list": [
   {
     "pagePath": "pages/checkin/checkin",
-
+    "text": "打卡",
+    "iconPath": "icons/navigation/checkin.png",
+    "selectedIconPath": "icons/navigation/checkin-active.png"
+  },
+  {
+    "pagePath": "pages/square/square",
+    "text": "广场",
     "iconPath": "icons/navigation/checkin.png",
     "selectedIconPath": "icons/navigation/checkin-active.png"
   },
   {
     "pagePath": "pages/records/records",
-
+    "text": "记录",
     "iconPath": "icons/navigation/records.png",
     "selectedIconPath": "icons/navigation/records-active.png"
   },
   {
     "pagePath": "pages/statistics/statistics",
+    "text": "统计",
     "iconPath": "icons/navigation/statistics.png",
     "selectedIconPath": "icons/navigation/statistics-active.png"
   }

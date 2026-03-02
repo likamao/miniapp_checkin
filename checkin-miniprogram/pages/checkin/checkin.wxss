@@ -160,3 +160,36 @@
     max-width: 450rpx;
   }
 }
+
+/* 主题选择器样式 */
+.topic-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 12rpx;
+}
+
+.topic-item {
+  flex: 1 1 calc(50% - 8rpx);
+  min-width: 200rpx;
+}
+
+.topic-item-content {
+  padding: 16rpx;
+  border: 2rpx solid #e4e4e4;
+  border-radius: 8rpx;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.topic-item-content:hover {
+  border-color: #1989fa;
+  background-color: #f0f9ff;
+}
+
+.topic-item-content text {
+  font-size: 24rpx;
+  color: #333;
+  margin-bottom: 0;
+}

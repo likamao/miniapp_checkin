@@ -40,3 +40,32 @@ CREATE TABLE IF NOT EXISTS `checkin_statistics` (
   UNIQUE KEY `uk_user_year_month_week` (`user_id`, `year`, `month`, `week`),
   CONSTRAINT `fk_statistics_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='打卡统计表';
+
+-- 创建主题表
+CREATE TABLE IF NOT EXISTS `checkin_topic` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(100) NOT NULL COMMENT '主题标题',
+  `description` VARCHAR(500) COMMENT '主题描述',
+  `start_date` DATE NOT NULL COMMENT '开始日期',
+  `end_date` DATE NOT NULL COMMENT '结束日期',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_start_date` (`start_date`),
+  KEY `idx_end_date` (`end_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='打卡主题表';
+
+-- 创建主题打卡关联表
+CREATE TABLE IF NOT EXISTS `checkin_topic_record` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT(20) NOT NULL COMMENT '用户ID',
+  `topic_id` BIGINT(20) NOT NULL COMMENT '主题ID',
+  `checkin_record_id` BIGINT(20) NOT NULL COMMENT '打卡记录ID',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_topic_record` (`user_id`, `topic_id`, `checkin_record_id`),
+  CONSTRAINT `fk_topic_record_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_topic_record_topic` FOREIGN KEY (`topic_id`) REFERENCES `checkin_topic` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_topic_record_checkin` FOREIGN KEY (`checkin_record_id`) REFERENCES `checkin_record` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='主题打卡关联表';
