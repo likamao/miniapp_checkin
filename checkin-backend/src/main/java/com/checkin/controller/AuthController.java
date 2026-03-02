@@ -23,7 +23,10 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> request) {
         String code = request.get("code");
-        User user = weChatService.login(code);
+        String nickname = request.get("nickname");
+        String avatarUrl = request.get("avatarUrl");
+        
+        User user = weChatService.login(code, nickname, avatarUrl);
 
         String token = jwtUtil.generateToken(user.getId());
 

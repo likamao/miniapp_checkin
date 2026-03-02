@@ -4,10 +4,16 @@
     <text class="subtitle">每周主题打卡，一起参与吧！</text>
   </view>
   
-  <!-- 发布主题按钮 -->
-  <view class="publish-button-container">
-    <view class="publish-button" bindtap="showPublishModal">
-      <text class="publish-button-text">+</text>
+  <!-- 按钮容器 -->
+  <view class="buttons-container">
+    <!-- 发布主题按钮 -->
+    <view wx:if="{{hasPublishPermission}}" class="action-button publish-button" bindtap="showPublishModal">
+      <text class="action-button-text">发布主题</text>
+    </view>
+    
+    <!-- 打卡按钮 -->
+    <view class="action-button checkin-button" bindtap="showCheckinModal">
+      <text class="action-button-text">打卡</text>
     </view>
   </view>
   
@@ -16,21 +22,18 @@
       <view class="topic-card" bindtap="navigateToTopicDetail" data-topic-id="{{item.id}}">
         <view class="topic-header">
           <text class="topic-title">{{item.title}}</text>
-          <text class="topic-date">{{item.startDate}} 至 {{item.endDate}}</text>
+          <text class="topic-date">{{item.startDatetime}} 至 {{item.endDatetime}}</text>
         </view>
         <view class="topic-description">{{item.description}}</view>
         <view class="topic-footer">
-          <text class="checkin-count" wx:if="{{item.checkinCount !== undefined}}">
+          <text class="checkin-count">
             {{item.checkinCount}}人已打卡
           </text>
-          <text class="checkin-count" wx:else>
-            点击查看打卡人数
-          </text>
-          <text class="checkin-status" wx:if="{{item.hasCheckedIn}}">
-            ✓ 已打卡
+          <text class="checkin-status" wx:if="{{item.hasCheckedInToday}}">
+            ✓ 今日已打卡
           </text>
           <text class="checkin-status not-checked" wx:else>
-            未打卡
+            今日未打卡
           </text>
         </view>
       </view>
@@ -69,4 +72,60 @@
       </view>
     </view>
   </view>
+  
+  <!-- 打卡弹框 -->
+  <view wx:if="{{showCheckinModal}}" class="checkin-modal-overlay" bindtap="hideCheckinModal">
+    <view class="checkin-modal-content" catchtap="stopPropagation">
+      <!-- 加载状态 -->
+      <view wx:if="{{checkinIsLoading}}" class="checkin-loading-container">
+        <view class="checkin-loading-spinner"></view>
+        <view class="checkin-loading-text">加载中...</view>
+      </view>
+      
+      <!-- 打卡界面 -->
+      <view wx:else class="checkin-card">
+        <view class="checkin-title">每日打卡</view>
+        <!-- 未打卡状态 -->
+        <form wx:if="{{!checkinHasCheckedInToday}}" bindsubmit="checkinSubmitCheckin">
+          <view class="checkin-form-item">
+            <text>打卡标题</text>
+            <input class="input" name="title" placeholder="请输入打卡标题（50 字以内）" maxlength="50" required />
+          </view>
+          <view class="checkin-form-item">
+            <text>打卡内容</text>
+            <textarea class="textarea" name="content" placeholder="请输入打卡内容（500 字以内）" maxlength="500" required bindinput="checkinOnContentInput" />
+          </view>
+          <view class="checkin-form-item">
+            <text>选择主题</text>
+            <view class="checkin-topic-selector">
+              <view wx:for="{{checkinTopics}}" wx:key="id" class="checkin-topic-item" bindtap="checkinSelectTopic" data-topic-id="{{item.id}}">
+                <view class="checkin-topic-item-content" style="border-color: {{checkinSelectedTopicId == item.id ? '#1989fa' : '#e4e4e4'}}; background-color: {{checkinSelectedTopicId == item.id ? '#f0f9ff' : 'white'}};">
+                  <text style="color: {{checkinSelectedTopicId == item.id ? '#1989fa' : '#333'}};">{{item.title}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          <button class="btn btn-primary" form-type="submit">提交打卡</button>
+        </form>
+        <!-- 已打卡状态 -->
+        <view wx:else class="checkin-checked-in">
+          <view class="checkin-checked-in-icon">
+            <image class="checkin-checked-in-image" src="/pages/checkin/icons/relax.png" />
+          </view>
+
+          <view class="checkin-checked-in-title">打卡成功</view>
+          <view class="checkin-checked-in-desc">{{checkinEncouragementText}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 庆祝动画 -->
+  <view wx:if="{{checkinShowCelebration}}" class="checkin-celebration">
+    <view class="checkin-firework" wx:for="{{checkinFireworks}}" wx:key="index" style="left: {{item.left}}px; top: {{item.top}}px; animation-delay: {{item.delay}}s;">
+      <view class="checkin-spark" wx:for="{{10}}" wx:key="sparkIndex" style="transform: rotate({{36 * sparkIndex}}deg);"></view>
+    </view>
+  </view>
+  
+
 </view>

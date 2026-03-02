@@ -1,0 +1,85 @@
+<view class="container">
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">加载中...</view>
+  </view>
+  
+  <view wx:else class="topic-detail">
+    <view class="topic-header">
+      <view class="topic-title">{{topic.title}}</view>
+      <view class="topic-meta">
+        <text class="topic-date">{{topic.startDatetime}} 至 {{topic.endDatetime}}</text>
+        <text class="topic-checkin-count">{{topic.checkinCount}}人已打卡</text>
+      </view>
+    </view>
+    
+    <view class="topic-description">
+      <text class="section-title">主题描述</text>
+      <text class="description-text">{{topic.description || '暂无描述'}}</text>
+    </view>
+    
+    <view class="topic-status">
+      <text class="section-title">打卡状态</text>
+      <view class="status-info">
+        <text wx:if="{{topic.hasCheckedInToday}}" class="status-checked">✓ 今日已打卡</text>
+        <text wx:else class="status-unchecked">今日未打卡</text>
+      </view>
+    </view>
+    
+    <view class="action-section">
+      <button wx:if="{{!topic.hasCheckedInToday}}" class="btn btn-primary" bindtap="showCheckinModal">立即打卡</button>
+      <button wx:else class="btn btn-disabled" disabled>今日已打卡</button>
+    </view>
+    
+    <view class="checkin-records">
+      <text class="section-title">打卡记录</text>
+      <view class="record-list">
+        <view wx:for="{{records}}" wx:key="id" class="record-item">
+          <view class="record-user">用户 {{item.userId}}</view>
+          <view class="record-info">
+            <text class="record-date">{{item.checkinDate}}</text>
+            <text class="record-consecutive">连续{{item.consecutiveDays}}天</text>
+          </view>
+        </view>
+        <view wx:if="{{records.length === 0}}" class="empty-records">
+          暂无打卡记录
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view wx:if="{{showCheckinModal}}" class="modal-overlay" bindtap="hideCheckinModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">主题打卡</text>
+        <text class="modal-close" bindtap="hideCheckinModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">打卡标题</text>
+          <input class="form-input" placeholder="请输入打卡标题（50字以内）" maxlength="50" bindinput="onCheckinTitleInput" value="{{checkinForm.title}}" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">打卡内容</text>
+          <textarea class="form-textarea" placeholder="请输入打卡内容（500字以内）" maxlength="500" bindinput="onCheckinContentInput" value="{{checkinForm.content}}" />
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-button cancel" bindtap="hideCheckinModal">取消</button>
+        <button class="modal-button confirm" bindtap="submitCheckin">提交</button>
+      </view>
+    </view>
+  </view>
+  
+  <view wx:if="{{showSuccessModal}}" class="success-modal-overlay" bindtap="hideSuccessModal">
+    <view class="success-modal-content" catchtap="stopPropagation">
+      <view class="success-icon">✓</view>
+      <view class="success-title">打卡成功！</view>
+      <view class="success-info">
+        <text>当前已有 {{checkinResult.checkinCount}} 人打卡</text>
+        <text>你已连续打卡 {{checkinResult.consecutiveDays}} 天</text>
+      </view>
+      <button class="success-button" bindtap="hideSuccessModal">确定</button>
+    </view>
+  </view>
+</view>

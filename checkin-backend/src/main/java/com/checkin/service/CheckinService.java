@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CheckinService {
@@ -171,30 +173,12 @@ public class CheckinService {
     }
 
     // 主题相关方法
-    public CheckinRecord createCheckinRecordWithTopic(User user, String title, String content, Long topicId) {
-        // 创建打卡记录
-        CheckinRecord record = createCheckinRecord(user, title, content);
-        
-        // 关联主题
-        if (topicId != null) {
-            CheckinTopicRecord topicRecord = new CheckinTopicRecord();
-            topicRecord.setUserId(user.getId());
-            topicRecord.setTopicId(topicId);
-            topicRecord.setCheckinRecordId(record.getId());
-            topicRecord.setCreatedAt(new Date());
-            topicRecord.setUpdatedAt(new Date());
-            checkinTopicRecordRepository.save(topicRecord);
-        }
-        
-        return record;
-    }
-
     public List<CheckinTopic> getActiveTopics() {
         return checkinTopicRepository.findActiveTopics(new Date());
     }
 
     public List<CheckinTopic> getAllTopics() {
-        return checkinTopicRepository.findAllOrderByStartDateDesc();
+        return checkinTopicRepository.findAllOrderByCreatedAtDesc();
     }
 
     public CheckinTopic getTopicById(Long topicId) {
@@ -205,38 +189,189 @@ public class CheckinService {
         return checkinTopicRecordRepository.countUniqueUsersByTopicId(topicId);
     }
 
-    public boolean hasUserCheckedInTopic(User user, Long topicId) {
-        List<CheckinTopicRecord> records = checkinTopicRecordRepository.findByUserIdAndTopicId(user.getId(), topicId);
-        return !records.isEmpty();
-    }
-
     // 创建主题
-    public CheckinTopic createTopic(String title, String description) {
+    public CheckinTopic createTopic(String title, String description, Integer durationDays, User creator) {
         CheckinTopic topic = new CheckinTopic();
         topic.setTitle(title);
         topic.setDescription(description);
         
-        // 设置主题的开始和结束日期，默认为当前周
-        Calendar calendar = Calendar.getInstance();
-        // 设置为周一开始
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        topic.setStartDate(calendar.getTime());
+        if (durationDays == null) {
+            durationDays = 7; // 默认7天
+        }
+        topic.setDurationDays(durationDays);
+        topic.setStatus(1);
+        topic.setCreatedBy(creator.getId());
         
-        // 设置为周日结束
-        calendar.add(Calendar.DAY_OF_WEEK, 6);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-        topic.setEndDate(calendar.getTime());
+        // 设置主题的开始和结束时间
+        Calendar calendar = Calendar.getInstance();
+        Date startDatetime = calendar.getTime();
+        topic.setStartDatetime(startDatetime);
+        
+        calendar.add(Calendar.DAY_OF_YEAR, durationDays);
+        topic.setEndDatetime(calendar.getTime());
         
         topic.setCreatedAt(new Date());
         topic.setUpdatedAt(new Date());
         
         return checkinTopicRepository.save(topic);
+    }
+
+    // 更新主题
+    public CheckinTopic updateTopic(Long topicId, String title, String description, Integer durationDays, User user) {
+        CheckinTopic topic = getTopicById(topicId);
+        if (topic == null) {
+            return null;
+        }
+        
+        topic.setTitle(title);
+        topic.setDescription(description);
+        
+        if (durationDays != null && !durationDays.equals(topic.getDurationDays())) {
+            topic.setDurationDays(durationDays);
+            // 如果有效期变更，重新计算结束时间
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(topic.getStartDatetime());
+            calendar.add(Calendar.DAY_OF_YEAR, durationDays);
+            topic.setEndDatetime(calendar.getTime());
+        }
+        
+        topic.setUpdatedAt(new Date());
+        
+        return checkinTopicRepository.save(topic);
+    }
+
+    // 检查主题是否有效
+    public boolean isTopicValid(Long topicId) {
+        CheckinTopic topic = getTopicById(topicId);
+        if (topic == null) {
+            return false;
+        }
+        if (topic.getStatus() == 0) {
+            return false;
+        }
+        Date now = new Date();
+        return now.after(topic.getStartDatetime()) && now.before(topic.getEndDatetime());
+    }
+
+    // 检查用户今天是否已打卡该主题
+    public boolean hasUserCheckedInTopicToday(User user, Long topicId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String today = sdf.format(new Date());
+        
+        return checkinTopicRecordRepository.findByUserIdAndTopicIdAndCheckinDate(
+                user.getId(), topicId, today).isPresent();
+    }
+
+    // 主题打卡
+    public CheckinTopicRecord checkinTopic(User user, Long topicId, String title, String content) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat datetimeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String today = sdf.format(new Date());
+        Date now = new Date();
+        
+        // 检查主题是否有效
+        if (!isTopicValid(topicId)) {
+            return null;
+        }
+        
+        // 检查今天是否已打卡
+        if (hasUserCheckedInTopicToday(user, topicId)) {
+            return null;
+        }
+        
+        // 计算连续打卡天数
+        int consecutiveDays = calculateConsecutiveDays(user.getId(), topicId, today);
+        
+        // 创建打卡记录
+        CheckinRecord checkinRecord = createCheckinRecord(user, title, content);
+        
+        // 创建主题打卡记录
+        CheckinTopicRecord topicRecord = new CheckinTopicRecord();
+        topicRecord.setUserId(user.getId());
+        topicRecord.setTopicId(topicId);
+        topicRecord.setCheckinRecordId(checkinRecord.getId());
+        topicRecord.setCheckinDate(today);
+        topicRecord.setCheckinDatetime(now);
+        topicRecord.setConsecutiveDays(consecutiveDays);
+        topicRecord.setCreatedAt(now);
+        topicRecord.setUpdatedAt(now);
+        
+        return checkinTopicRecordRepository.save(topicRecord);
+    }
+
+    // 计算连续打卡天数
+    private int calculateConsecutiveDays(Long userId, Long topicId, String today) {
+        List<CheckinTopicRecord> records = checkinTopicRecordRepository.findByUserIdAndTopicIdOrderByCheckinDatetimeDesc(userId, topicId);
+        
+        if (records.isEmpty()) {
+            return 1;
+        }
+        
+        // 检查昨天是否有打卡
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(sdf.parse(today));
+        } catch (Exception e) {
+            return 1;
+        }
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        String yesterday = sdf.format(calendar.getTime());
+        
+        CheckinTopicRecord lastRecord = records.get(0);
+        if (yesterday.equals(lastRecord.getCheckinDate())) {
+            return lastRecord.getConsecutiveDays() + 1;
+        } else {
+            return 1;
+        }
+    }
+
+    // 获取主题的打卡记录
+    public Page<CheckinTopicRecord> getTopicCheckinRecords(Long topicId, Pageable pageable) {
+        return checkinTopicRecordRepository.findByTopicId(topicId, pageable);
+    }
+
+    // 获取用户在主题中的最高连续打卡天数
+    public int getUserMaxConsecutiveDays(Long userId, Long topicId) {
+        return checkinTopicRecordRepository.findMaxConsecutiveDaysByUserIdAndTopicId(userId, topicId).orElse(0);
+    }
+
+    // 检查并更新主题状态
+    public void checkAndUpdateTopicStatus(Long topicId) {
+        CheckinTopic topic = getTopicById(topicId);
+        if (topic == null) {
+            return;
+        }
+        
+        Date now = new Date();
+        if (now.after(topic.getEndDatetime()) && topic.getStatus() == 1) {
+            topic.setStatus(0);
+            topic.setUpdatedAt(new Date());
+            checkinTopicRepository.save(topic);
+        }
+    }
+
+    // 获取主题剩余有效期
+    public Map<String, Long> getTopicRemainingTime(Long topicId) {
+        CheckinTopic topic = getTopicById(topicId);
+        if (topic == null) {
+            return null;
+        }
+        
+        Date now = new Date();
+        long diff = topic.getEndDatetime().getTime() - now.getTime();
+        
+        Map<String, Long> result = new HashMap<>();
+        if (diff <= 0) {
+            result.put("days", 0L);
+            result.put("hours", 0L);
+        } else {
+            long days = diff / (1000 * 60 * 60 * 24);
+            long hours = (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
+            result.put("days", days);
+            result.put("hours", hours);
+        }
+        
+        return result;
     }
 }

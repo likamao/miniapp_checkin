@@ -41,6 +41,16 @@
   object-fit: contain;
 }
 
+.user-info {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background-color: #f0f9ff;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #1989fa;
+  text-align: center;
+}
+
 .btn {
   margin-top: 40rpx;
   width: 80%;

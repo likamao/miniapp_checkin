@@ -17,8 +17,18 @@ public class CheckinTopicRecord {
     @Column(name = "topic_id", nullable = false)
     private Long topicId;
 
-    @Column(name = "checkin_record_id", nullable = false)
+    @Column(name = "checkin_record_id")
     private Long checkinRecordId;
+
+    @Column(name = "checkin_date", nullable = false, length = 10)
+    private String checkinDate;
+
+    @Column(name = "checkin_datetime", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date checkinDatetime;
+
+    @Column(name = "consecutive_days", nullable = false)
+    private Integer consecutiveDays = 1;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -69,6 +79,30 @@ public class CheckinTopicRecord {
 
     public void setCheckinRecordId(Long checkinRecordId) {
         this.checkinRecordId = checkinRecordId;
+    }
+
+    public String getCheckinDate() {
+        return checkinDate;
+    }
+
+    public void setCheckinDate(String checkinDate) {
+        this.checkinDate = checkinDate;
+    }
+
+    public Date getCheckinDatetime() {
+        return checkinDatetime;
+    }
+
+    public void setCheckinDatetime(Date checkinDatetime) {
+        this.checkinDatetime = checkinDatetime;
+    }
+
+    public Integer getConsecutiveDays() {
+        return consecutiveDays;
+    }
+
+    public void setConsecutiveDays(Integer consecutiveDays) {
+        this.consecutiveDays = consecutiveDays;
     }
 
     public Date getCreatedAt() {

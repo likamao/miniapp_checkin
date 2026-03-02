@@ -10,9 +10,15 @@ import java.util.List;
 
 public interface CheckinTopicRepository extends JpaRepository<CheckinTopic, Long> {
 
-    @Query("SELECT t FROM CheckinTopic t WHERE t.startDate <= :date AND t.endDate >= :date")
+    @Query("SELECT t FROM CheckinTopic t WHERE t.startDatetime <= :date AND t.endDatetime >= :date AND t.status = 1")
     List<CheckinTopic> findActiveTopics(@Param("date") Date date);
 
-    @Query("SELECT t FROM CheckinTopic t ORDER BY t.startDate DESC")
-    List<CheckinTopic> findAllOrderByStartDateDesc();
+    @Query("SELECT t FROM CheckinTopic t ORDER BY t.createdAt DESC")
+    List<CheckinTopic> findAllOrderByCreatedAtDesc();
+
+    @Query("SELECT t FROM CheckinTopic t WHERE t.status = 1 ORDER BY t.createdAt DESC")
+    List<CheckinTopic> findAllActiveTopics();
+
+    @Query("SELECT t FROM CheckinTopic t WHERE t.status = 0 ORDER BY t.updatedAt DESC")
+    List<CheckinTopic> findAllExpiredTopics();
 }

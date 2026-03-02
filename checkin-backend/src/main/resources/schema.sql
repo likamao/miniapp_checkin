@@ -46,26 +46,35 @@ CREATE TABLE IF NOT EXISTS `checkin_topic` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(100) NOT NULL COMMENT '主题标题',
   `description` VARCHAR(500) COMMENT '主题描述',
-  `start_date` DATE NOT NULL COMMENT '开始日期',
-  `end_date` DATE NOT NULL COMMENT '结束日期',
+  `start_datetime` DATETIME NOT NULL COMMENT '开始时间',
+  `end_datetime` DATETIME NOT NULL COMMENT '结束时间',
+  `duration_days` INT NOT NULL DEFAULT 7 COMMENT '有效期天数',
+  `status` TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1-有效，0-已过期',
+  `created_by` BIGINT(20) COMMENT '创建者ID',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_start_date` (`start_date`),
-  KEY `idx_end_date` (`end_date`)
+  KEY `idx_start_datetime` (`start_datetime`),
+  KEY `idx_end_datetime` (`end_datetime`),
+  KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='打卡主题表';
 
--- 创建主题打卡关联表
+-- 创建主题打卡记录表
 CREATE TABLE IF NOT EXISTS `checkin_topic_record` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT(20) NOT NULL COMMENT '用户ID',
   `topic_id` BIGINT(20) NOT NULL COMMENT '主题ID',
-  `checkin_record_id` BIGINT(20) NOT NULL COMMENT '打卡记录ID',
+  `checkin_record_id` BIGINT(20) COMMENT '打卡记录ID',
+  `checkin_date` VARCHAR(10) NOT NULL COMMENT '打卡日期 (YYYY-MM-DD)',
+  `checkin_datetime` DATETIME NOT NULL COMMENT '打卡时间',
+  `consecutive_days` INT NOT NULL DEFAULT 1 COMMENT '连续打卡天数',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_user_topic_record` (`user_id`, `topic_id`, `checkin_record_id`),
+  UNIQUE KEY `uk_user_topic_date` (`user_id`, `topic_id`, `checkin_date`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_topic_id` (`topic_id`),
+  KEY `idx_checkin_date` (`checkin_date`),
   CONSTRAINT `fk_topic_record_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_topic_record_topic` FOREIGN KEY (`topic_id`) REFERENCES `checkin_topic` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_topic_record_checkin` FOREIGN KEY (`checkin_record_id`) REFERENCES `checkin_record` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='主题打卡关联表';
+  CONSTRAINT `fk_topic_record_topic` FOREIGN KEY (`topic_id`) REFERENCES `checkin_topic` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='主题打卡记录表';

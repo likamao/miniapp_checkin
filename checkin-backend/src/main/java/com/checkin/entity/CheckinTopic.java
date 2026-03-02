@@ -17,11 +17,22 @@ public class CheckinTopic {
     @Column(name = "description", length = 500)
     private String description;
 
-    @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    @Column(name = "start_datetime", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startDatetime;
 
-    @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    @Column(name = "end_datetime", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endDatetime;
+
+    @Column(name = "duration_days", nullable = false)
+    private Integer durationDays = 7;
+
+    @Column(name = "status", nullable = false)
+    private Integer status = 1;
+
+    @Column(name = "created_by")
+    private Long createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -66,20 +77,44 @@ public class CheckinTopic {
         this.description = description;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Date getStartDatetime() {
+        return startDatetime;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartDatetime(Date startDatetime) {
+        this.startDatetime = startDatetime;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Date getEndDatetime() {
+        return endDatetime;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setEndDatetime(Date endDatetime) {
+        this.endDatetime = endDatetime;
+    }
+
+    public Integer getDurationDays() {
+        return durationDays;
+    }
+
+    public void setDurationDays(Integer durationDays) {
+        this.durationDays = durationDays;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Date getCreatedAt() {

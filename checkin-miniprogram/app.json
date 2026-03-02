@@ -4,7 +4,8 @@
     "pages/checkin/checkin",
     "pages/records/records",
     "pages/statistics/statistics",
-    "pages/square/square"
+    "pages/square/square",
+    "pages/topic-detail/topic-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -13,11 +13,18 @@ App({
       this.globalData.token = token;
     }
   },
-  login: function(code, callback) {
+  login: function(code, userInfo, callback) {
+    const requestData = { code: code };
+    // 如果提供了用户信息，添加到请求数据中
+    if (userInfo) {
+      requestData.nickname = userInfo.nickName || '';
+      requestData.avatarUrl = userInfo.avatarUrl || '';
+    }
+    
     wx.request({
       url: `${this.globalData.apiBaseUrl}/api/auth/login`,
       method: 'POST',
-      data: { code: code },
+      data: requestData,
       success: (res) => {
         if (res.data.token) {
           this.globalData.token = res.data.token;

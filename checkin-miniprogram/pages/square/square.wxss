@@ -96,42 +96,404 @@
   font-size: 24rpx;
 }
 
-/* 发布主题按钮样式 */
-.publish-button-container {
+/* 按钮容器 */
+.buttons-container {
   position: fixed;
   bottom: 40rpx;
   right: 40rpx;
   z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  align-items: flex-end;
 }
 
-.publish-button {
-  width: 90rpx;
-  height: 90rpx;
-  border-radius: 50%;
-  background-color: #1989fa;
-  color: white;
+/* 操作按钮样式 */
+.action-button {
+  min-width: 180rpx;
+  padding: 20rpx 32rpx;
+  border-radius: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
   border: 4rpx solid white;
   transition: all 0.3s ease;
+  min-height: 88rpx;
+  box-sizing: border-box;
 }
 
-.publish-button-text {
-  font-size: 48rpx;
-  font-weight: bold;
-  line-height: 90rpx;
+.action-button-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: white;
+  text-align: center;
 }
 
-.publish-button:hover {
-  background-color: #007aff;
-  transform: scale(1.1);
+/* 发布主题按钮 */
+.action-button.publish-button {
+  background-color: #1989fa;
+}
+
+/* 打卡按钮 */
+.action-button.checkin-button {
+  background-color: #67c23a;
+}
+
+/* 按钮悬停效果 */
+.action-button:hover {
+  transform: translateY(-4rpx);
   box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.25);
 }
 
-.publish-button:active {
-  transform: scale(0.95);
+.action-button.publish-button:hover {
+  background-color: #007aff;
+}
+
+.action-button.checkin-button:hover {
+  background-color: #52c41a;
+}
+
+/* 按钮点击效果 */
+.action-button:active {
+  transform: scale(0.95) translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 375px) {
+  .action-button {
+    min-width: 140rpx;
+    padding: 16rpx 24rpx;
+    min-height: 76rpx;
+  }
+  
+  .action-button-text {
+    font-size: 24rpx;
+  }
+}
+
+/* 响应式设计 */
+@media (min-width: 768px) {
+  .action-button {
+    min-width: 180rpx;
+    padding: 24rpx 40rpx;
+    min-height: 96rpx;
+  }
+  
+  .action-button-text {
+    font-size: 32rpx;
+  }
+}
+
+/* 打卡弹框样式 */
+.checkin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 40rpx;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease;
+}
+
+.checkin-modal-content {
+  width: 100%;
+  max-width: 600rpx;
+  background-color: white;
+  border-radius: 16rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease;
+  position: relative;
+}
+
+.checkin-card {
+  width: 100%;
+  max-width: 600rpx;
+  box-sizing: border-box;
+  padding: 20rpx;
+}
+
+.checkin-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.checkin-form-item {
+  margin: 20rpx 0;
+}
+
+.checkin-form-item text {
+  display: block;
+  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.checkin-input {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid #e4e4e4;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #333;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.checkin-input:focus {
+  border-color: #1989fa;
+  box-shadow: 0 0 0 4rpx rgba(25, 137, 250, 0.1);
+}
+
+.checkin-textarea {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid #e4e4e4;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #333;
+  box-sizing: border-box;
+  line-height: 1.5;
+  transition: all 0.3s ease;
+  min-height: 200rpx;
+}
+
+.checkin-textarea:focus {
+  border-color: #1989fa;
+  box-shadow: 0 0 0 4rpx rgba(25, 137, 250, 0.1);
+}
+
+.checkin-btn {
+  padding: 24rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  margin-top: 30rpx;
+  width: 100%;
+}
+
+.checkin-btn-primary {
+  background-color: #1989fa;
+  color: white;
+}
+
+.checkin-btn-primary:hover {
+  background-color: #007aff;
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(25, 137, 250, 0.3);
+}
+
+.checkin-btn-primary:active {
+  transform: translateY(0);
+}
+
+.checkin-checked-in {
+  text-align: center;
+  padding: 40rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.checkin-checked-in-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30rpx;
+}
+
+.checkin-checked-in-image {
+  width: 160rpx;
+  height: 160rpx;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
+  padding: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.checkin-checked-in-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.checkin-checked-in-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: #4caf50;
+}
+
+.checkin-checked-in-desc {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.5;
+  padding: 0 20rpx;
+  text-align: center;
+}
+
+/* 主题选择器样式 */
+.checkin-topic-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 12rpx;
+}
+
+.checkin-topic-item {
+  flex: 1 1 calc(50% - 8rpx);
+  min-width: 200rpx;
+}
+
+.checkin-topic-item-content {
+  padding: 16rpx;
+  border: 2rpx solid #e4e4e4;
+  border-radius: 8rpx;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.checkin-topic-item-content:hover {
+  border-color: #1989fa;
+  background-color: #f0f9ff;
+}
+
+.checkin-topic-item-content text {
+  font-size: 24rpx;
+  color: #333;
+  margin-bottom: 0;
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+  .checkin-card {
+    width: 80%;
+    max-width: 500rpx;
+  }
+}
+
+@media (min-width: 1200px) {
+  .checkin-card {
+    width: 60%;
+    max-width: 450rpx;
+  }
+}
+
+/* 加载状态样式 */
+.checkin-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 20rpx;
+  box-sizing: border-box;
+}
+
+.checkin-loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 8rpx solid #f3f3f3;
+  border-top: 8rpx solid #1989fa;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+.checkin-loading-text {
+  font-size: 32rpx;
+  color: #666;
+}
+
+/* 庆祝动画样式 */
+.checkin-celebration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.checkin-firework {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.checkin-spark {
+  position: absolute;
+  width: 2px;
+  height: 30rpx;
+  background: linear-gradient(to bottom, #fff, transparent);
+  left: 50%;
+  top: 50%;
+  transform-origin: bottom center;
+  animation: spark 1s ease-out forwards;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20rpx); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spark {
+  0% {
+    transform: rotate(0deg) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(0deg) translateY(-100rpx);
+    opacity: 0;
+  }
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+  .checkin-modal-content {
+    width: 80%;
+    max-width: 500rpx;
+  }
+}
+
+@media (min-width: 1200px) {
+  .checkin-modal-content {
+    width: 60%;
+    max-width: 450rpx;
+  }
 }
 
 /* 发布主题弹框样式 */
