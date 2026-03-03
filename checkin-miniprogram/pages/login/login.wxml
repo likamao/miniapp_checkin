@@ -1,8 +1,18 @@
 <view class="container">
-  <view class="card">
+  <!-- 背景图片 -->
+  <view class="background-image">
+    <image src="../../icons/login_back.jpg" mode="aspectFill"></image>
+  </view>
+  <!-- 半透明覆盖层 -->
+  <view class="overlay"></view>
+  <!-- 内容层 -->
+  <view class="content">
     <view class="title">听 夏</view>
-    <view class="logo">
-      <image src="../../icons/logo.png" mode="aspectFit" style="width: 200rpx; height: 200rpx; margin: 0 auto;"></image>
+    <view class="poem">
+      <view class="poem-line">Every day is a new beginning,</view>
+      <view class="poem-line">Take a deep breath and start again.</view>
+      <view class="poem-line">Small steps lead to big changes,</view>
+      <view class="poem-line">Keep going, you've got this!</view>
     </view>
     <view class="desc">请使用微信登录以开始打卡</view>
     <view wx:if="{{userInfo}}" class="user-info">
