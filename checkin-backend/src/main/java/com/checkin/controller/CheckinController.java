@@ -363,7 +363,8 @@ public class CheckinController {
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-        Page<CheckinTopicRecord> recordPage = checkinService.getTopicCheckinRecords(topicId, pageable);
+        // 只获取当前用户在主题中的打卡记录
+        Page<CheckinTopicRecord> recordPage = checkinService.getUserTopicCheckinRecords(user.getId(), topicId, pageable);
 
         List<Map<String, Object>> records = recordPage.getContent().stream().map(record -> {
             Map<String, Object> recordMap = new HashMap<>();

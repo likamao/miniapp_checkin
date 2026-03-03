@@ -50,4 +50,10 @@ public interface CheckinTopicRecordRepository extends JpaRepository<CheckinTopic
     List<CheckinTopicRecord> findRecentByUserIdAndTopicId(
             @Param("userId") Long userId, 
             @Param("topicId") Long topicId);
+    
+    @Query("SELECT r FROM CheckinTopicRecord r WHERE r.userId = :userId AND r.topicId = :topicId ORDER BY r.checkinDatetime DESC")
+    Page<CheckinTopicRecord> findByUserIdAndTopicId(
+            @Param("userId") Long userId, 
+            @Param("topicId") Long topicId, 
+            Pageable pageable);
 }

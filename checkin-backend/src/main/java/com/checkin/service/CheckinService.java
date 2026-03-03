@@ -331,6 +331,11 @@ public class CheckinService {
         return checkinTopicRecordRepository.findByTopicId(topicId, pageable);
     }
 
+    // 获取当前用户在主题中的打卡记录
+    public Page<CheckinTopicRecord> getUserTopicCheckinRecords(Long userId, Long topicId, Pageable pageable) {
+        return checkinTopicRecordRepository.findByUserIdAndTopicId(userId, topicId, pageable);
+    }
+
     // 获取用户在主题中的最高连续打卡天数
     public int getUserMaxConsecutiveDays(Long userId, Long topicId) {
         return checkinTopicRecordRepository.findMaxConsecutiveDaysByUserIdAndTopicId(userId, topicId).orElse(0);

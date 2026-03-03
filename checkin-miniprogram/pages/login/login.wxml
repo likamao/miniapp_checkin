@@ -2,7 +2,7 @@
   <view class="card">
     <view class="title">听 夏</view>
     <view class="logo">
-      <image src="../../icons/logo.jpg" mode="aspectFit" style="width: 200rpx; height: 200rpx; margin: 0 auto;"></image>
+      <image src="../../icons/logo.png" mode="aspectFit" style="width: 200rpx; height: 200rpx; margin: 0 auto;"></image>
     </view>
     <view class="desc">请使用微信登录以开始打卡</view>
     <view wx:if="{{userInfo}}" class="user-info">
