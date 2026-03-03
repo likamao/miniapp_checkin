@@ -101,5 +101,12 @@ Page({
   // 触发式刷新方法，供其他页面调用
   refreshStatistics: function() {
     this.loadStatistics();
+  },
+
+  // 导航到设置页面
+  navigateToSettings: function() {
+    wx.navigateTo({
+      url: '/pages/settings/settings'
+    });
   }
 })

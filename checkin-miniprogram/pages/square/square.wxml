@@ -15,6 +15,11 @@
     <view class="action-button checkin-button" bindtap="showCheckinModal">
       <text class="action-button-text">打卡</text>
     </view>
+    
+    <!-- 报告按钮 -->
+    <view wx:if="{{hasReportPermission}}" class="action-button report-button" bindtap="showReportMenu">
+      <text class="action-button-text">报告</text>
+    </view>
   </view>
   
   <view class="topic-list">
@@ -124,6 +129,22 @@
   <view wx:if="{{checkinShowCelebration}}" class="checkin-celebration">
     <view class="checkin-firework" wx:for="{{checkinFireworks}}" wx:key="index" style="left: {{item.left}}px; top: {{item.top}}px; animation-delay: {{item.delay}}s;">
       <view class="checkin-spark" wx:for="{{10}}" wx:key="sparkIndex" style="transform: rotate({{36 * sparkIndex}}deg);"></view>
+    </view>
+  </view>
+  
+
+  
+  <!-- 报告菜单弹框 -->
+  <view wx:if="{{showReportMenu}}" class="report-menu-overlay" bindtap="hideReportMenu">
+    <view class="report-menu-content" catchtap="stopPropagation">
+      <view class="report-menu-buttons">
+        <view class="report-menu-button weekly" bindtap="generateWeeklyReport">
+          <text class="report-menu-button-text">周报</text>
+        </view>
+        <view class="report-menu-button monthly" bindtap="generateMonthlyReport">
+          <text class="report-menu-button-text">月报</text>
+        </view>
+      </view>
     </view>
   </view>
   

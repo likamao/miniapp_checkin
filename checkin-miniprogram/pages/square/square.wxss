@@ -140,6 +140,11 @@
   background-color: #67c23a;
 }
 
+/* 报告按钮 */
+.action-button.report-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 /* 按钮悬停效果 */
 .action-button:hover {
   transform: translateY(-4rpx);
@@ -152,6 +157,12 @@
 
 .action-button.checkin-button:hover {
   background-color: #52c41a;
+}
+
+.action-button.report-button:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4198 100%);
+  transform: translateY(-4rpx);
+  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.4);
 }
 
 /* 按钮点击效果 */
@@ -667,4 +678,102 @@
 
 .modal-button:active {
   transform: translateY(0);
+}
+
+/* 报告按钮样式 */
+.report-button-container {
+  position: fixed;
+  bottom: 200rpx;
+  right: 40rpx;
+  z-index: 998;
+}
+
+.report-button {
+  min-width: 180rpx;
+    padding: 20rpx 32rpx;
+    border-radius: 40rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+    border: 4rpx solid white;
+    transition: all 0.3s ease;
+    min-height: 88rpx;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+}
+
+.report-button:active {
+  transform: scale(0.9);
+}
+
+.report-button-icon {
+  font-size: 44rpx;
+}
+
+/* 报告菜单遮罩 */
+.report-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.report-menu-content {
+  width: 100%;
+  background-color: white;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 40rpx 32rpx;
+  box-sizing: border-box;
+  animation: slideUp 0.3s ease;
+}
+
+.report-menu-buttons {
+  display: flex;
+  gap: 24rpx;
+}
+
+.report-menu-button {
+  flex: 1;
+  padding: 32rpx 24rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.report-menu-button.weekly {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.report-menu-button.monthly {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.report-menu-button:active {
+  transform: scale(0.95);
+}
+
+.report-menu-button-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: white;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }

@@ -26,10 +26,26 @@ public class WeChatService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * 微信登录（简化版）
+     * 
+     * @param code 微信登录码
+     * @return 用户信息
+     * @throws RuntimeException 登录失败时抛出
+     */
     public User login(String code) {
         return login(code, null, null);
     }
     
+    /**
+     * 微信登录
+     * 
+     * @param code 微信登录码
+     * @param nickname 用户昵称
+     * @param avatarUrl 用户头像URL
+     * @return 用户信息
+     * @throws RuntimeException 登录失败时抛出
+     */
     public User login(String code, String nickname, String avatarUrl) {
         // 调用微信 API 获取 openid 和 session_key
         String url = String.format("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
@@ -79,6 +95,14 @@ public class WeChatService {
         }
     }
 
+    /**
+     * 更新用户信息
+     * 
+     * @param user 用户信息
+     * @param nickname 用户昵称
+     * @param avatarUrl 用户头像URL
+     * @return 更新后的用户信息
+     */
     public User updateUserInfo(User user, String nickname, String avatarUrl) {
         user.setNickname(nickname);
         user.setAvatarUrl(avatarUrl);

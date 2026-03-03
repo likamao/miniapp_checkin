@@ -6,6 +6,7 @@ Page({
     token: '',
     showPublishModal: false,
     showCheckinModal: false,
+    showReportMenu: false,
     newTopic: {
       title: '',
       description: ''
@@ -15,6 +16,7 @@ Page({
     maxTitleInputHeight: 160, // 标题输入框最大高度
     maxDescriptionInputHeight: 400, // 描述输入框最大高度
     hasPublishPermission: false, // 是否有发布权限
+    hasReportPermission: false, // 是否有报告查看权限
     // 打卡相关数据
     checkinIsLoading: false,
     checkinHasCheckedInToday: false,
@@ -39,10 +41,32 @@ Page({
 
   // 检查用户权限
   checkUserPermissions() {
-    // 这里可以根据实际情况检查用户权限
-    // 暂时默认所有登录用户都有发布权限
-    // 实际项目中应该调用后端API检查权限
-    this.setData({ hasPublishPermission: true });
+    const token = this.data.token;
+    wx.request({
+      url: apiConfig.API_BASE_URL + '/api/users/me',
+      method: 'GET',
+      header: {
+        'Authorization': 'Bearer ' + token
+      },
+      success: (res) => {
+        if (res.data && res.data.user) {
+          // 检查用户是否有管理员角色
+          const hasAdminRole = res.data.user.roles && res.data.user.roles.includes('ADMIN');
+          
+          this.setData({
+            hasPublishPermission: true, // 暂时默认所有登录用户都有发布权限
+            hasReportPermission: hasAdminRole
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('获取用户权限失败:', err);
+        this.setData({
+          hasPublishPermission: true,
+          hasReportPermission: false
+        });
+      }
+    });
   },
 
   // 显示打卡弹框
@@ -101,7 +125,37 @@ Page({
       },
       success: (res) => {
         if (res.data && res.data.topics) {
-          this.setData({ checkinTopics: res.data.topics });
+          // 获取当前用户信息
+          wx.request({
+            url: apiConfig.API_BASE_URL + '/api/users/me',
+            method: 'GET',
+            header: {
+              'Authorization': 'Bearer ' + token
+            },
+            success: (userRes) => {
+              if (userRes.data && userRes.data.user) {
+                const currentUserId = userRes.data.user.user.id;
+                const hasAdminRole = userRes.data.user.roles && userRes.data.user.roles.includes('ADMIN');
+                
+                // 为每个主题检查用户是否具有查看报告的权限
+                const topicsWithPermission = res.data.topics.map(topic => {
+                  const isTopicCreator = topic.createdBy === currentUserId;
+                  const canViewReport = hasAdminRole || isTopicCreator;
+                  return {
+                    ...topic,
+                    canViewReport
+                  };
+                });
+                
+                this.setData({ checkinTopics: topicsWithPermission });
+              } else {
+                this.setData({ checkinTopics: res.data.topics });
+              }
+            },
+            fail: () => {
+              this.setData({ checkinTopics: res.data.topics });
+            }
+          });
         }
       },
       fail: (err) => {
@@ -258,7 +312,41 @@ Page({
       success: (res) => {
         wx.hideLoading();
         if (res.data && res.data.topics) {
-          this.setData({ topics: res.data.topics });
+          // 获取当前用户信息
+          const token = this.data.token;
+          wx.request({
+            url: apiConfig.API_BASE_URL + '/api/users/me',
+            method: 'GET',
+            header: {
+              'Authorization': 'Bearer ' + token
+            },
+            success: (userRes) => {
+              if (userRes.data && userRes.data.user) {
+                const currentUserId = userRes.data.user.user.id;
+                const hasAdminRole = userRes.data.user.roles && userRes.data.user.roles.includes('ADMIN');
+                
+                // 为每个主题检查用户是否具有查看报告的权限
+                const topicsWithPermission = res.data.topics.map(topic => {
+                  const isTopicCreator = topic.createdBy === currentUserId;
+                  const canViewReport = hasAdminRole || isTopicCreator;
+                  return {
+                    ...topic,
+                    canViewReport
+                  };
+                });
+                
+                this.setData({ 
+                  topics: topicsWithPermission,
+                  hasReportPermission: hasAdminRole || topicsWithPermission.some(topic => topic.canViewReport)
+                });
+              } else {
+                this.setData({ topics: res.data.topics });
+              }
+            },
+            fail: () => {
+              this.setData({ topics: res.data.topics });
+            }
+          });
         }
       },
       fail: (err) => {
@@ -404,5 +492,27 @@ Page({
         console.error('发布主题失败:', err);
       }
     });
+  },
+
+  // 显示报告菜单
+  showReportMenu() {
+    this.setData({ showReportMenu: true });
+  },
+
+  // 隐藏报告菜单
+  hideReportMenu() {
+    this.setData({ showReportMenu: false });
+  },
+
+  // 生成周报
+  generateWeeklyReport() {
+    this.hideReportMenu();
+    wx.showToast({ title: '周报功能开发中', icon: 'none' });
+  },
+
+  // 生成月报
+  generateMonthlyReport() {
+    this.hideReportMenu();
+    wx.showToast({ title: '月报功能开发中', icon: 'none' });
   }
 });

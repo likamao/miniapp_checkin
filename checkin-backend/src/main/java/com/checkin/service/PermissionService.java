@@ -22,7 +22,8 @@ public class PermissionService {
 
     /**
      * 检查用户是否拥有指定权限
-     * @param user 用户
+     * 
+     * @param user 用户信息
      * @param permissionCode 权限代码
      * @return 是否拥有权限
      */
@@ -61,7 +62,8 @@ public class PermissionService {
 
     /**
      * 检查用户是否拥有指定角色
-     * @param user 用户
+     * 
+     * @param user 用户信息
      * @param roleName 角色名称
      * @return 是否拥有角色
      */

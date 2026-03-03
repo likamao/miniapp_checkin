@@ -36,6 +36,14 @@ public class CheckinService {
     @Autowired
     private CheckinTopicRecordRepository checkinTopicRecordRepository;
 
+    /**
+     * 创建打卡记录
+     * 
+     * @param user 用户信息
+     * @param title 打卡标题
+     * @param content 打卡内容
+     * @return 创建的打卡记录
+     */
     public CheckinRecord createCheckinRecord(User user, String title, String content) {
         CheckinRecord record = new CheckinRecord();
         record.setUser(user);
@@ -53,14 +61,34 @@ public class CheckinService {
         return savedRecord;
     }
 
+    /**
+     * 获取用户的所有打卡记录
+     * 
+     * @param user 用户信息
+     * @return 打卡记录列表
+     */
     public List<CheckinRecord> getCheckinRecords(User user) {
         return checkinRecordRepository.findByUser(user);
     }
 
+    /**
+     * 获取指定日期范围内的打卡记录
+     * 
+     * @param user 用户信息
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 打卡记录列表
+     */
     public List<CheckinRecord> getCheckinRecordsByDateRange(User user, Date startDate, Date endDate) {
         return checkinRecordRepository.findByUserAndCheckinTimeBetween(user, startDate, endDate);
     }
 
+    /**
+     * 更新统计数据
+     * 
+     * @param user 用户信息
+     * @param checkinTime 打卡时间
+     */
     private void updateStatistics(User user, Date checkinTime) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(checkinTime);
@@ -92,10 +120,24 @@ public class CheckinService {
         // 这里可以添加月统计的逻辑，根据实际需求调整
     }
 
+    /**
+     * 获取用户的周统计数据
+     * 
+     * @param user 用户信息
+     * @param year 年份
+     * @param month 月份
+     * @return 统计数据列表
+     */
     public List<CheckinStatistics> getWeeklyStatistics(User user, int year, int month) {
         return checkinStatisticsRepository.findByUserAndYearAndMonth(user, year, month);
     }
 
+    /**
+     * 获取最近7天的打卡次数
+     * 
+     * @param user 用户信息
+     * @return 打卡次数
+     */
     public long getRecent7DaysCheckinCount(User user) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -7);
@@ -106,6 +148,12 @@ public class CheckinService {
         return records.size();
     }
 
+    /**
+     * 检查用户今日是否已打卡
+     * 
+     * @param user 用户信息
+     * @return 是否已打卡
+     */
     public boolean hasCheckedInToday(User user) {
         Calendar calendar = Calendar.getInstance();
         // 设置为今天的开始时间
@@ -126,10 +174,26 @@ public class CheckinService {
         return !records.isEmpty();
     }
 
+    /**
+     * 分页获取用户的打卡记录
+     * 
+     * @param user 用户信息
+     * @param pageable 分页参数
+     * @return 分页的打卡记录
+     */
     public Page<CheckinRecord> getCheckinRecords(User user, Pageable pageable) {
         return checkinRecordRepository.findByUser(user, pageable);
     }
 
+    /**
+     * 分页获取指定年份和月份的打卡记录
+     * 
+     * @param user 用户信息
+     * @param year 年份
+     * @param month 月份，可为null（表示按年查询）
+     * @param pageable 分页参数
+     * @return 分页的打卡记录
+     */
     public Page<CheckinRecord> getCheckinRecordsByYearAndMonth(User user, int year, Integer month, Pageable pageable) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
@@ -167,29 +231,64 @@ public class CheckinService {
         return checkinRecordRepository.findByUserAndCheckinTimeBetween(user, startDate, endDate, pageable);
     }
 
+    /**
+     * 格式化日期时间
+     * 
+     * @param date 日期对象
+     * @return 格式化后的日期时间字符串
+     */
     public String formatDateTime(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
     }
 
-    // 主题相关方法
+    /**
+     * 获取所有活跃的主题
+     * 
+     * @return 活跃主题列表
+     */
     public List<CheckinTopic> getActiveTopics() {
         return checkinTopicRepository.findActiveTopics(new Date());
     }
 
+    /**
+     * 获取所有主题
+     * 
+     * @return 主题列表
+     */
     public List<CheckinTopic> getAllTopics() {
         return checkinTopicRepository.findAllOrderByCreatedAtDesc();
     }
 
+    /**
+     * 根据ID获取主题
+     * 
+     * @param topicId 主题ID
+     * @return 主题信息，不存在则返回null
+     */
     public CheckinTopic getTopicById(Long topicId) {
         return checkinTopicRepository.findById(topicId).orElse(null);
     }
 
+    /**
+     * 获取主题的打卡用户数量
+     * 
+     * @param topicId 主题ID
+     * @return 打卡用户数量
+     */
     public long getTopicCheckinCount(Long topicId) {
         return checkinTopicRecordRepository.countUniqueUsersByTopicId(topicId);
     }
 
-    // 创建主题
+    /**
+     * 创建主题
+     * 
+     * @param title 主题标题
+     * @param description 主题描述
+     * @param durationDays 持续天数，可为null（默认7天）
+     * @param creator 创建者信息
+     * @return 创建的主题
+     */
     public CheckinTopic createTopic(String title, String description, Integer durationDays, User creator) {
         CheckinTopic topic = new CheckinTopic();
         topic.setTitle(title);
@@ -216,7 +315,16 @@ public class CheckinService {
         return checkinTopicRepository.save(topic);
     }
 
-    // 更新主题
+    /**
+     * 更新主题
+     * 
+     * @param topicId 主题ID
+     * @param title 主题标题
+     * @param description 主题描述
+     * @param durationDays 持续天数，可为null
+     * @param user 操作用户信息
+     * @return 更新后的主题，主题不存在则返回null
+     */
     public CheckinTopic updateTopic(Long topicId, String title, String description, Integer durationDays, User user) {
         CheckinTopic topic = getTopicById(topicId);
         if (topic == null) {
@@ -240,7 +348,12 @@ public class CheckinService {
         return checkinTopicRepository.save(topic);
     }
 
-    // 检查主题是否有效
+    /**
+     * 检查主题是否有效
+     * 
+     * @param topicId 主题ID
+     * @return 主题是否有效
+     */
     public boolean isTopicValid(Long topicId) {
         CheckinTopic topic = getTopicById(topicId);
         if (topic == null) {
@@ -253,7 +366,13 @@ public class CheckinService {
         return now.after(topic.getStartDatetime()) && now.before(topic.getEndDatetime());
     }
 
-    // 检查用户今天是否已打卡该主题
+    /**
+     * 检查用户今天是否已打卡该主题
+     * 
+     * @param user 用户信息
+     * @param topicId 主题ID
+     * @return 是否已打卡
+     */
     public boolean hasUserCheckedInTopicToday(User user, Long topicId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String today = sdf.format(new Date());
@@ -262,7 +381,15 @@ public class CheckinService {
                 user.getId(), topicId, today).isPresent();
     }
 
-    // 主题打卡
+    /**
+     * 主题打卡
+     * 
+     * @param user 用户信息
+     * @param topicId 主题ID
+     * @param title 打卡标题
+     * @param content 打卡内容
+     * @return 主题打卡记录，主题无效或已打卡则返回null
+     */
     public CheckinTopicRecord checkinTopic(User user, Long topicId, String title, String content) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat datetimeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -299,7 +426,14 @@ public class CheckinService {
         return checkinTopicRecordRepository.save(topicRecord);
     }
 
-    // 计算连续打卡天数
+    /**
+     * 计算连续打卡天数
+     * 
+     * @param userId 用户ID
+     * @param topicId 主题ID
+     * @param today 今天的日期字符串（yyyy-MM-dd）
+     * @return 连续打卡天数
+     */
     private int calculateConsecutiveDays(Long userId, Long topicId, String today) {
         List<CheckinTopicRecord> records = checkinTopicRecordRepository.findByUserIdAndTopicIdOrderByCheckinDatetimeDesc(userId, topicId);
         
@@ -326,22 +460,45 @@ public class CheckinService {
         }
     }
 
-    // 获取主题的打卡记录
+    /**
+     * 获取主题的打卡记录
+     * 
+     * @param topicId 主题ID
+     * @param pageable 分页参数
+     * @return 分页的打卡记录
+     */
     public Page<CheckinTopicRecord> getTopicCheckinRecords(Long topicId, Pageable pageable) {
         return checkinTopicRecordRepository.findByTopicId(topicId, pageable);
     }
 
-    // 获取当前用户在主题中的打卡记录
+    /**
+     * 获取当前用户在主题中的打卡记录
+     * 
+     * @param userId 用户ID
+     * @param topicId 主题ID
+     * @param pageable 分页参数
+     * @return 分页的打卡记录
+     */
     public Page<CheckinTopicRecord> getUserTopicCheckinRecords(Long userId, Long topicId, Pageable pageable) {
         return checkinTopicRecordRepository.findByUserIdAndTopicId(userId, topicId, pageable);
     }
 
-    // 获取用户在主题中的最高连续打卡天数
+    /**
+     * 获取用户在主题中的最高连续打卡天数
+     * 
+     * @param userId 用户ID
+     * @param topicId 主题ID
+     * @return 最高连续打卡天数
+     */
     public int getUserMaxConsecutiveDays(Long userId, Long topicId) {
         return checkinTopicRecordRepository.findMaxConsecutiveDaysByUserIdAndTopicId(userId, topicId).orElse(0);
     }
 
-    // 检查并更新主题状态
+    /**
+     * 检查并更新主题状态
+     * 
+     * @param topicId 主题ID
+     */
     public void checkAndUpdateTopicStatus(Long topicId) {
         CheckinTopic topic = getTopicById(topicId);
         if (topic == null) {
@@ -356,7 +513,12 @@ public class CheckinService {
         }
     }
 
-    // 获取主题剩余有效期
+    /**
+     * 获取主题剩余有效期
+     * 
+     * @param topicId 主题ID
+     * @return 包含剩余天数和小时数的Map，主题不存在则返回null
+     */
     public Map<String, Long> getTopicRemainingTime(Long topicId) {
         CheckinTopic topic = getTopicById(topicId);
         if (topic == null) {
@@ -378,5 +540,25 @@ public class CheckinService {
         }
         
         return result;
+    }
+
+    /**
+     * 获取周报数据
+     * 
+     * @param topicId 主题ID
+     * @return 周报数据
+     */
+    public Map<String, Object> getWeeklyReport(Long topicId) {
+        return null;
+    }
+
+    /**
+     * 获取月报数据
+     * 
+     * @param topicId 主题ID
+     * @return 月报数据
+     */
+    public Map<String, Object> getMonthlyReport(Long topicId) {
+        return null;
     }
 }

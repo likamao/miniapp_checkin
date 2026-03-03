@@ -28,6 +28,9 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    @Column(name = "allow_stats_display", nullable = false)
+    private Boolean allowStatsDisplay = false;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -83,5 +86,13 @@ public class User {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Boolean getAllowStatsDisplay() {
+        return allowStatsDisplay;
+    }
+
+    public void setAllowStatsDisplay(Boolean allowStatsDisplay) {
+        this.allowStatsDisplay = allowStatsDisplay;
     }
 }
