@@ -1,0 +1,124 @@
+<view class="report-container">
+  <!-- 隐藏的canvas，用于生成报告图片 -->
+  <canvas canvas-id="reportCanvas" style="width: 100vw; height: 2500px; position: fixed; left: -9999px;"></canvas>
+  <!-- 隐藏的canvas，用于生成分享图片 -->
+  <canvas canvas-id="shareCanvas" style="width: 100vw; height: 720px; position: fixed; left: -9999px;"></canvas>
+  
+  <!-- 报告头部 -->
+  <view class="report-header">
+    <text class="report-title">{{reportTitle}}</text>
+    <text class="report-date-range">{{dateRange}}</text>
+  </view>
+  
+  <!-- 报告类型选择 -->
+  <view class="report-type-selector">
+    <button 
+      class="type-button {{reportType === 'weekly' ? 'active' : ''}}" 
+      bindtap="selectReportType" 
+      data-type="weekly"
+    >
+      周报
+    </button>
+    <button 
+      class="type-button {{reportType === 'monthly' ? 'active' : ''}}" 
+      bindtap="selectReportType" 
+      data-type="monthly"
+    >
+      月报
+    </button>
+  </view>
+  
+  <!-- 主题选择 -->
+  <view class="topic-selector">
+    <text class="selector-label">选择主题：</text>
+    <picker bindchange="bindTopicChange" value="{{selectedTopicIndex}}" range="{{topics}}" range-key="title">
+      <view class="picker">
+        {{selectedTopic ? selectedTopic.title : '请选择主题'}}
+      </view>
+    </picker>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <text class="loading-text">加载中...</text>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view wx:if="{{error}}" class="error-container">
+    <text class="error-text">{{error}}</text>
+  </view>
+  
+  <!-- 报告内容 -->
+  <view wx:if="{{!loading && !error && reportData}}" class="report-content">
+    <!-- 总体统计数据 -->
+    <view class="metrics-section">
+      <text class="section-title">总体统计</text>
+      <view class="metrics-grid">
+        <view class="metric-item">
+          <text class="metric-value">{{reportData.metrics.totalCheckinCount}}</text>
+          <text class="metric-label">总打卡次数</text>
+        </view>
+        <view class="metric-item">
+          <text class="metric-value">{{reportData.metrics.participantCount}}</text>
+          <text class="metric-label">参与用户数</text>
+        </view>
+        <view class="metric-item">
+          <text class="metric-value">{{reportData.metrics.averageCheckinCountFormatted}}</text>
+          <text class="metric-label">平均打卡次数</text>
+        </view>
+        <view class="metric-item">
+          <text class="metric-value">{{reportData.metrics.userActivityRatePercent}}%</text>
+          <text class="metric-label">用户活跃度</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 趋势图 -->
+    <view class="chart-section">
+      <text class="section-title">打卡趋势</text>
+      <view class="chart-container">
+        <canvas id="trendChart" class="chart" canvas-id="trendChart"></canvas>
+      </view>
+    </view>
+    
+    <!-- 热力日历 -->
+    <view class="chart-section">
+      <text class="section-title">热力日历</text>
+      <view class="chart-container">
+        <canvas id="heatmapChart" class="chart" canvas-id="heatmapChart"></canvas>
+      </view>
+    </view>
+    
+    <!-- 用户打卡详情 -->
+    <view class="user-section">
+      <text class="section-title">用户打卡详情</text>
+      <view class="user-list">
+        <view wx:for="{{reportData.userDetails.users}}" wx:key="{{item.userId}}" class="user-item">
+          <view class="user-basic-info">
+            <text class="user-rank">{{index + 1}}</text>
+            <text class="user-info">用户{{item.userId}}</text>
+          </view>
+          <view class="user-stats">
+            <text class="user-checkin-count">{{item.checkinCount}}次</text>
+            <text class="user-consecutive-days">连续{{item.maxConsecutiveDays}}天</text>
+          </view>
+          
+          <!-- 详细打卡记录 -->
+          <view wx:if="{{item.checkinDetails && item.checkinDetails.length > 0}}" class="checkin-details">
+            <view wx:for="{{item.checkinDetails}}" wx:key="{{index}}" class="checkin-detail-item">
+              <text class="checkin-date">打卡时间: {{item.checkinDate}}</text>
+              <text wx:if="{{item.title}}" class="checkin-title">标题: {{item.title}}</text>
+              <text wx:if="{{item.content}}" class="checkin-content">描述: {{item.content.length > 50 ? item.content.substring(0, 50) + '...' : item.content}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="action-button" bindtap="generateReportImage">生成报告图片</button>
+      <button class="action-button" bindtap="shareReport">分享报告</button>
+    </view>
+  </view>
+</view>

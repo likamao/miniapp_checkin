@@ -489,7 +489,7 @@ public class CheckinController {
             return errorResponse;
         }
 
-        boolean isAdmin = permissionService.hasRole(user, "admin");
+        boolean isAdmin = permissionService.hasRole(user, "ADMIN");
         boolean isTopicCreator = topic.getCreatedBy() != null && topic.getCreatedBy().equals(user.getId());
         
         if (!isAdmin && !isTopicCreator) {
@@ -523,7 +523,7 @@ public class CheckinController {
             return errorResponse;
         }
 
-        boolean isAdmin = permissionService.hasRole(user, "admin");
+        boolean isAdmin = permissionService.hasRole(user, "ADMIN");
         boolean isTopicCreator = topic.getCreatedBy() != null && topic.getCreatedBy().equals(user.getId());
         
         if (!isAdmin && !isTopicCreator) {

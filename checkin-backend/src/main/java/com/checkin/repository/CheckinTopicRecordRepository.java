@@ -56,4 +56,10 @@ public interface CheckinTopicRecordRepository extends JpaRepository<CheckinTopic
             @Param("userId") Long userId, 
             @Param("topicId") Long topicId, 
             Pageable pageable);
+    
+    @Query("SELECT r FROM CheckinTopicRecord r WHERE r.topicId = :topicId AND r.checkinDatetime BETWEEN :startDate AND :endDate ORDER BY r.checkinDatetime DESC")
+    List<CheckinTopicRecord> findByTopicIdAndCheckinDatetimeBetween(
+            @Param("topicId") Long topicId, 
+            @Param("startDate") Date startDate, 
+            @Param("endDate") Date endDate);
 }

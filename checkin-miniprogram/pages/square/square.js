@@ -507,12 +507,16 @@ Page({
   // 生成周报
   generateWeeklyReport() {
     this.hideReportMenu();
-    wx.showToast({ title: '周报功能开发中', icon: 'none' });
+    wx.navigateTo({
+      url: '/pages/report/report?reportType=weekly'
+    });
   },
 
   // 生成月报
   generateMonthlyReport() {
     this.hideReportMenu();
-    wx.showToast({ title: '月报功能开发中', icon: 'none' });
+    wx.navigateTo({
+      url: '/pages/report/report?reportType=monthly'
+    });
   }
 });

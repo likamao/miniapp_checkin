@@ -9,17 +9,23 @@ import com.checkin.repository.CheckinRecordRepository;
 import com.checkin.repository.CheckinStatisticsRepository;
 import com.checkin.repository.CheckinTopicRecordRepository;
 import com.checkin.repository.CheckinTopicRepository;
+import com.checkin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.OptionalInt;
 
 @Service
 public class CheckinService {
@@ -35,6 +41,11 @@ public class CheckinService {
 
     @Autowired
     private CheckinTopicRecordRepository checkinTopicRecordRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+
 
     /**
      * 创建打卡记录
@@ -549,7 +560,254 @@ public class CheckinService {
      * @return 周报数据
      */
     public Map<String, Object> getWeeklyReport(Long topicId) {
-        return null;
+        Map<String, Object> report = new HashMap<>();
+        
+        // 计算本周时间范围（周一至周日）
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int daysToMonday = (dayOfWeek == Calendar.SUNDAY) ? 6 : dayOfWeek - 2;
+        calendar.add(Calendar.DAY_OF_YEAR, -daysToMonday);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date startDate = calendar.getTime();
+        
+        calendar.add(Calendar.DAY_OF_YEAR, 6);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        Date endDate = calendar.getTime();
+        
+        // 获取主题信息
+        CheckinTopic topic = getTopicById(topicId);
+        if (topic == null) {
+            report.put("error", "主题不存在");
+            return report;
+        }
+        
+        // 获取本周打卡记录
+        List<CheckinTopicRecord> records = checkinTopicRecordRepository.findByTopicIdAndCheckinDatetimeBetween(topicId, startDate, endDate);
+        
+        // 计算关键指标
+        Map<String, Object> metrics = calculateMetrics(records, startDate, endDate);
+        report.put("metrics", metrics);
+        
+        // 获取用户打卡详情
+        Map<String, Object> userDetails = getUserCheckinDetails(records);
+        report.put("userDetails", userDetails);
+        
+        // 生成热力日历数据
+        List<Map<String, Object>> heatmapData = generateHeatmapData(records, startDate, endDate);
+        report.put("heatmapData", heatmapData);
+        
+        // 生成趋势图数据
+        Map<String, Object> trendData = generateTrendData(records, startDate, endDate);
+        report.put("trendData", trendData);
+        
+        // 添加时间范围信息
+        report.put("startDate", formatDateTime(startDate));
+        report.put("endDate", formatDateTime(endDate));
+        report.put("topicName", topic.getTitle());
+        
+        return report;
+    }
+    
+    /**
+     * 计算关键业务指标
+     * 
+     * @param records 打卡记录列表
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 关键指标Map
+     */
+    private Map<String, Object> calculateMetrics(List<CheckinTopicRecord> records, Date startDate, Date endDate) {
+        Map<String, Object> metrics = new HashMap<>();
+        
+        // 计算总打卡次数
+        metrics.put("totalCheckinCount", records.size());
+        
+        // 计算参与用户数
+        Set<Long> userIds = records.stream().map(CheckinTopicRecord::getUserId).collect(Collectors.toSet());
+        metrics.put("participantCount", userIds.size());
+        
+        // 计算平均打卡次数
+        if (!userIds.isEmpty()) {
+            double avgCheckinCount = (double) records.size() / userIds.size();
+            metrics.put("averageCheckinCount", avgCheckinCount);
+        } else {
+            metrics.put("averageCheckinCount", 0);
+        }
+        
+        // 计算用户活跃度（打卡用户数 / 总用户数，这里简化处理）
+        // 实际项目中需要从用户表获取总用户数
+        metrics.put("userActivityRate", userIds.isEmpty() ? 0 : 1.0);
+        
+        // 计算连续打卡天数分布
+        Map<Integer, Long> consecutiveDaysDistribution = records.stream()
+                .collect(Collectors.groupingBy(CheckinTopicRecord::getConsecutiveDays, Collectors.counting()));
+        metrics.put("consecutiveDaysDistribution", consecutiveDaysDistribution);
+        
+        // 计算最高连续打卡天数
+        OptionalInt maxConsecutiveDays = records.stream()
+                .mapToInt(CheckinTopicRecord::getConsecutiveDays)
+                .max();
+        metrics.put("maxConsecutiveDays", maxConsecutiveDays.orElse(0));
+        
+        return metrics;
+    }
+    
+    /**
+     * 获取用户打卡详情
+     * 
+     * @param records 打卡记录列表
+     * @return 用户打卡详情Map
+     */
+    private Map<String, Object> getUserCheckinDetails(List<CheckinTopicRecord> records) {
+        Map<Long, List<CheckinTopicRecord>> userRecords = records.stream()
+                .collect(Collectors.groupingBy(CheckinTopicRecord::getUserId));
+        
+        List<Map<String, Object>> userDetails = new ArrayList<>();
+        
+        userRecords.forEach((userId, userRecordList) -> {
+            Map<String, Object> userDetail = new HashMap<>();
+            userDetail.put("userId", userId);
+            userDetail.put("checkinCount", userRecordList.size());
+            
+            // 获取用户信息，添加隐私设置
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                userDetail.put("allowStatsDisplay", user.getAllowStatsDisplay());
+            } else {
+                userDetail.put("allowStatsDisplay", true); // 默认允许显示
+            }
+            
+            // 计算用户最高连续打卡天数
+            OptionalInt maxConsecutiveDays = userRecordList.stream()
+                    .mapToInt(CheckinTopicRecord::getConsecutiveDays)
+                    .max();
+            userDetail.put("maxConsecutiveDays", maxConsecutiveDays.orElse(0));
+            
+            // 获取最后打卡时间
+            Optional<Date> lastCheckinTime = userRecordList.stream()
+                    .map(CheckinTopicRecord::getCheckinDatetime)
+                    .max(Date::compareTo);
+            lastCheckinTime.ifPresent(time -> userDetail.put("lastCheckinTime", formatDateTime(time)));
+            
+            // 计算打卡日期列表
+            List<String> checkinDates = userRecordList.stream()
+                    .map(CheckinTopicRecord::getCheckinDate)
+                    .collect(Collectors.toList());
+            userDetail.put("checkinDates", checkinDates);
+            
+            // 获取详细的打卡记录信息
+            List<Map<String, Object>> checkinDetails = new ArrayList<>();
+            for (CheckinTopicRecord topicRecord : userRecordList) {
+                Map<String, Object> checkinDetail = new HashMap<>();
+                // 获取对应的CheckinRecord
+                Optional<CheckinRecord> checkinRecordOpt = checkinRecordRepository.findById(topicRecord.getCheckinRecordId());
+                if (checkinRecordOpt.isPresent()) {
+                    CheckinRecord checkinRecord = checkinRecordOpt.get();
+                    checkinDetail.put("title", checkinRecord.getTitle());
+                    checkinDetail.put("content", checkinRecord.getContent());
+                    checkinDetail.put("checkinTime", formatDateTime(checkinRecord.getCheckinTime()));
+                    checkinDetail.put("checkinDate", topicRecord.getCheckinDate());
+                }
+                checkinDetails.add(checkinDetail);
+            }
+            userDetail.put("checkinDetails", checkinDetails);
+            
+            userDetails.add(userDetail);
+        });
+        
+        // 按打卡次数排序
+        userDetails.sort((a, b) -> {
+            int countA = (int) a.get("checkinCount");
+            int countB = (int) b.get("checkinCount");
+            return Integer.compare(countB, countA);
+        });
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("users", userDetails);
+        result.put("totalUsers", userDetails.size());
+        
+        return result;
+    }
+    
+    /**
+     * 生成热力日历数据
+     * 
+     * @param records 打卡记录列表
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 热力日历数据
+     */
+    private List<Map<String, Object>> generateHeatmapData(List<CheckinTopicRecord> records, Date startDate, Date endDate) {
+        List<Map<String, Object>> heatmapData = new ArrayList<>();
+        
+        // 按日期分组统计打卡次数
+        Map<String, Long> dateCheckinCount = records.stream()
+                .collect(Collectors.groupingBy(CheckinTopicRecord::getCheckinDate, Collectors.counting()));
+        
+        // 生成日期范围内的所有日期
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        
+        while (!calendar.getTime().after(endDate)) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String dateStr = sdf.format(calendar.getTime());
+            
+            Map<String, Object> dayData = new HashMap<>();
+            dayData.put("date", dateStr);
+            dayData.put("checkinCount", dateCheckinCount.getOrDefault(dateStr, 0L));
+            dayData.put("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
+            
+            heatmapData.add(dayData);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        
+        return heatmapData;
+    }
+    
+    /**
+     * 生成趋势图数据
+     * 
+     * @param records 打卡记录列表
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 趋势图数据
+     */
+    private Map<String, Object> generateTrendData(List<CheckinTopicRecord> records, Date startDate, Date endDate) {
+        Map<String, Object> trendData = new HashMap<>();
+        
+        // 按日期分组统计打卡次数
+        Map<String, Long> dateCheckinCount = records.stream()
+                .collect(Collectors.groupingBy(CheckinTopicRecord::getCheckinDate, Collectors.counting()));
+        
+        // 生成日期和打卡次数列表
+        List<String> dates = new ArrayList<>();
+        List<Long> checkinCounts = new ArrayList<>();
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        
+        while (!calendar.getTime().after(endDate)) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+            String dateStr = sdf.format(calendar.getTime());
+            String fullDateStr = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+            
+            dates.add(dateStr);
+            checkinCounts.add(dateCheckinCount.getOrDefault(fullDateStr, 0L));
+            
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        
+        trendData.put("dates", dates);
+        trendData.put("checkinCounts", checkinCounts);
+        
+        return trendData;
     }
 
     /**
@@ -559,6 +817,123 @@ public class CheckinService {
      * @return 月报数据
      */
     public Map<String, Object> getMonthlyReport(Long topicId) {
-        return null;
+        Map<String, Object> report = new HashMap<>();
+        
+        // 计算本月时间范围
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date startDate = calendar.getTime();
+        
+        calendar.add(Calendar.MONTH, 1);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        Date endDate = calendar.getTime();
+        
+        // 获取主题信息
+        CheckinTopic topic = getTopicById(topicId);
+        if (topic == null) {
+            report.put("error", "主题不存在");
+            return report;
+        }
+        
+        // 获取本月打卡记录
+        List<CheckinTopicRecord> records = checkinTopicRecordRepository.findByTopicIdAndCheckinDatetimeBetween(topicId, startDate, endDate);
+        
+        // 计算关键指标
+        Map<String, Object> metrics = calculateMetrics(records, startDate, endDate);
+        report.put("metrics", metrics);
+        
+        // 获取用户打卡详情
+        Map<String, Object> userDetails = getUserCheckinDetails(records);
+        report.put("userDetails", userDetails);
+        
+        // 生成热力日历数据
+        List<Map<String, Object>> heatmapData = generateHeatmapData(records, startDate, endDate);
+        report.put("heatmapData", heatmapData);
+        
+        // 生成趋势图数据
+        Map<String, Object> trendData = generateTrendData(records, startDate, endDate);
+        report.put("trendData", trendData);
+        
+        // 按周统计数据
+        Map<String, Object> weeklyStats = generateWeeklyStats(records, startDate, endDate);
+        report.put("weeklyStats", weeklyStats);
+        
+        // 添加时间范围信息
+        report.put("startDate", formatDateTime(startDate));
+        report.put("endDate", formatDateTime(endDate));
+        report.put("topicName", topic.getTitle());
+        
+        return report;
+    }
+    
+    /**
+     * 按周统计数据
+     * 
+     * @param records 打卡记录列表
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 按周统计数据
+     */
+    private Map<String, Object> generateWeeklyStats(List<CheckinTopicRecord> records, Date startDate, Date endDate) {
+        Map<String, Object> weeklyStats = new HashMap<>();
+        List<Map<String, Object>> weeks = new ArrayList<>();
+        
+        // 按周分组
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        
+        while (!calendar.getTime().after(endDate)) {
+            // 计算本周开始（周一）
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            int daysToMonday = (dayOfWeek == Calendar.SUNDAY) ? 6 : dayOfWeek - 2;
+            Calendar weekStart = (Calendar) calendar.clone();
+            weekStart.add(Calendar.DAY_OF_YEAR, -daysToMonday);
+            weekStart.set(Calendar.HOUR_OF_DAY, 0);
+            weekStart.set(Calendar.MINUTE, 0);
+            weekStart.set(Calendar.SECOND, 0);
+            weekStart.set(Calendar.MILLISECOND, 0);
+            
+            // 计算本周结束（周日）
+            Calendar weekEnd = (Calendar) weekStart.clone();
+            weekEnd.add(Calendar.DAY_OF_YEAR, 6);
+            weekEnd.set(Calendar.HOUR_OF_DAY, 23);
+            weekEnd.set(Calendar.MINUTE, 59);
+            weekEnd.set(Calendar.SECOND, 59);
+            weekEnd.set(Calendar.MILLISECOND, 999);
+            
+            // 过滤本周的记录
+            List<CheckinTopicRecord> weekRecords = records.stream()
+                    .filter(record -> record.getCheckinDatetime().after(weekStart.getTime()) && 
+                                     record.getCheckinDatetime().before(weekEnd.getTime()))
+                    .collect(Collectors.toList());
+            
+            // 计算本周指标
+            Map<String, Object> weekData = new HashMap<>();
+            weekData.put("weekStart", formatDateTime(weekStart.getTime()));
+            weekData.put("weekEnd", formatDateTime(weekEnd.getTime()));
+            weekData.put("checkinCount", weekRecords.size());
+            
+            // 计算本周参与用户数
+            Set<Long> weekUserIds = weekRecords.stream()
+                    .map(CheckinTopicRecord::getUserId)
+                    .collect(Collectors.toSet());
+            weekData.put("participantCount", weekUserIds.size());
+            
+            weeks.add(weekData);
+            
+            // 移动到下一周
+            calendar.add(Calendar.DAY_OF_YEAR, 7);
+        }
+        
+        weeklyStats.put("weeks", weeks);
+        return weeklyStats;
     }
 }

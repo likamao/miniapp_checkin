@@ -6,7 +6,8 @@
     "pages/statistics/statistics",
     "pages/square/square",
     "pages/topic-detail/topic-detail",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/report/report"
   ],
   "window": {
     "backgroundTextStyle": "light",
