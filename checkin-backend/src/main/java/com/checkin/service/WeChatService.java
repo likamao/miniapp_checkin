@@ -34,7 +34,7 @@ public class WeChatService {
      * @throws RuntimeException 登录失败时抛出
      */
     public User login(String code) {
-        return login(code, null, null);
+        return login(code, null);
     }
     
     /**
@@ -42,11 +42,10 @@ public class WeChatService {
      * 
      * @param code 微信登录码
      * @param nickname 用户昵称
-     * @param avatarUrl 用户头像URL
      * @return 用户信息
      * @throws RuntimeException 登录失败时抛出
      */
-    public User login(String code, String nickname, String avatarUrl) {
+    public User login(String code, String nickname) {
         // 调用微信 API 获取 openid 和 session_key
         String url = String.format("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
                 appId, appSecret, code);
@@ -75,12 +74,15 @@ public class WeChatService {
                 user.setUpdatedAt(new Date());
             }
             
-            // 更新用户昵称和头像（如果提供了新的信息）
+            // 更新用户昵称（如果提供了新的信息）
             if (nickname != null && !nickname.isEmpty()) {
                 user.setNickname(nickname);
+                // 标记为已完成个人资料设置
+                user.setProfileSetupCompleted(true);
             }
-            if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                user.setAvatarUrl(avatarUrl);
+            // 如果是新用户且没有提供昵称，标记为未完成个人资料设置
+            if (user.getId() == null && (nickname == null || nickname.isEmpty())) {
+                user.setProfileSetupCompleted(false);
             }
             user.setUpdatedAt(new Date());
             
@@ -100,13 +102,47 @@ public class WeChatService {
      * 
      * @param user 用户信息
      * @param nickname 用户昵称
-     * @param avatarUrl 用户头像URL
      * @return 更新后的用户信息
      */
-    public User updateUserInfo(User user, String nickname, String avatarUrl) {
+    public User updateUserInfo(User user, String nickname) {
         user.setNickname(nickname);
-        user.setAvatarUrl(avatarUrl);
         user.setUpdatedAt(new Date());
         return userRepository.save(user);
+    }
+
+    /**
+     * 根据用户ID获取用户信息
+     * 
+     * @param userId 用户ID
+     * @return 用户信息
+     */
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    /**
+     * 根据微信登录码获取用户信息
+     * 
+     * @param code 微信登录码
+     * @return 用户信息（如果存在）
+     */
+    public User getUserByOpenidCode(String code) {
+        try {
+            String url = String.format("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+                    appId, appSecret, code);
+
+            String response = restTemplate.getForObject(url, String.class);
+            Map<String, Object> result = objectMapper.readValue(response, Map.class);
+            
+            if (result.containsKey("errcode")) {
+                return null;
+            }
+            
+            String openid = (String) result.get("openid");
+            return userRepository.findByOpenid(openid);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

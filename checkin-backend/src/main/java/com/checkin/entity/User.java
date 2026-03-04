@@ -19,9 +19,6 @@ public class User {
     @Column(name = "nickname", length = 50)
     private String nickname;
 
-    @Column(name = "avatar_url", length = 255)
-    private String avatarUrl;
-
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
@@ -30,6 +27,9 @@ public class User {
 
     @Column(name = "allow_stats_display", nullable = false)
     private Boolean allowStatsDisplay = false;
+
+    @Column(name = "profile_setup_completed", nullable = false)
+    private Boolean profileSetupCompleted = false;
 
     // Getters and Setters
     public Long getId() {
@@ -64,14 +64,6 @@ public class User {
         this.nickname = nickname;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -94,5 +86,13 @@ public class User {
 
     public void setAllowStatsDisplay(Boolean allowStatsDisplay) {
         this.allowStatsDisplay = allowStatsDisplay;
+    }
+
+    public Boolean getProfileSetupCompleted() {
+        return profileSetupCompleted;
+    }
+
+    public void setProfileSetupCompleted(Boolean profileSetupCompleted) {
+        this.profileSetupCompleted = profileSetupCompleted;
     }
 }

@@ -4,6 +4,15 @@
   </view>
   
   <view class="settings-list">
+    <!-- 个人信息设置 -->
+    <view class="setting-item" bindtap="onEditProfile">
+      <view class="setting-info">
+        <text class="setting-title">个人信息</text>
+        <text class="setting-desc">修改您的昵称</text>
+      </view>
+      <view class="setting-arrow">›</view>
+    </view>
+    
     <view class="setting-item">
       <view class="setting-info">
         <text class="setting-title">允许周/月报展示我的信息</text>
@@ -24,4 +33,13 @@
     <text class="tips-text">• 未开启此开关时，您的信息将被匿名化处理，显示为"用户XXX"</text>
     <text class="tips-text">• 您可以随时在设置中开启或关闭此功能</text>
   </view>
+  
+  <!-- 个人信息修改弹框 -->
+  <user-profile-modal 
+    visible="{{showProfileModal}}"
+    defaultNickname="{{defaultNickname}}"
+    currentNickname="{{currentNickname}}"
+    bind:close="onProfileModalClose"
+    bind:confirm="onProfileModalConfirm"
+  ></user-profile-modal>
 </view>

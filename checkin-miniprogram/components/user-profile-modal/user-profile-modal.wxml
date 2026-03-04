@@ -1,0 +1,26 @@
+<view class="modal-mask" wx:if="{{visible}}" bindtap="onClose">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <view class="modal-title">完善个人信息</view>
+      <view class="modal-close" bindtap="onClose">×</view>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 昵称输入 -->
+      <view class="form-item">
+        <view class="form-label">昵称</view>
+        <input 
+          class="nickname-input" 
+          type="nickname" 
+          placeholder="请输入昵称" 
+          value="{{nickname}}"
+          bindinput="onNicknameInput"
+        />
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="btn btn-confirm" bindtap="onConfirm">确认</button>
+    </view>
+  </view>
+</view>

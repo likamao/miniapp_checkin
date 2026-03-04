@@ -1,6 +1,6 @@
 -- 为指定openID的用户添加管理员角色
 -- 1. 查找用户ID
-SET @user_id = (SELECT id FROM `user` WHERE openid = 'oEhH64gvulVWsF1jyb6KDU3ShKC4');
+SET @user_id = (SELECT id FROM `user` WHERE openid = 'XXXXXXX');
 
 -- 2. 查找ADMIN角色ID
 SET @admin_role_id = (SELECT id FROM `role` WHERE name = 'ADMIN');

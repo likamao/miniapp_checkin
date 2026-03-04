@@ -58,6 +58,12 @@
   transform: scale(1.1);
 }
 
+.setting-arrow {
+  font-size: 40rpx;
+  color: #999;
+  line-height: 1;
+}
+
 .tips {
   background-color: white;
   border-radius: 16rpx;

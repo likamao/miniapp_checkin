@@ -21,9 +21,79 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     /**
+     * 验证 token 有效性
+     * 
+     * @param token 请求头中的 token
+     * @return 包含验证结果和用户信息的响应
+     */
+    @GetMapping("/verify")
+    public Map<String, Object> verifyToken(@RequestHeader("Authorization") String token) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            
+            if (jwtUtil.isTokenExpired(token)) {
+                response.put("valid", false);
+                response.put("message", "Token 已过期");
+                return response;
+            }
+            
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            User user = weChatService.getUserById(userId);
+            
+            if (user != null) {
+                response.put("valid", true);
+                response.put("user", user);
+            } else {
+                response.put("valid", false);
+                response.put("message", "用户不存在");
+            }
+        } catch (Exception e) {
+            response.put("valid", false);
+            response.put("message", "Token 验证失败");
+        }
+        
+        return response;
+    }
+
+    /**
+     * 检查用户信息是否存在
+     * 
+     * @param request 请求参数，包含code（微信登录码）
+     * @return 包含用户信息存在状态的响应
+     */
+    @PostMapping("/checkUser")
+    public Map<String, Object> checkUser(@RequestBody Map<String, String> request) {
+        String code = request.get("code");
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            User user = weChatService.getUserByOpenidCode(code);
+            
+            if (user != null) {
+                response.put("exists", true);
+                response.put("profileSetupCompleted", user.getProfileSetupCompleted());
+                response.put("nickname", user.getNickname());
+            } else {
+                response.put("exists", false);
+                response.put("profileSetupCompleted", false);
+            }
+        } catch (Exception e) {
+            response.put("exists", false);
+            response.put("profileSetupCompleted", false);
+        }
+        
+        return response;
+    }
+
+    /**
      * 微信登录
      * 
-     * @param request 请求参数，包含code（微信登录码）、nickname（昵称）和avatarUrl（头像URL）
+     * @param request 请求参数，包含code（微信登录码）和nickname（昵称）
      * @return 包含token和用户信息的响应
      * @throws RuntimeException 登录失败时抛出
      */
@@ -31,9 +101,8 @@ public class AuthController {
     public Map<String, Object> login(@RequestBody Map<String, String> request) {
         String code = request.get("code");
         String nickname = request.get("nickname");
-        String avatarUrl = request.get("avatarUrl");
         
-        User user = weChatService.login(code, nickname, avatarUrl);
+        User user = weChatService.login(code, nickname);
 
         String token = jwtUtil.generateToken(user.getId());
 
@@ -47,7 +116,7 @@ public class AuthController {
     /**
      * 更新用户信息
      * 
-     * @param request 请求参数，包含userId（用户ID）、nickname（昵称）和avatarUrl（头像URL）
+     * @param request 请求参数，包含userId（用户ID）和nickname（昵称）
      * @return 包含更新后用户信息的响应
      * @throws RuntimeException 更新失败时抛出
      */
@@ -55,13 +124,12 @@ public class AuthController {
     public Map<String, Object> updateUserInfo(@RequestBody Map<String, String> request) {
         Long userId = Long.parseLong(request.get("userId"));
         String nickname = request.get("nickname");
-        String avatarUrl = request.get("avatarUrl");
 
         // 这里需要根据userId获取用户信息，然后更新
         // 简化处理，实际项目中需要添加权限验证
         User user = new User();
         user.setId(userId);
-        user = weChatService.updateUserInfo(user, nickname, avatarUrl);
+        user = weChatService.updateUserInfo(user, nickname);
 
         Map<String, Object> response = new HashMap<>();
         response.put("user", user);

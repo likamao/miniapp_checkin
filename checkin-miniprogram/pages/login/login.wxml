@@ -15,9 +15,18 @@
       <view class="poem-line">Keep going, you've got this!</view>
     </view>
     <view class="desc">请使用微信登录以开始打卡</view>
+<!--     
     <view wx:if="{{userInfo}}" class="user-info">
-      <text>当前登录用户：{{userInfo.nickName}}</text>
-    </view>
+      <text>当前登录用户：{{userInfo.nickname || userInfo.nickName || '微信用户'}}</text>
+    </view> -->
     <button class="btn btn-primary" bindtap="login">微信登录</button>
   </view>
+  
+  <!-- 个人信息完善弹框 -->
+  <user-profile-modal 
+    visible="{{showProfileModal}}"
+    defaultNickname="{{defaultNickname}}"
+    bind:close="onProfileModalClose"
+    bind:confirm="onProfileModalConfirm"
+  ></user-profile-modal>
 </view>

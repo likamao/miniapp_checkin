@@ -118,8 +118,54 @@ public class UserController {
             userRepository.save(currentUser);
         }
 
+        // 获取用户的角色列表
+        List<String> roles = userRoleRepository.findByUser(currentUser).stream()
+                .map(userRole -> userRole.getRole().getName())
+                .collect(Collectors.toList());
+        
+        // 构建权限列表
+        List<String> permissions = List.of("checkin:read", "checkin:create", "checkin:statistics");
+        
+        // 创建带权限的用户信息
+        UserWithPermissions userWithPermissions = new UserWithPermissions(currentUser, roles, permissions);
+
         Map<String, Object> response = new HashMap<>();
-        response.put("user", currentUser);
+        response.put("user", userWithPermissions);
+        return response;
+    }
+
+    /**
+     * 更新当前用户个人信息
+     * 
+     * @param request 请求参数，包含nickname（昵称）
+     * @param currentUser 当前登录用户信息
+     * @return 包含更新后用户信息的响应
+     */
+    @PutMapping("/me/profile")
+    public Map<String, Object> updateUserProfile(
+            @RequestBody Map<String, Object> request,
+            @RequestAttribute("user") User currentUser) {
+        if (request.containsKey("nickname")) {
+            String nickname = request.get("nickname").toString();
+            if (nickname != null && !nickname.isEmpty()) {
+                currentUser.setNickname(nickname);
+            }
+        }
+        userRepository.save(currentUser);
+
+        // 获取用户的角色列表
+        List<String> roles = userRoleRepository.findByUser(currentUser).stream()
+                .map(userRole -> userRole.getRole().getName())
+                .collect(Collectors.toList());
+        
+        // 构建权限列表
+        List<String> permissions = List.of("checkin:read", "checkin:create", "checkin:statistics");
+        
+        // 创建带权限的用户信息
+        UserWithPermissions userWithPermissions = new UserWithPermissions(currentUser, roles, permissions);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", userWithPermissions);
         return response;
     }
 }
