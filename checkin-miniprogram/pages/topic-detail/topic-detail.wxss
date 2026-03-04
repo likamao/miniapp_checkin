@@ -514,10 +514,9 @@
 .form-input,
 .form-textarea {
   width: 100%;
-  padding: 24rpx;
   border: none;
   border-radius: 14rpx;
-  font-size: 28rpx;
+  font-size: 25rpx;
   color: #333;
   box-sizing: border-box;
   background: #ffffff;

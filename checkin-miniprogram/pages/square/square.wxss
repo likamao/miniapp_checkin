@@ -190,12 +190,17 @@
   font-weight: 500;
   display: flex;
   align-items: center;
+  line-height: 1;
+  height: 40rpx;
 }
 
 .checkin-count::before {
   content: '👥';
   margin-right: 8rpx;
   font-size: 24rpx;
+  line-height: 1;
+  display: flex;
+  align-items: flex-end;
 }
 
 .checkin-status {
@@ -203,13 +208,18 @@
   color: #4caf50;
   font-weight: 500;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  line-height: 1;
+  height: 40rpx;
 }
 
 .checkin-status::before {
   content: '✓';
   margin-right: 8rpx;
   font-size: 24rpx;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .checkin-status.not-checked {
@@ -218,6 +228,9 @@
 
 .checkin-status.not-checked::before {
   content: '○';
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 /* 空状态 */

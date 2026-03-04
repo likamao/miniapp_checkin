@@ -321,12 +321,6 @@ Page({
       ctx.setFillStyle('#ffffff');
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-      // 绘制标题
-      ctx.setFontSize(16);
-      ctx.setFillStyle('#333333');
-      ctx.setTextAlign('center');
-      ctx.fillText('打卡趋势', canvasWidth / 2, 20);
-
       // 计算数据范围
       const maxCount = Math.max(...trendData.checkinCounts, 1);
       const dataPoints = trendData.dates.length;
@@ -410,12 +404,6 @@ Page({
       // 绘制背景
       ctx.setFillStyle('#ffffff');
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-      // 绘制标题
-      ctx.setFontSize(16);
-      ctx.setFillStyle('#333333');
-      ctx.setTextAlign('center');
-      ctx.fillText('打卡热力图', canvasWidth / 2, 20);
 
       // 计算网格大小
       const cellSize = (canvasWidth - 2 * padding) / 7;
@@ -585,17 +573,7 @@ Page({
     // 绘制趋势图
     const trendData = this.data.reportData.trendData;
     if (trendData && trendData.dates && trendData.dates.length > 0) {
-      // 绘制趋势图标题
-      ctx.setFontSize(18);
-      ctx.setFillStyle('#1976d2');
-      ctx.setTextAlign('left');
-      ctx.fillText('打卡趋势', 30, yPosition);
-      
-      // 绘制标题左侧装饰线
-      ctx.setFillStyle('#42a5f5');
-      ctx.fillRect(20, yPosition - 12, 4, 20);
-      
-      yPosition += 30;
+      yPosition += 10;
       
       // 绘制趋势图区域背景
       ctx.setFillStyle('#ffffff');
@@ -659,15 +637,7 @@ Page({
       });
     } else {
       // 绘制空趋势图区域
-      ctx.setFontSize(18);
-      ctx.setFillStyle('#1976d2');
-      ctx.setTextAlign('left');
-      ctx.fillText('打卡趋势', 30, yPosition);
-      
-      ctx.setFillStyle('#42a5f5');
-      ctx.fillRect(20, yPosition - 12, 4, 20);
-      
-      yPosition += 30;
+      yPosition += 10;
       
       ctx.setFillStyle('#ffffff');
       ctx.fillRect(20, yPosition, canvasWidth - 40, 200);
@@ -682,20 +652,10 @@ Page({
     }
 
     // 绘制热力图
-    yPosition += 240;
+    yPosition += 220;
     const heatmapData = this.data.reportData.heatmapData;
     if (heatmapData && heatmapData.length > 0) {
-      // 绘制热力图标题
-      ctx.setFontSize(18);
-      ctx.setFillStyle('#1976d2');
-      ctx.setTextAlign('left');
-      ctx.fillText('打卡热力图', 30, yPosition);
-      
-      // 绘制标题左侧装饰线
-      ctx.setFillStyle('#42a5f5');
-      ctx.fillRect(20, yPosition - 12, 4, 20);
-      
-      yPosition += 30;
+      yPosition += 10;
       
       // 绘制热力图区域背景
       ctx.setFillStyle('#ffffff');
@@ -738,16 +698,8 @@ Page({
       });
     } else {
       // 绘制空热力图区域
-      ctx.setFontSize(18);
-      ctx.setFillStyle('#1976d2');
-      ctx.setTextAlign('left');
-      ctx.fillText('打卡热力图', 30, yPosition);
-      
-      ctx.setFillStyle('#42a5f5');
-      ctx.fillRect(20, yPosition - 12, 4, 20);
-      
-      yPosition += 30;
-      
+      yPosition += 10;
+
       ctx.setFillStyle('#ffffff');
       ctx.fillRect(20, yPosition, canvasWidth - 40, 200);
       ctx.setStrokeStyle('#e3f2fd');
@@ -1029,11 +981,6 @@ Page({
       ctx.setStrokeStyle('#e3f2fd');
       ctx.setLineWidth(2);
       ctx.strokeRect(canvasWidth * 0.1, yPosition, canvasWidth * 0.8, 100);
-      
-      ctx.setFontSize(12);
-      ctx.setFillStyle('#1976d2');
-      ctx.setTextAlign('center');
-      ctx.fillText('打卡趋势', canvasWidth / 2, yPosition + 15);
       
       // 计算数据范围
       const maxCount = Math.max(...trendData.checkinCounts, 1);
