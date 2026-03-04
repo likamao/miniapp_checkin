@@ -42,7 +42,6 @@ class CheckinServiceTests {
             testUser = new User();
             testUser.setOpenid("test_openid_123");
             testUser.setNickname("测试用户");
-            testUser.setAvatarUrl("https://example.com/avatar.jpg");
             testUser.setCreatedAt(new Date());
             testUser.setUpdatedAt(new Date());
             testUser = userRepository.save(testUser);

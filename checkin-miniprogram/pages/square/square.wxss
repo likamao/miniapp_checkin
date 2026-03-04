@@ -91,7 +91,7 @@
 }
 
 /* 页面标题 */
-.title {
+.page-title {
   font-size: 44rpx;
   font-weight: 700;
   color: #1565c0;
@@ -102,7 +102,7 @@
   margin-bottom: 12rpx;
 }
 
-.subtitle {
+.page-subtitle {
   font-size: 26rpx;
   color: #64b5f6;
   display: block;

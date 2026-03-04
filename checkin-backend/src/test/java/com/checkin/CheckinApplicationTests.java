@@ -51,8 +51,7 @@ class CheckinApplicationTests {
         User user = new User();
         user.setOpenid("test_openid");
         user.setNickname("测试用户");
-        user.setAvatarUrl("https://example.com/avatar.jpg");
-        
+
         User savedUser = userRepository.save(user);
         assertNotNull(savedUser.getId());
         

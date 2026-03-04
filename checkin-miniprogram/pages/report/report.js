@@ -294,10 +294,19 @@ Page({
   drawCharts: function() {
     if (!this.data.reportData) return;
 
-    // 绘制趋势图
-    this.drawTrendChart();
-    // 绘制热力日历
-    this.drawHeatmapChart();
+    // 清除之前的定时器，避免重复绘制
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+
+    // 延迟绘制图表，确保数据已更新
+    this.timer = setTimeout(() => {
+      // 绘制趋势图
+      this.drawTrendChart();
+      // 绘制热力日历
+      this.drawHeatmapChart();
+    }, 100);
   },
 
   // 绘制趋势图
@@ -381,13 +390,6 @@ Page({
   drawHeatmapChart: function() {
     const heatmapData = this.data.reportData.heatmapData;
     if (!heatmapData) return;
-    console.log('热力图数据:', heatmapData);
-    console.log('热力图数据长度:', heatmapData.length);
-    // 检查是否有打卡次数大于0的数据
-    const hasData = heatmapData.some(item => item.checkinCount > 0);
-    console.log('是否有打卡数据:', hasData);
-    // 打印前几个数据项
-    console.log('前5个数据项:', heatmapData.slice(0, 5));
 
     // 获取canvas上下文和实际尺寸
     const query = wx.createSelectorQuery();
@@ -421,7 +423,6 @@ Page({
         
         // 根据打卡次数选择颜色
         const checkinCount = item.checkinCount;
-        console.log('当前日期打卡次数:', item.date, checkinCount);
         let colorIndex = 0;
         if (checkinCount > 0) {
           colorIndex = Math.min(Math.floor(checkinCount / 1), colors.length - 1);
@@ -443,6 +444,28 @@ Page({
 
       ctx.draw();
     });
+  },
+
+  // 页面卸载时清理资源
+  onUnload: function() {
+    // 清理Canvas资源
+    try {
+      // 清除可能存在的定时器
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      
+      // 清理其他资源
+      this.setData({
+        reportData: null,
+        topics: [],
+        selectedTopic: null,
+        shareImageUrl: ''
+      });
+    } catch (e) {
+      console.error('清理资源失败:', e);
+    }
   },
 
   // 生成报告图片

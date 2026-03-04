@@ -5,9 +5,9 @@
     <view class="header-bubble bubble-1"></view>
     <view class="header-bubble bubble-2"></view>
     <view class="header-bubble bubble-3"></view>
-    
-    <text class="title">{{hitokotoText || '打卡广场'}}</text>
-    <text class="subtitle" wx:if="{{hitokotoFrom}}">—— {{hitokotoFrom}}</text>
+
+    <text class="page-title">今天也来打个小卡吗？(´･ω･`)♡</text>
+    <text class="page-subtitle">不管今天怎样，你来过就闪闪发光！</text>
     
     <!-- 波浪装饰 -->
     <view class="wave-decoration">

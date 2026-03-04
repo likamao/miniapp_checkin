@@ -6,7 +6,8 @@
     <view class="header-bubble bubble-2"></view>
     <view class="header-bubble bubble-3"></view>
     
-    <text class="title">打卡记录</text>
+    <text class="page-title">今天的我在这里✧*｡٩(ˊᗜˋ*)و✧*｡</text>
+    <text class="page-subtitle">不管多少，都值得被温柔对待</text>
     
     <!-- 波浪装饰 -->
     <view class="wave-decoration">

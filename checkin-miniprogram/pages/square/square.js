@@ -278,6 +278,12 @@ Page({
 
   // 显示庆祝动画
   checkinShowCelebration() {
+    // 清除之前的定时器，避免重复动画
+    if (this.celebrationTimer) {
+      clearTimeout(this.celebrationTimer);
+      this.celebrationTimer = null;
+    }
+    
     // 使用新的 API 获取屏幕信息
     const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
     const windowWidth = windowInfo.windowWidth || windowInfo.screenWidth;
@@ -299,9 +305,25 @@ Page({
     });
     
     // 3秒后隐藏庆祝动画
-    setTimeout(() => {
+    this.celebrationTimer = setTimeout(() => {
       this.setData({ checkinShowCelebration: false });
     }, 3000);
+  },
+
+  // 页面卸载时清理资源
+  onUnload: function() {
+    // 清理定时器
+    if (this.celebrationTimer) {
+      clearTimeout(this.celebrationTimer);
+      this.celebrationTimer = null;
+    }
+    
+    // 清理其他资源
+    this.setData({
+      topics: [],
+      newTopic: { title: '', description: '' },
+      checkinFireworks: []
+    });
   },
 
   // 获取随机鼓励性文本

@@ -6,8 +6,8 @@
     <view class="header-bubble bubble-2"></view>
     <view class="header-bubble bubble-3"></view>
     
-    <text class="page-title">打卡统计</text>
-    <text class="page-subtitle">坚持打卡，见证成长</text>
+    <text class="page-title">慢慢来，没关系，我们一起数星星</text>
+    <text class="page-subtitle">哪怕只是一点点，你都在变好哦༼つ ் ▽ ் ༽つ</text>
     
     <!-- 波浪装饰 -->
     <view class="wave-decoration">
@@ -51,7 +51,7 @@
     
     <!-- 鼓励语 -->
     <view class="stat-info">
-      <view class="stat-desc">坚持打卡，养成良好习惯！</view>
+      <view class="stat-desc">今天起床/吃饭/睁眼就算赢～</view>
     </view>
   </view>
 </view>

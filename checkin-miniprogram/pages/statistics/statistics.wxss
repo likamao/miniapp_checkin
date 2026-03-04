@@ -324,7 +324,7 @@
 }
 
 .stat-desc::before {
-  content: '💪';
+  content: '(๑´ڡ`๑)';
   margin-right: 8rpx;
   font-size: 26rpx;
 }
