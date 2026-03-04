@@ -47,7 +47,7 @@
       <text class="action-button-text">打卡</text>
     </view>
     <!-- 报告按钮 -->
-    <view wx:if="{{hasReportPermission}}" class="action-button report-button" bindtap="navigateToReport">
+    <view wx:if="{{hasReportPermission && token}}" class="action-button report-button" bindtap="navigateToReport">
       <text class="action-button-text">报告</text>
     </view>
   </view>

@@ -86,6 +86,7 @@ Page({
       success: (res) => {
         if (res.data && res.data.user) {
           // 检查用户是否有管理员角色
+          console.log(res.data.user);
           const hasAdminRole = res.data.user.roles && res.data.user.roles.includes('ADMIN');
           
           this.setData({
@@ -531,6 +532,12 @@ Page({
 
   // 跳转到报告页面
   navigateToReport() {
+    // 前端权限验证
+    if (!this.data.token || !this.data.hasReportPermission) {
+      wx.showToast({ title: '权限不足', icon: 'none' });
+      return;
+    }
+    
     wx.navigateTo({
       url: '/pages/report/report'
     });
