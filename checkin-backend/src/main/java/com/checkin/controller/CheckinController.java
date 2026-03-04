@@ -444,13 +444,19 @@ public class CheckinController {
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-        // 只获取当前用户在主题中的打卡记录
-        Page<CheckinTopicRecord> recordPage = checkinService.getUserTopicCheckinRecords(user.getId(), topicId, pageable);
+        // 获取主题的所有打卡记录
+        Page<CheckinTopicRecord> recordPage = checkinService.getTopicCheckinRecords(topicId, pageable);
 
         List<Map<String, Object>> records = recordPage.getContent().stream().map(record -> {
             Map<String, Object> recordMap = new HashMap<>();
             recordMap.put("id", record.getId());
             recordMap.put("userId", record.getUserId());
+            
+            // 获取用户昵称
+            String nickname = checkinService.getUserNickname(record.getUserId());
+            // 如果用户允许展示信息且有昵称，则显示昵称，否则显示"微信用户"
+            recordMap.put("nickname", nickname != null && !nickname.isEmpty() ? nickname : "微信用户");
+            
             recordMap.put("checkinDate", record.getCheckinDate());
             recordMap.put("checkinDatetime", checkinService.formatDateTime(record.getCheckinDatetime()));
             recordMap.put("consecutiveDays", record.getConsecutiveDays());

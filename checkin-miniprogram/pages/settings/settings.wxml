@@ -1,8 +1,21 @@
 <view class="container">
+  <!-- 页面头部 - 海浪风格 -->
   <view class="header">
+    <!-- 装饰气泡 -->
+    <view class="header-bubble bubble-1"></view>
+    <view class="header-bubble bubble-2"></view>
+    <view class="header-bubble bubble-3"></view>
+    
     <text class="title">设置</text>
+    
+    <!-- 波浪装饰 - 与弹框一致 -->
+    <view class="wave-decoration">
+      <view class="wave-line"></view>
+      <view class="wave-line"></view>
+    </view>
   </view>
   
+  <!-- 设置列表 -->
   <view class="settings-list">
     <!-- 个人信息设置 -->
     <view class="setting-item" bindtap="onEditProfile">
@@ -13,6 +26,7 @@
       <view class="setting-arrow">›</view>
     </view>
     
+    <!-- 隐私开关 -->
     <view class="setting-item">
       <view class="setting-info">
         <text class="setting-title">允许周/月报展示我的信息</text>
@@ -22,16 +36,17 @@
         class="setting-switch" 
         checked="{{allowStatsDisplay}}" 
         bindchange="onAllowStatsDisplayChange"
-        color="#1989fa"
+        color="#1976d2"
       />
     </view>
   </view>
   
+  <!-- 数据设置 -->
   <view class="tips">
-    <text class="tips-title">隐私说明</text>
-    <text class="tips-text">• 只有管理员和主题发布者才能查看周报和月报</text>
-    <text class="tips-text">• 未开启此开关时，您的信息将被匿名化处理，显示为"用户XXX"</text>
-    <text class="tips-text">• 您可以随时在设置中开启或关闭此功能</text>
+    <text class="tips-title">{{dataSettingsTitle}}</text>
+    <block wx:for="{{dataSettings}}" wx:key="index">
+      <text class="tips-text">{{item.text}}</text>
+    </block>
   </view>
   
   <!-- 个人信息修改弹框 -->

@@ -168,4 +168,26 @@ public class UserController {
         response.put("user", userWithPermissions);
         return response;
     }
+
+    /**
+     * 获取数据设置说明（隐私说明）
+     * 
+     * @return 包含数据设置说明列表的响应
+     */
+    @GetMapping("/data-settings")
+    public Map<String, Object> getDataSettings() {
+        Map<String, Object> response = new HashMap<>();
+        
+        // 数据设置说明列表
+        List<Map<String, String>> dataSettings = List.of(
+            Map.of("icon", "🌊", "text", "当您登录时，你只能查看你自己的打卡数据"),
+            Map.of("icon", "🌊", "text", "只有管理员，对应主题发布者才能查看主题内所有人的周报和月报"),
+            Map.of("icon", "🌊", "text", "未开启此开关时，您的信息将被匿名化处理，显示为\"微信用户\""),
+            Map.of("icon", "🌊", "text", "您可以随时在设置中开启或关闭此功能")
+        );
+        
+        response.put("title", "数据设置");
+        response.put("items", dataSettings);
+        return response;
+    }
 }

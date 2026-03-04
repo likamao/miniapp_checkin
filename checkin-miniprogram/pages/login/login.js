@@ -79,8 +79,11 @@ Page({
     });
   },
   onProfileModalClose: function(e) {
-    const { nickname } = e.detail;
-    this.completeLogin(nickname);
+    const { nickname, isModified } = e.detail;
+    
+    // 登录流程中，如果用户没有修改，使用默认昵称完成登录
+    const finalNickname = isModified ? nickname : this.data.defaultNickname;
+    this.completeLogin(finalNickname);
   },
   onProfileModalConfirm: function(e) {
     const { nickname } = e.detail;

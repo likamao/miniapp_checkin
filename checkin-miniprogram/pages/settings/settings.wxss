@@ -1,91 +1,278 @@
+/* 页面容器 - 浅灰色背景 */
 .container {
-  padding: 20rpx;
-  background-color: #f5f5f5;
   min-height: 100vh;
+  background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+  padding: 32rpx;
+  box-sizing: border-box;
 }
 
+/* 页面头部 - 海浪风格 */
 .header {
-  margin-bottom: 30rpx;
-}
-
-.title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-  display: block;
-}
-
-.settings-list {
-  background-color: white;
-  border-radius: 16rpx;
+  position: relative;
+  padding: 48rpx 32rpx 80rpx;
+  margin: -32rpx -32rpx 32rpx -32rpx;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
   overflow: hidden;
-  margin-bottom: 30rpx;
 }
 
+/* 波浪装饰容器 */
+.wave-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60rpx;
+  overflow: hidden;
+}
+
+/* 波浪线条 - 与弹框一致 */
+.wave-line {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f5f5f5' fill-opacity='1' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+  background-size: 50% 100%;
+  animation: waveFlow 6s linear infinite;
+}
+
+/* 第二层波浪 - 反向动画 */
+.wave-line:nth-child(2) {
+  opacity: 0.5;
+  animation: waveFlow 8s linear infinite reverse;
+  bottom: 5rpx;
+}
+
+/* 波浪流动动画 */
+@keyframes waveFlow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 装饰气泡 */
+.header-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(187, 222, 251, 0.3));
+  animation: float 4s ease-in-out infinite;
+}
+
+.bubble-1 {
+  width: 32rpx;
+  height: 32rpx;
+  top: 20rpx;
+  left: 40rpx;
+  animation-delay: 0s;
+}
+
+.bubble-2 {
+  width: 20rpx;
+  height: 20rpx;
+  top: 60rpx;
+  left: 100rpx;
+  animation-delay: 1s;
+}
+
+.bubble-3 {
+  width: 28rpx;
+  height: 28rpx;
+  top: 30rpx;
+  right: 60rpx;
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-15rpx) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* 页面标题 */
+.title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #1565c0;
+  display: block;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* 设置列表容器 */
+.settings-list {
+  background: #ffffff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid #e3f2fd;
+}
+
+/* 设置项 */
 .setting-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 32rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: 36rpx 32rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .setting-item:last-child {
   border-bottom: none;
 }
 
+.setting-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rpx;
+  height: 0;
+  background: linear-gradient(180deg, #42a5f5 0%, #1976d2 100%);
+  border-radius: 0 3rpx 3rpx 0;
+  transition: height 0.3s ease;
+}
+
+.setting-item:active {
+  background-color: #f5f5f5;
+}
+
+.setting-item:active::before {
+  height: 60%;
+}
+
+/* 设置信息区域 */
 .setting-info {
   flex: 1;
-  margin-right: 20rpx;
+  margin-right: 24rpx;
 }
 
+/* 设置标题 */
 .setting-title {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: 500;
+  font-size: 30rpx;
+  color: #1976d2;
+  font-weight: 600;
   display: block;
-  margin-bottom: 8rpx;
+  margin-bottom: 12rpx;
 }
 
+/* 设置描述 */
 .setting-desc {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 26rpx;
+  color: #90caf9;
   display: block;
   line-height: 1.5;
 }
 
-.setting-switch {
-  transform: scale(1.1);
-}
-
+/* 设置箭头 */
 .setting-arrow {
-  font-size: 40rpx;
-  color: #999;
+  font-size: 44rpx;
+  color: #90caf9;
   line-height: 1;
+  transition: all 0.3s ease;
 }
 
+.setting-item:active .setting-arrow {
+  transform: translateX(8rpx);
+  color: #1976d2;
+}
+
+/* 自定义开关样式 */
+.setting-switch {
+  transform: scale(1.15);
+}
+
+/* 开关选中状态颜色 */
+.setting-switch .wx-switch-input {
+  background-color: #e3f2fd !important;
+  border-color: #bbdefb !important;
+}
+
+.setting-switch .wx-switch-input::before {
+  background-color: #e3f2fd !important;
+}
+
+.setting-switch .wx-switch-input::after {
+  background-color: #1976d2 !important;
+}
+
+/* 隐私说明卡片 */
 .tips {
-  background-color: white;
-  border-radius: 16rpx;
-  padding: 32rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid #e3f2fd;
 }
 
+/* 隐私说明标题 */
 .tips-title {
-  font-size: 28rpx;
-  color: #333;
+  font-size: 30rpx;
+  color: #1976d2;
   font-weight: 600;
   display: block;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
+  padding-left: 16rpx;
+  position: relative;
 }
 
+.tips-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rpx;
+  height: 28rpx;
+  background: linear-gradient(180deg, #42a5f5 0%, #1976d2 100%);
+  border-radius: 3rpx;
+}
+
+/* 隐私说明文本 */
 .tips-text {
-  font-size: 24rpx;
-  color: #666;
+  font-size: 26rpx;
+  color: #64b5f6;
   display: block;
   line-height: 1.8;
-  margin-bottom: 12rpx;
+  margin-bottom: 16rpx;
+  padding-left: 20rpx;
+  position: relative;
+}
+
+.tips-text::before {
+  content: '🌊';
+  position: absolute;
+  left: -10rpx;
+  font-size: 20rpx;
 }
 
 .tips-text:last-child {
   margin-bottom: 0;
+}
+
+/* 响应式适配 */
+@media screen and (min-width: 768px) {
+  .container {
+    padding: 48rpx;
+  }
+  
+  .header {
+    margin: -48rpx -48rpx 48rpx -48rpx;
+    padding: 64rpx 48rpx;
+  }
+  
+  .settings-list,
+  .tips {
+    max-width: 720rpx;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

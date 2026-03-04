@@ -1,26 +1,56 @@
 <view class="modal-mask" wx:if="{{visible}}" bindtap="onClose">
   <view class="modal-content" catchtap="stopPropagation">
-    <view class="modal-header">
-      <view class="modal-title">完善个人信息</view>
+    <!-- 海浪头部 -->
+    <view class="wave-header">
+      <!-- 装饰气泡 -->
+      <view class="bubble-decoration bubble-1"></view>
+      <view class="bubble-decoration bubble-2"></view>
+      <view class="bubble-decoration bubble-3"></view>
+      
+      <!-- 关闭按钮 -->
       <view class="modal-close" bindtap="onClose">×</view>
+      
+      <!-- 波浪装饰 -->
+      <view class="wave-decoration">
+        <view class="wave-line"></view>
+        <view class="wave-line"></view>
+      </view>
     </view>
     
     <view class="modal-body">
-      <!-- 昵称输入 -->
-      <view class="form-item">
-        <view class="form-label">昵称</view>
-        <input 
-          class="nickname-input" 
-          type="nickname" 
-          placeholder="请输入昵称" 
-          value="{{nickname}}"
-          bindinput="onNicknameInput"
-        />
+      <!-- 欢迎文字 -->
+      <view class="welcome-text">
+        <text class="welcome-title">完善个人信息</text>
+        <text class="welcome-subtitle">让我们更好地认识您</text>
+      </view>
+      
+      <!-- 表单区域 -->
+      <view class="form-container">
+        <view class="form-item">
+          <view class="form-label">昵称</view>
+          <view class="input-wrapper">
+            <input 
+              class="nickname-input" 
+              type="nickname" 
+              placeholder="请输入您的昵称" 
+              value="{{nickname}}"
+              bindinput="onNicknameInput"
+              focus="{{visible}}"
+            />
+          </view>
+          <view class="input-hint">
+            <text class="hint-icon">🌊</text>
+            <text class="hint-text">昵称将用于展示您的打卡记录</text>
+          </view>
+        </view>
       </view>
     </view>
     
     <view class="modal-footer">
-      <button class="btn btn-confirm" bindtap="onConfirm">确认</button>
+      <button class="btn-confirm" bindtap="onConfirm">
+        <text class="btn-text">开启打卡之旅</text>
+        <view class="ripple-container" id="rippleContainer"></view>
+      </button>
     </view>
   </view>
 </view>

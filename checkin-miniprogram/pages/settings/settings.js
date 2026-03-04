@@ -6,11 +6,46 @@ Page({
     allowStatsDisplay: false,
     showProfileModal: false,
     defaultNickname: '微信用户',
-    currentNickname: ''
+    currentNickname: '',
+    dataSettingsTitle: '数据设置',
+    dataSettings: []
   },
 
   onLoad() {
     this.loadUserInfo();
+    this.loadDataSettings();
+  },
+
+  loadDataSettings() {
+    const token = wx.getStorageSync('token');
+    wx.request({
+      url: apiConfig.API_BASE_URL + '/api/users/data-settings',
+      method: 'GET',
+      header: {
+        'Authorization': 'Bearer ' + token
+      },
+      success: (res) => {
+        if (res.data) {
+          this.setData({
+            dataSettingsTitle: res.data.title || '数据设置',
+            dataSettings: res.data.items || []
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('获取数据设置失败:', err);
+        // 使用默认数据
+        this.setData({
+          dataSettingsTitle: '数据设置',
+          dataSettings: [
+            { icon: '🌊', text: '当您登录时，你只能查看你自己的打卡数据' },
+            { icon: '🌊', text: '只有管理员，对应主题发布者才能查看主题内所有人的周报和月报' },
+            { icon: '🌊', text: '未开启此开关时，您的信息将被匿名化处理，显示为"微信用户"' },
+            { icon: '🌊', text: '您可以随时在设置中开启或关闭此功能' }
+          ]
+        });
+      }
+    });
   },
 
   loadUserInfo() {
@@ -70,12 +105,32 @@ Page({
     });
   },
 
-  onProfileModalClose() {
+  onProfileModalClose(e) {
     this.setData({ showProfileModal: false });
+    
+    // 如果用户没有修改昵称，不调用接口
+    if (!e.detail.isModified) {
+      return;
+    }
+    
+    // 用户有修改，调用更新接口
+    const { nickname } = e.detail;
+    if (nickname) {
+      this.updateUserProfile(nickname);
+    }
   },
 
   onProfileModalConfirm(e) {
-    const { nickname } = e.detail;
+    const { nickname, isModified } = e.detail;
+    
+    // 关闭弹框
+    this.setData({ showProfileModal: false });
+    
+    // 如果用户没有修改昵称，不调用接口
+    if (!isModified) {
+      return;
+    }
+    
     this.updateUserProfile(nickname);
   },
 

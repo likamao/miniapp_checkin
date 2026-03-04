@@ -495,6 +495,18 @@ public class CheckinService {
     }
 
     /**
+     * 获取用户昵称
+     * 
+     * @param userId 用户ID
+     * @return 用户昵称，如果用户不存在则返回null
+     */
+    public String getUserNickname(Long userId) {
+        return userRepository.findById(userId)
+                .map(User::getNickname)
+                .orElse(null);
+    }
+
+    /**
      * 获取用户在主题中的最高连续打卡天数
      * 
      * @param userId 用户ID

@@ -35,7 +35,7 @@
       <text class="section-title">打卡记录</text>
       <view class="record-list">
         <view wx:for="{{records}}" wx:key="id" class="record-item">
-          <view class="record-user">用户 {{item.userId}}</view>
+          <view class="record-user">{{item.nickname || '微信用户'}}</view>
           <view class="record-info">
             <text class="record-date">{{item.checkinDate}}</text>
             <text class="record-consecutive">连续{{item.consecutiveDays}}天</text>
