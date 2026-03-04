@@ -6,8 +6,8 @@
     <view class="header-bubble bubble-2"></view>
     <view class="header-bubble bubble-3"></view>
     
-    <text class="title">打卡广场</text>
-    <text class="subtitle">发现精彩主题，一起坚持打卡</text>
+    <text class="title">{{hitokotoText || '打卡广场'}}</text>
+    <text class="subtitle" wx:if="{{hitokotoFrom}}">—— {{hitokotoFrom}}</text>
     
     <!-- 波浪装饰 -->
     <view class="wave-decoration">

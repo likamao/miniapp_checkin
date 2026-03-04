@@ -24,7 +24,10 @@ Page({
     checkinFireworks: [],
     checkinEncouragementText: '感谢您的坚持，明天再来哦！',
     checkinTopics: [],
-    checkinSelectedTopicId: null
+    checkinSelectedTopicId: null,
+    // 一言文本
+    hitokotoText: '',
+    hitokotoFrom: ''
   },
 
   onLoad() {
@@ -37,6 +40,39 @@ Page({
     
     // 加载主题列表
     this.loadTopics();
+    
+    // 获取一言文本
+    this.getHitokotoText();
+  },
+
+  // 获取一言文本
+  getHitokotoText() {
+    wx.request({
+      url: 'https://v1.hitokoto.cn/',
+      method: 'GET',
+      timeout: 3000,
+      data: {
+        c: 'b', // 漫画
+        c: 'd', // 文学
+        c: 'k', // 哲学
+        encode: 'json'
+      },
+      success: (res) => {
+        if (res.data && res.data.hitokoto) {
+          this.setData({
+            hitokotoText: res.data.hitokoto,
+            hitokotoFrom: res.data.from || ''
+          });
+        }
+      },
+      fail: (err) => {
+        console.log('获取一言文本失败:', err);
+        // 使用默认文本
+        this.setData({
+          hitokotoText: '发现精彩主题，一起坚持打卡'
+        });
+      }
+    });
   },
 
   // 检查用户权限
