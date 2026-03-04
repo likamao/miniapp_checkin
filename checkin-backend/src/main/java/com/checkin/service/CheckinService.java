@@ -687,13 +687,18 @@ public class CheckinService {
             userDetail.put("userId", userId);
             userDetail.put("checkinCount", userRecordList.size());
             
-            // 获取用户信息，添加隐私设置
+            // 获取用户信息，添加隐私设置和昵称
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 userDetail.put("allowStatsDisplay", user.getAllowStatsDisplay());
+                // 添加用户昵称，确保数据一致性
+                String nickname = user.getNickname();
+                userDetail.put("nickname", nickname != null && !nickname.trim().isEmpty() ? nickname : "用户" + userId);
+                userDetail.put("userId", userId); // 保留userId用于内部使用
             } else {
                 userDetail.put("allowStatsDisplay", true); // 默认允许显示
+                userDetail.put("nickname", "用户" + userId);
             }
             
             // 计算用户最高连续打卡天数

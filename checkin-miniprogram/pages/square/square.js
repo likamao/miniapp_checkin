@@ -6,7 +6,6 @@ Page({
     token: '',
     showPublishModal: false,
     showCheckinModal: false,
-    showReportMenu: false,
     newTopic: {
       title: '',
       description: ''
@@ -530,29 +529,10 @@ Page({
     });
   },
 
-  // 显示报告菜单
-  showReportMenu() {
-    this.setData({ showReportMenu: true });
-  },
-
-  // 隐藏报告菜单
-  hideReportMenu() {
-    this.setData({ showReportMenu: false });
-  },
-
-  // 生成周报
-  generateWeeklyReport() {
-    this.hideReportMenu();
+  // 跳转到报告页面
+  navigateToReport() {
     wx.navigateTo({
-      url: '/pages/report/report?reportType=weekly'
-    });
-  },
-
-  // 生成月报
-  generateMonthlyReport() {
-    this.hideReportMenu();
-    wx.navigateTo({
-      url: '/pages/report/report?reportType=monthly'
+      url: '/pages/report/report'
     });
   }
 });

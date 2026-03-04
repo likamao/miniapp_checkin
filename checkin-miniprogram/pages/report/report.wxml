@@ -4,47 +4,43 @@
   <!-- 隐藏的canvas，用于生成分享图片 -->
   <canvas canvas-id="shareCanvas" style="width: 100vw; height: 720px; position: fixed; left: -9999px;"></canvas>
   
-  <!-- 报告头部 -->
+  <!-- 报告头部 - 海浪风格 -->
   <view class="report-header">
+    <!-- 装饰气泡 -->
+    <view class="header-bubble bubble-1"></view>
+    <view class="header-bubble bubble-2"></view>
+    <view class="header-bubble bubble-3"></view>
+    
     <text class="report-title">{{reportTitle}}</text>
     <text class="report-date-range">{{dateRange}}</text>
-  </view>
-  
-  <!-- 报告类型选择 -->
-  <view class="report-type-selector">
-    <button 
-      class="type-button {{reportType === 'weekly' ? 'active' : ''}}" 
-      bindtap="selectReportType" 
-      data-type="weekly"
-    >
-      周报
-    </button>
-    <button 
-      class="type-button {{reportType === 'monthly' ? 'active' : ''}}" 
-      bindtap="selectReportType" 
-      data-type="monthly"
-    >
-      月报
-    </button>
+    
+    <!-- 波浪装饰 -->
+    <view class="wave-decoration">
+      <view class="wave-line"></view>
+      <view class="wave-line"></view>
+    </view>
   </view>
   
   <!-- 主题选择 -->
   <view class="topic-selector">
-    <text class="selector-label">选择主题：</text>
+    <text class="selector-label">选择主题</text>
     <picker bindchange="bindTopicChange" value="{{selectedTopicIndex}}" range="{{topics}}" range-key="title">
       <view class="picker">
-        {{selectedTopic ? selectedTopic.title : '请选择主题'}}
+        <text class="picker-text">{{selectedTopic ? selectedTopic.title : '请选择主题'}}</text>
+        <text class="picker-arrow">›</text>
       </view>
     </picker>
   </view>
   
   <!-- 加载状态 -->
   <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
     <text class="loading-text">加载中...</text>
   </view>
   
   <!-- 错误提示 -->
   <view wx:if="{{error}}" class="error-container">
+    <text class="error-icon">⚠️</text>
     <text class="error-text">{{error}}</text>
   </view>
   
@@ -52,21 +48,30 @@
   <view wx:if="{{!loading && !error && reportData}}" class="report-content">
     <!-- 总体统计数据 -->
     <view class="metrics-section">
-      <text class="section-title">总体统计</text>
+      <view class="section-header">
+        <view class="section-title-wrapper">
+          <view class="section-title-bar"></view>
+          <text class="section-title">总体统计</text>
+        </view>
+      </view>
       <view class="metrics-grid">
         <view class="metric-item">
+          <text class="metric-icon">📝</text>
           <text class="metric-value">{{reportData.metrics.totalCheckinCount}}</text>
           <text class="metric-label">总打卡次数</text>
         </view>
         <view class="metric-item">
+          <text class="metric-icon">👥</text>
           <text class="metric-value">{{reportData.metrics.participantCount}}</text>
           <text class="metric-label">参与用户数</text>
         </view>
         <view class="metric-item">
+          <text class="metric-icon">📊</text>
           <text class="metric-value">{{reportData.metrics.averageCheckinCountFormatted}}</text>
           <text class="metric-label">平均打卡次数</text>
         </view>
         <view class="metric-item">
+          <text class="metric-icon">🔥</text>
           <text class="metric-value">{{reportData.metrics.userActivityRatePercent}}%</text>
           <text class="metric-label">用户活跃度</text>
         </view>
@@ -75,7 +80,12 @@
     
     <!-- 趋势图 -->
     <view class="chart-section">
-      <text class="section-title">打卡趋势</text>
+      <view class="section-header">
+        <view class="section-title-wrapper">
+          <view class="section-title-bar"></view>
+          <text class="section-title">打卡趋势</text>
+        </view>
+      </view>
       <view class="chart-container">
         <canvas id="trendChart" class="chart" canvas-id="trendChart"></canvas>
       </view>
@@ -83,7 +93,12 @@
     
     <!-- 热力日历 -->
     <view class="chart-section">
-      <text class="section-title">热力日历</text>
+      <view class="section-header">
+        <view class="section-title-wrapper">
+          <view class="section-title-bar"></view>
+          <text class="section-title">热力日历</text>
+        </view>
+      </view>
       <view class="chart-container">
         <canvas id="heatmapChart" class="chart" canvas-id="heatmapChart"></canvas>
       </view>
@@ -91,24 +106,52 @@
     
     <!-- 用户打卡详情 -->
     <view class="user-section">
-      <text class="section-title">用户打卡详情</text>
-      <view class="user-list">
-        <view wx:for="{{reportData.userDetails.users}}" wx:key="{{item.userId}}" class="user-item">
-          <view class="user-basic-info">
-            <text class="user-rank">{{index + 1}}</text>
-            <text class="user-info">用户{{item.userId}}</text>
+      <view class="section-header">
+        <view class="section-title-wrapper">
+          <view class="section-title-bar"></view>
+          <text class="section-title">用户打卡详情</text>
+        </view>
+        <!-- 全局展开/收起开关 -->
+        <view class="expand-all-switch" bindtap="toggleExpandAllUsers">
+          <text class="switch-label">{{expandAllUsers ? '收起全部' : '展开全部'}}</text>
+          <view class="switch-btn {{expandAllUsers ? 'active' : ''}}">
+            <view class="switch-indicator"></view>
           </view>
-          <view class="user-stats">
-            <text class="user-checkin-count">{{item.checkinCount}}次</text>
-            <text class="user-consecutive-days">连续{{item.maxConsecutiveDays}}天</text>
+        </view>
+      </view>
+      <view class="user-list">
+        <view wx:for="{{reportData.userDetails.users}}" wx:key="userId" class="user-item">
+          <!-- 用户基本信息 - 始终显示 -->
+          <view class="user-basic-info" bindtap="toggleUserDetails" data-user-id="{{item.userId}}">
+            <view class="user-rank">{{index + 1}}</view>
+            <view class="user-info">
+              <text class="user-nickname">{{item.nickname || '用户' + item.userId}}</text>
+              <view class="user-stats">
+                <text class="user-stat-item">📝 {{item.checkinCount}}次</text>
+                <text class="user-stat-item">🔥 连续{{item.maxConsecutiveDays}}天</text>
+              </view>
+            </view>
+            <!-- 展开/收起按钮 -->
+            <view class="expand-btn {{expandedUsers[item.userId] ? 'expanded' : ''}}">
+              <text class="expand-icon">›</text>
+            </view>
           </view>
           
-          <!-- 详细打卡记录 -->
-          <view wx:if="{{item.checkinDetails && item.checkinDetails.length > 0}}" class="checkin-details">
-            <view wx:for="{{item.checkinDetails}}" wx:key="{{index}}" class="checkin-detail-item">
-              <text class="checkin-date">打卡时间: {{item.checkinDate}}</text>
-              <text wx:if="{{item.title}}" class="checkin-title">标题: {{item.title}}</text>
-              <text wx:if="{{item.content}}" class="checkin-content">描述: {{item.content.length > 50 ? item.content.substring(0, 50) + '...' : item.content}}</text>
+          <!-- 详细打卡记录 - 展开时显示 -->
+          <view wx:if="{{expandedUsers[item.userId]}}" class="checkin-details">
+            <!-- 打卡详情列表 -->
+            <view wx:if="{{item.checkinDetails && item.checkinDetails.length > 0}}" class="checkin-details-list">
+              <view wx:for="{{item.checkinDetails}}" wx:for-item="checkin" wx:key="index" class="checkin-detail-item">
+                <view class="checkin-header">
+                  <text class="checkin-date">🕐 {{checkin.checkinDate}}</text>
+                </view>
+                <view wx:if="{{checkin.title}}" class="checkin-title">
+                  <text>{{checkin.title}}</text>
+                </view>
+                <view wx:if="{{checkin.content}}" class="checkin-content">
+                  <text>{{checkin.content.length > 50 ? checkin.content.substring(0, 50) + '...' : checkin.content}}</text>
+                </view>
+              </view>
             </view>
           </view>
         </view>
@@ -117,8 +160,14 @@
     
     <!-- 操作按钮 -->
     <view class="action-buttons">
-      <button class="action-button" bindtap="generateReportImage">生成报告图片</button>
-      <button class="action-button" bindtap="shareReport">分享报告</button>
+      <button class="action-button primary" bindtap="generateReportImage">
+        <text class="btn-icon">📷</text>
+        <text class="btn-text">生成报告图片</text>
+      </button>
+      <button class="action-button secondary" bindtap="shareReport">
+        <text class="btn-icon">📤</text>
+        <text class="btn-text">分享报告</text>
+      </button>
     </view>
   </view>
 </view>

@@ -47,7 +47,7 @@
       <text class="action-button-text">打卡</text>
     </view>
     <!-- 报告按钮 -->
-    <view wx:if="{{hasReportPermission}}" class="action-button report-button" bindtap="showReportMenu">
+    <view wx:if="{{hasReportPermission}}" class="action-button report-button" bindtap="navigateToReport">
       <text class="action-button-text">报告</text>
     </view>
   </view>
@@ -126,7 +126,7 @@
       <view wx:elif="{{checkinHasCheckedInToday}}" class="checkin-card">
         <view class="checkin-checked-in">
           <view class="checkin-checked-in-icon">
-            <image class="checkin-checked-in-image" src="https://pic.imgdb.cn/item/6707f8f2d29ded1a8c74e1f2.gif" mode="aspectFit"/>
+            <image class="checkin-checked-in-image" src="../../icons/relax.png" mode="aspectFit"/>
           </view>
           <view class="checkin-checked-in-title">今日已打卡</view>
           <view class="checkin-checked-in-desc">{{checkinEncouragementText}}</view>
@@ -168,17 +168,5 @@
     </view>
   </view>
 
-  <!-- 报告菜单 - 海浪风格 -->
-  <view wx:if="{{showReportMenu}}" class="report-menu-overlay" bindtap="hideReportMenu">
-    <view class="report-menu-content" catchtap="stopPropagation">
-      <view class="report-menu-buttons">
-        <view class="report-menu-button weekly" bindtap="generateWeeklyReport">
-          <text class="report-menu-button-text">周报</text>
-        </view>
-        <view class="report-menu-button monthly" bindtap="generateMonthlyReport">
-          <text class="report-menu-button-text">月报</text>
-        </view>
-      </view>
-    </view>
-  </view>
+
 </view>

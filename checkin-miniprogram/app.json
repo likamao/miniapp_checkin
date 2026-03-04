@@ -1,10 +1,9 @@
 {
   "pages": [
+    "pages/square/square",
     "pages/login/login",
-    "pages/checkin/checkin",
     "pages/records/records",
     "pages/statistics/statistics",
-    "pages/square/square",
     "pages/topic-detail/topic-detail",
     "pages/settings/settings",
     "pages/report/report"
@@ -21,12 +20,6 @@
     "backgroundColor": "#fff",
     "borderStyle": "white",
     "list": [
-  {
-    "pagePath": "pages/checkin/checkin",
-    "text": "打卡",
-    "iconPath": "icons/navigation/checkin.png",
-    "selectedIconPath": "icons/navigation/checkin-active.png"
-  },
   {
     "pagePath": "pages/square/square",
     "text": "广场",

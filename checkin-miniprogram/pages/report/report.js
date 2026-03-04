@@ -12,7 +12,11 @@ Page({
     reportTitle: '打卡报告',
     dateRange: '',
     shareImageUrl: '',
-    shareTopicId: ''
+    shareTopicId: '',
+    // 用户详情展开状态映射：key为userId，value为boolean
+    expandedUsers: {},
+    // 全局展开/收起所有用户详情
+    expandAllUsers: false
   },
 
   onLoad: function(options) {
@@ -140,7 +144,9 @@ Page({
     const type = e.currentTarget.dataset.type;
     this.setData({
       reportType: type,
-      reportData: null
+      reportData: null,
+      expandedUsers: {}, // 重置展开状态
+      expandAllUsers: false // 重置全局开关
     });
     if (this.data.selectedTopic) {
       this.loadReportData();
@@ -154,7 +160,9 @@ Page({
     this.setData({
       selectedTopicIndex: index,
       selectedTopic: selectedTopic,
-      reportData: null
+      reportData: null,
+      expandedUsers: {}, // 重置展开状态
+      expandAllUsers: false // 重置全局开关
     });
     this.loadReportData();
   },
@@ -166,7 +174,9 @@ Page({
     this.setData({
       loading: true,
       error: null,
-      reportData: null // 清空之前的数据，避免显示旧数据
+      reportData: null, // 清空之前的数据，避免显示旧数据
+      expandedUsers: {}, // 重置展开状态
+      expandAllUsers: false // 重置全局开关
     });
 
     const token = wx.getStorageSync('token');
@@ -250,6 +260,33 @@ Page({
           loading: false
         });
       }
+    });
+  },
+
+  // 切换用户详情展开/收起状态
+  toggleUserDetails: function(e) {
+    const userId = e.currentTarget.dataset.userId;
+    const expandedUsers = { ...this.data.expandedUsers };
+    expandedUsers[userId] = !expandedUsers[userId];
+    this.setData({ expandedUsers });
+  },
+
+  // 全局展开/收起所有用户详情
+  toggleExpandAllUsers: function() {
+    const newExpandAll = !this.data.expandAllUsers;
+    const expandedUsers = {};
+    
+    if (newExpandAll && this.data.reportData && this.data.reportData.userDetails) {
+      // 展开所有用户
+      this.data.reportData.userDetails.users.forEach(user => {
+        expandedUsers[user.userId] = true;
+      });
+    }
+    // 收起时，expandedUsers保持为空对象
+    
+    this.setData({
+      expandAllUsers: newExpandAll,
+      expandedUsers: expandedUsers
     });
   },
 
@@ -384,7 +421,7 @@ Page({
       const cellSize = (canvasWidth - 2 * padding) / 7;
       const rows = Math.ceil(heatmapData.length / 7);
 
-      // 定义颜色梯度
+      // 定义颜色梯度 - 使用与settings页面一致的海浪蓝色系
       const colors = ['#e8e8e8', '#c0e6ff', '#73c0de', '#1989fa', '#005cc5'];
       
       // 绘制热力网格
@@ -443,56 +480,129 @@ Page({
     const canvasId = 'reportCanvas';
     const ctx = wx.createCanvasContext(canvasId);
 
-    // 绘制背景
-    ctx.setFillStyle('#ffffff');
+    // 绘制背景 - 使用与settings页面一致的浅灰色渐变
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
+    gradient.addColorStop(0, '#f5f5f5');
+    gradient.addColorStop(1, '#e8e8e8');
+    ctx.setFillStyle(gradient);
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // 绘制头部背景 - 海浪风格渐变
+    const headerGradient = ctx.createLinearGradient(0, 0, canvasWidth, 150);
+    headerGradient.addColorStop(0, '#e3f2fd');
+    headerGradient.addColorStop(0.5, '#bbdefb');
+    headerGradient.addColorStop(1, '#90caf9');
+    ctx.setFillStyle(headerGradient);
+    ctx.fillRect(0, 0, canvasWidth, 150);
+
+    // 绘制装饰气泡
+    ctx.setFillStyle('rgba(255, 255, 255, 0.6)');
+    ctx.beginPath();
+    ctx.arc(40, 30, 16, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(canvasWidth - 60, 40, 14, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // 绘制波浪装饰
+    ctx.setFillStyle('#f5f5f5');
+    ctx.beginPath();
+    ctx.moveTo(0, 150);
+    ctx.bezierCurveTo(canvasWidth * 0.3, 130, canvasWidth * 0.7, 170, canvasWidth, 150);
+    ctx.lineTo(canvasWidth, 180);
+    ctx.lineTo(0, 180);
+    ctx.closePath();
+    ctx.fill();
 
     // 绘制标题
     ctx.setFontSize(24);
-    ctx.setFillStyle('#333333');
+    ctx.setFillStyle('#1565c0');
     ctx.setTextAlign('center');
-    ctx.fillText(this.data.reportTitle, canvasWidth / 2, 60);
+    ctx.fillText(this.data.reportTitle, canvasWidth / 2, 80);
 
     // 绘制日期范围
     ctx.setFontSize(16);
-    ctx.setFillStyle('#666666');
-    ctx.fillText(this.data.dateRange, canvasWidth / 2, 90);
+    ctx.setFillStyle('#64b5f6');
+    ctx.fillText(this.data.dateRange, canvasWidth / 2, 110);
 
-    // 绘制统计数据
+    // 绘制统计数据卡片区域
+    let yPosition = 200;
     const metrics = this.data.reportData.metrics;
     const metricItems = [
-      { label: '总打卡次数', value: metrics.totalCheckinCount },
-      { label: '参与用户数', value: metrics.participantCount },
-      { label: '平均打卡次数', value: metrics.averageCheckinCountFormatted },
-      { label: '用户活跃度', value: metrics.userActivityRatePercent + '%' }
+      { label: '总打卡次数', value: metrics.totalCheckinCount, icon: '📝' },
+      { label: '参与用户数', value: metrics.participantCount, icon: '👥' },
+      { label: '平均打卡次数', value: metrics.averageCheckinCountFormatted, icon: '📊' },
+      { label: '用户活跃度', value: metrics.userActivityRatePercent + '%', icon: '🔥' }
     ];
 
-    let yPosition = 140;
+    // 绘制统计数据标题
+    ctx.setFontSize(18);
+    ctx.setFillStyle('#1976d2');
+    ctx.setTextAlign('left');
+    ctx.fillText('总体统计', 30, yPosition);
+    
+    // 绘制标题左侧装饰线
+    ctx.setFillStyle('#42a5f5');
+    ctx.fillRect(20, yPosition - 12, 4, 20);
+    
+    yPosition += 30;
+
+    // 绘制统计卡片 - 2x2网格布局
+    const cardWidth = (canvasWidth - 60) / 2;
+    const cardHeight = 100;
     metricItems.forEach((item, index) => {
-      ctx.setFontSize(16);
-      ctx.setFillStyle('#333333');
-      ctx.setTextAlign('left');
-      ctx.fillText(item.label, 20, yPosition);
+      const col = index % 2;
+      const row = Math.floor(index / 2);
+      const x = 20 + col * (cardWidth + 20);
+      const y = yPosition + row * (cardHeight + 20);
       
-      ctx.setFontSize(18);
-      ctx.setFillStyle('#1989fa');
-      ctx.setTextAlign('right');
-      ctx.fillText(item.value, canvasWidth - 20, yPosition);
+      // 绘制卡片背景 - 使用海浪风格渐变
+      const cardGradient = ctx.createLinearGradient(x, y, x + cardWidth, y + cardHeight);
+      cardGradient.addColorStop(0, '#e3f2fd');
+      cardGradient.addColorStop(1, '#f5f5f5');
+      ctx.setFillStyle(cardGradient);
+      ctx.fillRect(x, y, cardWidth, cardHeight);
       
-      yPosition += 50;
+      // 绘制卡片边框
+      ctx.setStrokeStyle('#e3f2fd');
+      ctx.setLineWidth(2);
+      ctx.strokeRect(x, y, cardWidth, cardHeight);
+      
+      // 绘制数值
+      ctx.setFontSize(28);
+      ctx.setFillStyle('#1976d2');
+      ctx.setTextAlign('center');
+      ctx.fillText(String(item.value), x + cardWidth / 2, y + 45);
+      
+      // 绘制标签
+      ctx.setFontSize(14);
+      ctx.setFillStyle('#64b5f6');
+      ctx.fillText(item.label, x + cardWidth / 2, y + 75);
     });
+
+    yPosition += 240;
 
     // 绘制趋势图
     const trendData = this.data.reportData.trendData;
     if (trendData && trendData.dates && trendData.dates.length > 0) {
-      // 绘制趋势图区域
-      ctx.setStrokeStyle('#e8e8e8');
-      ctx.setLineWidth(1);
+      // 绘制趋势图标题
+      ctx.setFontSize(18);
+      ctx.setFillStyle('#1976d2');
+      ctx.setTextAlign('left');
+      ctx.fillText('打卡趋势', 30, yPosition);
+      
+      // 绘制标题左侧装饰线
+      ctx.setFillStyle('#42a5f5');
+      ctx.fillRect(20, yPosition - 12, 4, 20);
+      
+      yPosition += 30;
+      
+      // 绘制趋势图区域背景
+      ctx.setFillStyle('#ffffff');
+      ctx.fillRect(20, yPosition, canvasWidth - 40, 200);
+      ctx.setStrokeStyle('#e3f2fd');
+      ctx.setLineWidth(2);
       ctx.strokeRect(20, yPosition, canvasWidth - 40, 200);
-      ctx.setFontSize(14);
-      ctx.setFillStyle('#666666');
-      ctx.setTextAlign('center');
-      ctx.fillText('打卡趋势图', canvasWidth / 2, yPosition + 20);
       
       // 计算数据范围
       const maxCount = Math.max(...trendData.checkinCounts, 1);
@@ -516,9 +626,9 @@ Page({
       ctx.lineTo(40, yPosition + 180);
       ctx.stroke();
       
-      // 绘制数据点和连线
-      ctx.setStrokeStyle('#1989fa');
-      ctx.setLineWidth(2);
+      // 绘制数据点和连线 - 使用海浪蓝色
+      ctx.setStrokeStyle('#1976d2');
+      ctx.setLineWidth(3);
       ctx.beginPath();
       
       trendData.checkinCounts.forEach((count, index) => {
@@ -532,9 +642,9 @@ Page({
         }
         
         // 绘制数据点
-        ctx.setFillStyle('#1989fa');
+        ctx.setFillStyle('#42a5f5');
         ctx.beginPath();
-        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.arc(x, y, 4, 0, 2 * Math.PI);
         ctx.fill();
       });
       ctx.stroke();
@@ -549,33 +659,55 @@ Page({
       });
     } else {
       // 绘制空趋势图区域
-      ctx.setStrokeStyle('#e8e8e8');
-      ctx.setLineWidth(1);
+      ctx.setFontSize(18);
+      ctx.setFillStyle('#1976d2');
+      ctx.setTextAlign('left');
+      ctx.fillText('打卡趋势', 30, yPosition);
+      
+      ctx.setFillStyle('#42a5f5');
+      ctx.fillRect(20, yPosition - 12, 4, 20);
+      
+      yPosition += 30;
+      
+      ctx.setFillStyle('#ffffff');
+      ctx.fillRect(20, yPosition, canvasWidth - 40, 200);
+      ctx.setStrokeStyle('#e3f2fd');
+      ctx.setLineWidth(2);
       ctx.strokeRect(20, yPosition, canvasWidth - 40, 200);
+      
       ctx.setFontSize(14);
-      ctx.setFillStyle('#666666');
+      ctx.setFillStyle('#999999');
       ctx.setTextAlign('center');
-      ctx.fillText('打卡趋势图', canvasWidth / 2, yPosition + 20);
-      ctx.fillText('暂无数据', canvasWidth / 2, yPosition + 120);
+      ctx.fillText('暂无数据', canvasWidth / 2, yPosition + 110);
     }
 
     // 绘制热力图
+    yPosition += 240;
     const heatmapData = this.data.reportData.heatmapData;
     if (heatmapData && heatmapData.length > 0) {
-      yPosition += 220;
-      // 绘制热力图区域
-      ctx.setStrokeStyle('#e8e8e8');
-      ctx.setLineWidth(1);
+      // 绘制热力图标题
+      ctx.setFontSize(18);
+      ctx.setFillStyle('#1976d2');
+      ctx.setTextAlign('left');
+      ctx.fillText('打卡热力图', 30, yPosition);
+      
+      // 绘制标题左侧装饰线
+      ctx.setFillStyle('#42a5f5');
+      ctx.fillRect(20, yPosition - 12, 4, 20);
+      
+      yPosition += 30;
+      
+      // 绘制热力图区域背景
+      ctx.setFillStyle('#ffffff');
+      ctx.fillRect(20, yPosition, canvasWidth - 40, 200);
+      ctx.setStrokeStyle('#e3f2fd');
+      ctx.setLineWidth(2);
       ctx.strokeRect(20, yPosition, canvasWidth - 40, 200);
-      ctx.setFontSize(14);
-      ctx.setFillStyle('#666666');
-      ctx.setTextAlign('center');
-      ctx.fillText('打卡热力图', canvasWidth / 2, yPosition + 20);
       
       // 计算网格大小
       const cellSize = (canvasWidth - 80) / 7;
       
-      // 定义颜色梯度
+      // 定义颜色梯度 - 海浪蓝色系
       const colors = ['#e8e8e8', '#c0e6ff', '#73c0de', '#1989fa', '#005cc5'];
       
       // 绘制热力网格
@@ -583,14 +715,13 @@ Page({
         const row = Math.floor(index / 7);
         const col = index % 7;
         const x = 40 + col * cellSize;
-        const y = yPosition + 40 + row * cellSize;
+        const y = yPosition + 20 + row * cellSize;
         
         // 根据打卡次数选择颜色
         const checkinCount = item.checkinCount;
         let colorIndex = 0;
         if (checkinCount > 0) {
           colorIndex = Math.min(Math.floor(checkinCount / 1), colors.length - 1);
-          // 确保至少使用第二种颜色（不是灰色）
           if (colorIndex === 0) {
             colorIndex = 1;
           }
@@ -606,92 +737,139 @@ Page({
         ctx.fillText(item.date.substring(8), x + cellSize / 2, y + cellSize / 2 + 4);
       });
     } else {
-      yPosition += 220;
       // 绘制空热力图区域
-      ctx.setStrokeStyle('#e8e8e8');
-      ctx.setLineWidth(1);
+      ctx.setFontSize(18);
+      ctx.setFillStyle('#1976d2');
+      ctx.setTextAlign('left');
+      ctx.fillText('打卡热力图', 30, yPosition);
+      
+      ctx.setFillStyle('#42a5f5');
+      ctx.fillRect(20, yPosition - 12, 4, 20);
+      
+      yPosition += 30;
+      
+      ctx.setFillStyle('#ffffff');
+      ctx.fillRect(20, yPosition, canvasWidth - 40, 200);
+      ctx.setStrokeStyle('#e3f2fd');
+      ctx.setLineWidth(2);
       ctx.strokeRect(20, yPosition, canvasWidth - 40, 200);
+      
       ctx.setFontSize(14);
-      ctx.setFillStyle('#666666');
+      ctx.setFillStyle('#999999');
       ctx.setTextAlign('center');
-      ctx.fillText('打卡热力图', canvasWidth / 2, yPosition + 20);
-      ctx.fillText('暂无数据', canvasWidth / 2, yPosition + 120);
+      ctx.fillText('暂无数据', canvasWidth / 2, yPosition + 110);
     }
 
     // 绘制用户列表
-    yPosition += 220;
-    ctx.setFontSize(16);
-    ctx.setFillStyle('#333333');
+    yPosition += 240;
+    ctx.setFontSize(18);
+    ctx.setFillStyle('#1976d2');
     ctx.setTextAlign('left');
-    ctx.fillText('用户打卡详情', 20, yPosition);
+    ctx.fillText('用户打卡详情', 30, yPosition);
+    
+    // 绘制标题左侧装饰线
+    ctx.setFillStyle('#42a5f5');
+    ctx.fillRect(20, yPosition - 12, 4, 20);
 
-    yPosition += 30;
+    yPosition += 40;
     const userDetails = this.data.reportData.userDetails;
     if (userDetails && userDetails.users && userDetails.users.length > 0) {
       const users = userDetails.users.slice(0, 5); // 只显示前5名
       users.forEach((user, index) => {
-        // 绘制用户基本信息（排名和用户ID）
-        ctx.setFontSize(14);
-        ctx.setFillStyle('#666666');
+        // 绘制用户卡片背景
+        ctx.setFillStyle('#f5f5f5');
+        ctx.fillRect(20, yPosition - 25, canvasWidth - 40, 80);
+        ctx.setStrokeStyle('#e3f2fd');
+        ctx.setLineWidth(2);
+        ctx.strokeRect(20, yPosition - 25, canvasWidth - 40, 80);
+        
+        // 绘制左侧装饰线
+        ctx.setFillStyle('#42a5f5');
+        ctx.fillRect(20, yPosition - 25, 4, 80);
+        
+        // 绘制排名圆形背景
+        ctx.setFillStyle('#e3f2fd');
+        ctx.beginPath();
+        ctx.arc(55, yPosition + 5, 20, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.setStrokeStyle('#bbdefb');
+        ctx.setLineWidth(2);
+        ctx.stroke();
+        
+        // 绘制排名数字
+        ctx.setFontSize(18);
+        ctx.setFillStyle('#1976d2');
+        ctx.setTextAlign('center');
+        ctx.fillText(String(index + 1), 55, yPosition + 12);
+        
+        // 绘制用户昵称（优先使用nickname字段）
+        ctx.setFontSize(16);
+        ctx.setFillStyle('#1976d2');
         ctx.setTextAlign('left');
-        ctx.fillText(`${index + 1}. 用户${user.userId}`, 20, yPosition);
+        const displayName = user.nickname || `用户${user.userId}`;
+        ctx.fillText(displayName, 90, yPosition);
         
-        yPosition += 25;
-        
-        // 绘制用户统计信息（打卡次数和连续天数）
-        ctx.setFontSize(12);
-        ctx.setFillStyle('#666666');
-        ctx.setTextAlign('left');
-        ctx.fillText(`${user.checkinCount}次 | 连续${user.maxConsecutiveDays}天`, 40, yPosition);
-        
-        yPosition += 30;
+        // 绘制用户统计信息
+        ctx.setFontSize(13);
+        ctx.setFillStyle('#64b5f6');
+        ctx.fillText(`${user.checkinCount}次打卡 | 连续${user.maxConsecutiveDays}天`, 90, yPosition + 25);
         
         // 检查用户隐私设置，只有当允许显示详情时才绘制
         if (user.allowStatsDisplay !== false && user.checkinDetails && user.checkinDetails.length > 0) {
-          user.checkinDetails.forEach((checkin, checkinIndex) => {
+          yPosition += 70;
+          
+          user.checkinDetails.slice(0, 3).forEach((checkin, checkinIndex) => { // 最多显示3条
+            // 绘制打卡详情背景
+            ctx.setFillStyle('#ffffff');
+            ctx.fillRect(40, yPosition - 15, canvasWidth - 80, 70);
+            ctx.setStrokeStyle('#e3f2fd');
+            ctx.setLineWidth(1);
+            ctx.strokeRect(40, yPosition - 15, canvasWidth - 80, 70);
+            
             // 绘制打卡日期
-            ctx.setFontSize(11);
-            ctx.setFillStyle('#999999');
+            ctx.setFontSize(12);
+            ctx.setFillStyle('#90caf9');
             ctx.setTextAlign('left');
-            ctx.fillText(`打卡时间: ${checkin.checkinDate}`, 60, yPosition);
-            yPosition += 18;
+            ctx.fillText(`打卡时间: ${checkin.checkinDate}`, 55, yPosition);
             
             // 绘制打卡标题
             if (checkin.title) {
-              ctx.setFontSize(11);
-              ctx.setFillStyle('#333333');
-              ctx.setTextAlign('left');
-              ctx.fillText(`标题: ${checkin.title}`, 60, yPosition);
-              yPosition += 18;
+              ctx.setFontSize(13);
+              ctx.setFillStyle('#1976d2');
+              ctx.fillText(checkin.title, 55, yPosition + 20);
             }
             
             // 绘制打卡描述
             if (checkin.content) {
-              ctx.setFontSize(11);
-              ctx.setFillStyle('#666666');
-              ctx.setTextAlign('left');
+              ctx.setFontSize(12);
+              ctx.setFillStyle('#64b5f6');
               // 限制描述长度，避免过长
-              const content = checkin.content.length > 50 ? checkin.content.substring(0, 50) + '...' : checkin.content;
-              ctx.fillText(`描述: ${content}`, 60, yPosition);
-              yPosition += 18;
+              const content = checkin.content.length > 40 ? checkin.content.substring(0, 40) + '...' : checkin.content;
+              ctx.fillText(content, 55, yPosition + 38);
             }
+            
+            yPosition += 80;
           });
+          
+          if (user.checkinDetails.length > 3) {
+            ctx.setFontSize(12);
+            ctx.setFillStyle('#90caf9');
+            ctx.setTextAlign('center');
+            ctx.fillText(`还有 ${user.checkinDetails.length - 3} 条记录...`, canvasWidth / 2, yPosition);
+            yPosition += 30;
+          }
         } else if (user.allowStatsDisplay === false) {
+          yPosition += 70;
           // 显示隐私保护提示
-          ctx.setFontSize(11);
+          ctx.setFontSize(12);
           ctx.setFillStyle('#999999');
           ctx.setTextAlign('left');
-          ctx.fillText('该用户已设置隐私保护，隐藏打卡详情', 60, yPosition);
-          yPosition += 18;
+          ctx.fillText('该用户已设置隐私保护，隐藏打卡详情', 55, yPosition);
+          yPosition += 30;
+        } else {
+          yPosition += 70;
         }
         
-        // 添加用户之间的分隔线
-        ctx.setStrokeStyle('#e8e8e8');
-        ctx.setLineWidth(1);
-        ctx.beginPath();
-        ctx.moveTo(20, yPosition);
-        ctx.lineTo(canvasWidth - 20, yPosition);
-        ctx.stroke();
         yPosition += 20;
       });
     } else {
@@ -707,6 +885,10 @@ Page({
     ctx.setFillStyle('#999999');
     ctx.setTextAlign('center');
     ctx.fillText('打卡系统报告', canvasWidth / 2, yPosition + 30);
+    
+    // 绘制底部装饰线
+    ctx.setFillStyle('#e3f2fd');
+    ctx.fillRect(canvasWidth / 2 - 50, yPosition + 45, 100, 3);
 
     // 绘制完成，转换为图片
     ctx.draw(false, () => {
@@ -764,20 +946,43 @@ Page({
     const canvasId = 'shareCanvas';
     const ctx = wx.createCanvasContext(canvasId);
 
-    // 绘制背景
-    ctx.setFillStyle('#ffffff');
+    // 绘制背景 - 使用海浪风格渐变
+    const bgGradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
+    bgGradient.addColorStop(0, '#e3f2fd');
+    bgGradient.addColorStop(0.5, '#f5f5f5');
+    bgGradient.addColorStop(1, '#e8e8e8');
+    ctx.setFillStyle(bgGradient);
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
+    // 绘制顶部装饰波浪
+    ctx.setFillStyle('#bbdefb');
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(canvasWidth * 0.3, 30, canvasWidth * 0.7, -10, canvasWidth, 0);
+    ctx.lineTo(canvasWidth, 60);
+    ctx.lineTo(0, 60);
+    ctx.closePath();
+    ctx.fill();
+
+    // 绘制装饰气泡
+    ctx.setFillStyle('rgba(255, 255, 255, 0.5)');
+    ctx.beginPath();
+    ctx.arc(canvasWidth * 0.2, 40, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(canvasWidth * 0.8, 35, 6, 0, 2 * Math.PI);
+    ctx.fill();
+
     // 绘制标题
-    ctx.setFontSize(20);
-    ctx.setFillStyle('#333333');
+    ctx.setFontSize(22);
+    ctx.setFillStyle('#1565c0');
     ctx.setTextAlign('center');
-    ctx.fillText(this.data.reportTitle, canvasWidth / 2, 40);
+    ctx.fillText(this.data.reportTitle, canvasWidth / 2, 90);
 
     // 绘制日期范围
-    ctx.setFontSize(14);
-    ctx.setFillStyle('#666666');
-    ctx.fillText(this.data.dateRange, canvasWidth / 2, 65);
+    ctx.setFontSize(13);
+    ctx.setFillStyle('#64b5f6');
+    ctx.fillText(this.data.dateRange, canvasWidth / 2, 115);
 
     // 绘制统计数据
     const metrics = this.data.reportData.metrics;
@@ -788,30 +993,45 @@ Page({
       { label: '用户活跃度', value: metrics.userActivityRatePercent + '%' }
     ];
 
-    let yPosition = 100;
+    let yPosition = 150;
+    
+    // 绘制统计卡片背景
+    ctx.setFillStyle('#ffffff');
+    ctx.fillRect(canvasWidth * 0.1, yPosition, canvasWidth * 0.8, 120);
+    ctx.setStrokeStyle('#e3f2fd');
+    ctx.setLineWidth(2);
+    ctx.strokeRect(canvasWidth * 0.1, yPosition, canvasWidth * 0.8, 120);
+    
     metricItems.forEach((item, index) => {
-      ctx.setFontSize(14);
-      ctx.setFillStyle('#333333');
+      const row = Math.floor(index / 2);
+      const col = index % 2;
+      const x = canvasWidth * 0.15 + col * (canvasWidth * 0.35);
+      const y = yPosition + 25 + row * 50;
+      
+      ctx.setFontSize(12);
+      ctx.setFillStyle('#64b5f6');
       ctx.setTextAlign('left');
-      ctx.fillText(item.label, canvasWidth * 0.2, yPosition);
+      ctx.fillText(item.label, x, y);
       
-      ctx.setFontSize(14);
-      ctx.setFillStyle('#1989fa');
-      ctx.setTextAlign('right');
-      ctx.fillText(item.value, canvasWidth * 0.8, yPosition);
-      
-      yPosition += 25;
+      ctx.setFontSize(16);
+      ctx.setFillStyle('#1976d2');
+      ctx.fillText(String(item.value), x, y + 20);
     });
+
+    yPosition += 140;
 
     // 绘制趋势图
     const trendData = this.data.reportData.trendData;
     if (trendData && trendData.dates && trendData.dates.length > 0) {
       // 绘制趋势图区域
-      ctx.setStrokeStyle('#e8e8e8');
-      ctx.setLineWidth(1);
+      ctx.setFillStyle('#ffffff');
+      ctx.fillRect(canvasWidth * 0.1, yPosition, canvasWidth * 0.8, 100);
+      ctx.setStrokeStyle('#e3f2fd');
+      ctx.setLineWidth(2);
       ctx.strokeRect(canvasWidth * 0.1, yPosition, canvasWidth * 0.8, 100);
+      
       ctx.setFontSize(12);
-      ctx.setFillStyle('#666666');
+      ctx.setFillStyle('#1976d2');
       ctx.setTextAlign('center');
       ctx.fillText('打卡趋势', canvasWidth / 2, yPosition + 15);
       
@@ -824,7 +1044,7 @@ Page({
       const stepY = chartHeight / maxCount;
       
       // 绘制数据点和连线
-      ctx.setStrokeStyle('#1989fa');
+      ctx.setStrokeStyle('#1976d2');
       ctx.setLineWidth(2);
       ctx.beginPath();
       
@@ -839,9 +1059,9 @@ Page({
         }
         
         // 绘制数据点
-        ctx.setFillStyle('#1989fa');
+        ctx.setFillStyle('#42a5f5');
         ctx.beginPath();
-        ctx.arc(x, y, 2, 0, 2 * Math.PI);
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
         ctx.fill();
       });
       ctx.stroke();
@@ -849,8 +1069,13 @@ Page({
 
     // 绘制底部信息
     ctx.setFontSize(12);
-    ctx.setFillStyle('#999999');
-    ctx.fillText('打卡系统报告', canvasWidth / 2, canvasHeight - 20);
+    ctx.setFillStyle('#90caf9');
+    ctx.setTextAlign('center');
+    ctx.fillText('打卡系统报告', canvasWidth / 2, canvasHeight - 30);
+    
+    // 绘制底部装饰线
+    ctx.setFillStyle('#e3f2fd');
+    ctx.fillRect(canvasWidth / 2 - 30, canvasHeight - 20, 60, 2);
 
     // 绘制完成，转换为图片
     ctx.draw(false, () => {

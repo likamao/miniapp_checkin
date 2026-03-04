@@ -31,7 +31,7 @@ App({
           that.globalData.token = token;
           that.globalData.userInfo = res.data.user;
           wx.setStorageSync('userInfo', res.data.user);
-          wx.switchTab({ url: '/pages/checkin/checkin' });
+          wx.switchTab({ url: '/pages/square/square' });
         } else {
           that.clearLoginState();
         }

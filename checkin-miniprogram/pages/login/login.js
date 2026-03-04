@@ -56,8 +56,8 @@ Page({
 
       // 根据 profileSetupCompleted 判断是否弹出昵称框
       if (result.user && result.user.profileSetupCompleted) {
-        // 资料已完善，直接进入主页
-        wx.switchTab({ url: '/pages/checkin/checkin' });
+        // 资料已完善，直接进入广场页面
+        wx.switchTab({ url: '/pages/square/square' });
       } else {
         // 需要完善资料，弹出昵称框
         this.setData({
@@ -109,8 +109,8 @@ Page({
           app.globalData.userInfo = res.data.user;
           wx.setStorageSync('userInfo', res.data.user);
 
-          // 进入主页
-          wx.switchTab({ url: '/pages/checkin/checkin' });
+          // 进入广场页面
+          wx.switchTab({ url: '/pages/square/square' });
         } else {
           wx.showToast({ title: '保存失败', icon: 'none' });
         }
