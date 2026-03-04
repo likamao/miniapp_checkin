@@ -22,7 +22,7 @@
     "list": [
   {
     "pagePath": "pages/square/square",
-    "text": "广场",
+    "text": "打卡",
     "iconPath": "icons/navigation/checkin.png",
     "selectedIconPath": "icons/navigation/checkin-active.png"
   },
