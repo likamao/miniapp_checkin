@@ -100,15 +100,25 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> request) {
         String code = request.get("code");
-        String nickname = request.get("nickname");
         
-        User user = weChatService.login(code, nickname);
+        User user = weChatService.login(code);
 
         String token = jwtUtil.generateToken(user.getId());
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("user", user);
+        
+        // 构建用户信息响应，不包含 nickname 字段
+        Map<String, Object> userResponse = new HashMap<>();
+        userResponse.put("id", user.getId());
+        userResponse.put("openid", user.getOpenid());
+        userResponse.put("unionid", user.getUnionid());
+        userResponse.put("createdAt", user.getCreatedAt());
+        userResponse.put("updatedAt", user.getUpdatedAt());
+        userResponse.put("allowStatsDisplay", user.getAllowStatsDisplay());
+        userResponse.put("profileSetupCompleted", user.getProfileSetupCompleted());
+        
+        response.put("user", userResponse);
 
         return response;
     }

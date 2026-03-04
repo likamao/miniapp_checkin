@@ -26,16 +26,6 @@ public class WeChatService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * 微信登录（简化版）
-     * 
-     * @param code 微信登录码
-     * @return 用户信息
-     * @throws RuntimeException 登录失败时抛出
-     */
-    public User login(String code) {
-        return login(code, null);
-    }
     
     /**
      * 微信登录
@@ -45,7 +35,7 @@ public class WeChatService {
      * @return 用户信息
      * @throws RuntimeException 登录失败时抛出
      */
-    public User login(String code, String nickname) {
+    public User login(String code) {
         // 调用微信 API 获取 openid 和 session_key
         String url = String.format("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
                 appId, appSecret, code);
@@ -72,18 +62,9 @@ public class WeChatService {
                 user.setUnionid(unionid);
                 user.setCreatedAt(new Date());
                 user.setUpdatedAt(new Date());
-            }
-            
-            // 更新用户昵称（如果提供了新的信息）
-            if (nickname != null && !nickname.isEmpty()) {
-                user.setNickname(nickname);
-                // 标记为已完成个人资料设置
-                user.setProfileSetupCompleted(true);
-            }
-            // 如果是新用户且没有提供昵称，标记为未完成个人资料设置
-            if (user.getId() == null && (nickname == null || nickname.isEmpty())) {
                 user.setProfileSetupCompleted(false);
             }
+
             user.setUpdatedAt(new Date());
             
             // 保存用户信息（事务性更新）

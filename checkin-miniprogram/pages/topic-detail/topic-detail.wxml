@@ -21,7 +21,7 @@
     <view class="topic-status">
       <text class="section-title">打卡状态</text>
       <view class="status-info">
-        <text wx:if="{{topic.hasCheckedInToday}}" class="status-checked">✓ 今日已打卡</text>
+        <text wx:if="{{topic.hasCheckedInToday}}" class="status-checked">今日已打卡</text>
         <text wx:else class="status-unchecked">今日未打卡</text>
       </view>
     </view>
@@ -41,29 +41,60 @@
             <text class="record-consecutive">连续{{item.consecutiveDays}}天</text>
           </view>
         </view>
-        <view wx:if="{{records.length === 0}}" class="empty-records">
-          暂无打卡记录
-        </view>
+        <view wx:if="{{records.length === 0}}" class="empty-records">暂无打卡记录</view>
       </view>
     </view>
   </view>
   
+  <!-- 打卡弹窗 - 海浪风格 -->
   <view wx:if="{{showCheckinModal}}" class="modal-overlay" bindtap="hideCheckinModal">
     <view class="modal-content" catchtap="stopPropagation">
+      <!-- 弹窗头部 -->
       <view class="modal-header">
-        <text class="modal-title">主题打卡</text>
-        <text class="modal-close" bindtap="hideCheckinModal">×</text>
+        <!-- 气泡装饰 -->
+        <view class="modal-bubble modal-bubble-1"></view>
+        <view class="modal-bubble modal-bubble-2"></view>
+        <view class="modal-bubble modal-bubble-3"></view>
+        
+        <!-- 关闭按钮 -->
+        <view class="modal-close" bindtap="hideCheckinModal">×</view>
+        
+        <view class="modal-title">主题打卡</view>
+        
+        <!-- 波浪装饰 -->
+        <view class="modal-wave-decoration">
+          <view class="modal-wave-line"></view>
+          <view class="modal-wave-line"></view>
+        </view>
       </view>
+      
       <view class="modal-body">
         <view class="form-item">
           <text class="form-label">打卡标题</text>
-          <input class="form-input" placeholder="请输入打卡标题（50字以内）" maxlength="50" bindinput="onCheckinTitleInput" value="{{checkinForm.title}}" />
+          <view class="input-container">
+            <input 
+              class="form-input" 
+              placeholder="请输入打卡标题（50字以内）" 
+              maxlength="50" 
+              bindinput="onCheckinTitleInput" 
+              value="{{checkinForm.title}}" 
+            />
+          </view>
         </view>
         <view class="form-item">
           <text class="form-label">打卡内容</text>
-          <textarea class="form-textarea" placeholder="请输入打卡内容（500字以内）" maxlength="500" bindinput="onCheckinContentInput" value="{{checkinForm.content}}" />
+          <view class="textarea-container">
+            <textarea 
+              class="form-textarea" 
+              placeholder="请输入打卡内容（500字以内）" 
+              maxlength="500" 
+              bindinput="onCheckinContentInput" 
+              value="{{checkinForm.content}}" 
+            />
+          </view>
         </view>
       </view>
+      
       <view class="modal-footer">
         <button class="modal-button cancel" bindtap="hideCheckinModal">取消</button>
         <button class="modal-button confirm" bindtap="submitCheckin">提交</button>
@@ -71,6 +102,7 @@
     </view>
   </view>
   
+  <!-- 成功弹窗 - 海浪风格 -->
   <view wx:if="{{showSuccessModal}}" class="success-modal-overlay" bindtap="hideSuccessModal">
     <view class="success-modal-content" catchtap="stopPropagation">
       <view class="success-icon">✓</view>

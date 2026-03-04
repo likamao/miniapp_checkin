@@ -1,22 +1,46 @@
 <view class="container">
+  <!-- 页面头部 - 海浪风格 -->
+  <view class="header">
+    <!-- 装饰气泡 -->
+    <view class="header-bubble bubble-1"></view>
+    <view class="header-bubble bubble-2"></view>
+    <view class="header-bubble bubble-3"></view>
+    
+    <text class="page-title">打卡统计</text>
+    <text class="page-subtitle">坚持打卡，见证成长</text>
+    
+    <!-- 波浪装饰 -->
+    <view class="wave-decoration">
+      <view class="wave-line"></view>
+      <view class="wave-line"></view>
+    </view>
+  </view>
+
+  <!-- 设置入口 -->
   <view class="settings-entry" bindtap="navigateToSettings">
-    <text class="settings-entry-text">设置</text>
+    <text class="settings-entry-text">个人设置</text>
     <text class="settings-entry-icon">›</text>
   </view>
+
+  <!-- 统计卡片 -->
   <view class="card">
-    <view class="title">打卡统计</view>
+    <!-- 日期信息 -->
     <view class="month-info">{{currentMonth}}</view>
     <view class="week-info">{{currentWeekInfo}}</view>
+    
+    <!-- 统计数字 -->
     <view class="stat-cards">
       <view class="stat-card">
         <view class="stat-value">{{recent7DaysCount}}</view>
-        <view class="stat-label">最近7天打卡次数</view>
+        <view class="stat-label">最近7天打卡</view>
       </view>
       <view class="stat-card">
         <view class="stat-value">{{monthlyCount}}</view>
-        <view class="stat-label">本月打卡次数</view>
+        <view class="stat-label">本月打卡</view>
       </view>
     </view>
+    
+    <!-- 进度条 -->
     <view class="progress-section">
       <view class="progress-title">本月进度</view>
       <view class="progress-bar">
@@ -24,6 +48,8 @@
       </view>
       <view class="progress-text">{{monthlyProgress}}%</view>
     </view>
+    
+    <!-- 鼓励语 -->
     <view class="stat-info">
       <view class="stat-desc">坚持打卡，养成良好习惯！</view>
     </view>

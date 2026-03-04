@@ -1,85 +1,120 @@
 <view class="container">
+  <!-- 页面头部 - 海浪风格 -->
   <view class="header">
+    <!-- 装饰气泡 -->
+    <view class="header-bubble bubble-1"></view>
+    <view class="header-bubble bubble-2"></view>
+    <view class="header-bubble bubble-3"></view>
+    
     <text class="title">打卡广场</text>
-    <text class="subtitle">每周主题打卡，一起参与吧！</text>
+    <text class="subtitle">发现精彩主题，一起坚持打卡</text>
+    
+    <!-- 波浪装饰 -->
+    <view class="wave-decoration">
+      <view class="wave-line"></view>
+      <view class="wave-line"></view>
+    </view>
   </view>
-  
-  <!-- 按钮容器 -->
+
+  <!-- 主题列表 -->
+  <view class="topic-list" wx:if="{{topics.length > 0}}">
+    <view wx:for="{{topics}}" wx:key="id" class="topic-card" bindtap="navigateToTopicDetail" data-topic-id="{{item.id}}">
+      <view class="topic-header">
+        <text class="topic-title">{{item.title}}</text>
+        <text class="topic-date">{{item.startDatetime}} 至 {{item.endDatetime}}</text>
+      </view>
+      <view class="topic-description">{{item.description}}</view>
+      <view class="topic-footer">
+        <text class="checkin-count">{{item.checkinCount}}人已打卡</text>
+        <text class="checkin-status {{item.hasCheckedInToday ? '' : 'not-checked'}}">
+          {{item.hasCheckedInToday ? '今日已打卡' : '今日未打卡'}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{topics.length === 0}}" class="empty">暂无主题</view>
+
+  <!-- 悬浮按钮组 -->
   <view class="buttons-container">
     <!-- 发布主题按钮 -->
-    <view wx:if="{{hasPublishPermission}}" class="action-button publish-button" bindtap="showPublishModal">
+    <view class="action-button publish-button" bindtap="showPublishModal">
       <text class="action-button-text">发布主题</text>
     </view>
-    
     <!-- 打卡按钮 -->
     <view class="action-button checkin-button" bindtap="showCheckinModal">
       <text class="action-button-text">打卡</text>
     </view>
-    
     <!-- 报告按钮 -->
     <view wx:if="{{hasReportPermission}}" class="action-button report-button" bindtap="showReportMenu">
       <text class="action-button-text">报告</text>
     </view>
   </view>
-  
-  <view class="topic-list">
-    <block wx:for="{{topics}}" wx:key="id">
-      <view class="topic-card" bindtap="navigateToTopicDetail" data-topic-id="{{item.id}}">
-        <view class="topic-header">
-          <text class="topic-title">{{item.title}}</text>
-          <text class="topic-date">{{item.startDatetime}} 至 {{item.endDatetime}}</text>
-        </view>
-        <view class="topic-description">{{item.description}}</view>
-        <view class="topic-footer">
-          <text class="checkin-count">
-            {{item.checkinCount}}人已打卡
-          </text>
-          <text class="checkin-status" wx:if="{{item.hasCheckedInToday}}">
-            ✓ 今日已打卡
-          </text>
-          <text class="checkin-status not-checked" wx:else>
-            今日未打卡
-          </text>
-        </view>
-      </view>
-    </block>
-  </view>
-  
-  <view wx:if="{{topics.length === 0}}" class="empty">
-    <text>暂无主题</text>
-  </view>
-  
-  <!-- 发布主题弹框 -->
-  <view wx:if="{{showPublishModal}}" class="modal-overlay" bindtap="hidePublishModal">
+
+  <!-- 发布主题弹框 - 海浪风格 -->
+  <view wx:if="{{showPublishModal}}" class="modal-overlay" catchtap="hidePublishModal">
     <view class="modal-content" catchtap="stopPropagation">
+      <!-- 弹窗头部 -->
       <view class="modal-header">
-        <text class="modal-title">发布新主题</text>
-        <text class="modal-close" bindtap="hidePublishModal">×</text>
+        <!-- 气泡装饰 -->
+        <view class="modal-bubble modal-bubble-1"></view>
+        <view class="modal-bubble modal-bubble-2"></view>
+        <view class="modal-bubble modal-bubble-3"></view>
+        
+        <!-- 关闭按钮 -->
+        <view class="modal-close" bindtap="hidePublishModal">×</view>
+        
+        <view class="modal-title">发布主题</view>
+        
+        <!-- 波浪装饰 -->
+        <view class="modal-wave-decoration">
+          <view class="modal-wave-line"></view>
+          <view class="modal-wave-line"></view>
+        </view>
       </view>
+      
       <view class="modal-body">
         <view class="form-item">
           <text class="form-label">主题标题</text>
           <view class="input-container">
-            <textarea class="form-input" placeholder="建议10-30字符" maxlength="100" bindinput="onTitleInput" value="{{newTopic.title}}" style="height: {{titleInputHeight}}rpx;" />
+            <textarea 
+              class="form-input" 
+              placeholder="请输入主题标题（10-100字）" 
+              value="{{newTopic.title}}"
+              bindinput="onTitleInput"
+              maxlength="100"
+              auto-height
+              style="height: {{titleInputHeight}}rpx;"
+            />
           </view>
           <text class="form-hint">{{newTopic.title.length}}/100</text>
         </view>
         <view class="form-item">
           <text class="form-label">主题描述</text>
           <view class="textarea-container">
-            <textarea class="form-textarea" placeholder="请输入主题的详细描述（选填）" bindinput="onDescriptionInput" value="{{newTopic.description}}" style="height: {{descriptionInputHeight}}rpx;" />
+            <textarea 
+              class="form-textarea" 
+              placeholder="请输入主题描述" 
+              value="{{newTopic.description}}"
+              bindinput="onDescriptionInput"
+              maxlength="500"
+              style="height: {{descriptionInputHeight}}rpx;"
+            />
           </view>
+          <text class="form-hint">{{newTopic.description.length}}/500</text>
         </view>
       </view>
+      
       <view class="modal-footer">
         <button class="modal-button cancel" bindtap="hidePublishModal">取消</button>
         <button class="modal-button confirm" bindtap="publishTopic">发布</button>
       </view>
     </view>
   </view>
-  
-  <!-- 打卡弹框 -->
-  <view wx:if="{{showCheckinModal}}" class="checkin-modal-overlay" bindtap="hideCheckinModal">
+
+  <!-- 打卡弹框 - 海浪风格 -->
+  <view wx:if="{{showCheckinModal}}" class="checkin-modal-overlay" catchtap="hideCheckinModal">
     <view class="checkin-modal-content" catchtap="stopPropagation">
       <!-- 加载状态 -->
       <view wx:if="{{checkinIsLoading}}" class="checkin-loading-container">
@@ -87,54 +122,53 @@
         <view class="checkin-loading-text">加载中...</view>
       </view>
       
-      <!-- 打卡界面 -->
+      <!-- 已打卡状态 -->
+      <view wx:elif="{{checkinHasCheckedInToday}}" class="checkin-card">
+        <view class="checkin-checked-in">
+          <view class="checkin-checked-in-icon">
+            <image class="checkin-checked-in-image" src="https://pic.imgdb.cn/item/6707f8f2d29ded1a8c74e1f2.gif" mode="aspectFit"/>
+          </view>
+          <view class="checkin-checked-in-title">今日已打卡</view>
+          <view class="checkin-checked-in-desc">{{checkinEncouragementText}}</view>
+        </view>
+      </view>
+      
+      <!-- 打卡表单 -->
       <view wx:else class="checkin-card">
-        <view class="checkin-title">每日打卡</view>
-        <!-- 未打卡状态 -->
-        <form wx:if="{{!checkinHasCheckedInToday}}" bindsubmit="checkinSubmitCheckin">
-          <view class="checkin-form-item">
-            <text>打卡标题</text>
-            <input class="input" name="title" placeholder="请输入打卡标题（50 字以内）" maxlength="50" required />
-          </view>
-          <view class="checkin-form-item">
-            <text>打卡内容</text>
-            <textarea class="textarea" name="content" placeholder="请输入打卡内容（500 字以内）" maxlength="500" required bindinput="checkinOnContentInput" />
-          </view>
+        <view class="checkin-title">今日打卡</view>
+        <form bindsubmit="checkinSubmitCheckin">
           <view class="checkin-form-item">
             <text>选择主题</text>
             <view class="checkin-topic-selector">
               <view wx:for="{{checkinTopics}}" wx:key="id" class="checkin-topic-item" bindtap="checkinSelectTopic" data-topic-id="{{item.id}}">
-                <view class="checkin-topic-item-content" style="border-color: {{checkinSelectedTopicId == item.id ? '#1989fa' : '#e4e4e4'}}; background-color: {{checkinSelectedTopicId == item.id ? '#f0f9ff' : 'white'}};">
-                  <text style="color: {{checkinSelectedTopicId == item.id ? '#1989fa' : '#333'}};">{{item.title}}</text>
+                <view class="checkin-topic-item-content {{checkinSelectedTopicId === item.id ? 'active' : ''}}">
+                  <text>{{item.title}}</text>
                 </view>
               </view>
             </view>
           </view>
+          <view class="checkin-form-item">
+            <text>打卡标题</text>
+            <input class="checkin-input" name="title" placeholder="请输入打卡标题" maxlength="50"/>
+          </view>
+          <view class="checkin-form-item">
+            <text>打卡内容</text>
+            <textarea class="textarea" name="content" placeholder="请输入打卡内容" maxlength="500" bindinput="checkinOnContentInput"/>
+          </view>
           <button class="btn btn-primary" form-type="submit">提交打卡</button>
         </form>
-        <!-- 已打卡状态 -->
-        <view wx:else class="checkin-checked-in">
-          <view class="checkin-checked-in-icon">
-            <image class="checkin-checked-in-image" src="/pages/checkin/icons/relax.png" />
-          </view>
-
-          <view class="checkin-checked-in-title">打卡成功</view>
-          <view class="checkin-checked-in-desc">{{checkinEncouragementText}}</view>
-        </view>
       </view>
     </view>
   </view>
-  
+
   <!-- 庆祝动画 -->
   <view wx:if="{{checkinShowCelebration}}" class="checkin-celebration">
-    <view class="checkin-firework" wx:for="{{checkinFireworks}}" wx:key="index" style="left: {{item.left}}px; top: {{item.top}}px; animation-delay: {{item.delay}}s;">
-      <view class="checkin-spark" wx:for="{{10}}" wx:key="sparkIndex" style="transform: rotate({{36 * sparkIndex}}deg);"></view>
+    <view wx:for="{{checkinFireworks}}" wx:key="index" class="checkin-firework" style="left: {{item.left}}px; top: {{item.top}}px; animation-delay: {{item.delay}}s;">
+      <view class="checkin-spark"></view>
     </view>
   </view>
-  
 
-  
-  <!-- 报告菜单弹框 -->
+  <!-- 报告菜单 - 海浪风格 -->
   <view wx:if="{{showReportMenu}}" class="report-menu-overlay" bindtap="hideReportMenu">
     <view class="report-menu-content" catchtap="stopPropagation">
       <view class="report-menu-buttons">
@@ -147,6 +181,4 @@
       </view>
     </view>
   </view>
-  
-
 </view>

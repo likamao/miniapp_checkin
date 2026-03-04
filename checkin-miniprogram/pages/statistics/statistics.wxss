@@ -1,110 +1,349 @@
+/* 页面容器 - 浅灰色背景 */
 .container {
-  padding: 20rpx;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+  padding: 32rpx;
+  box-sizing: border-box;
 }
 
+/* 页面头部 - 海浪风格 */
+.header {
+  position: relative;
+  padding: 48rpx 32rpx 80rpx;
+  margin: -32rpx -32rpx 32rpx -32rpx;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+  overflow: hidden;
+}
+
+/* 装饰气泡 */
+.header-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(187, 222, 251, 0.3));
+  animation: float 4s ease-in-out infinite;
+}
+
+.bubble-1 {
+  width: 32rpx;
+  height: 32rpx;
+  top: 20rpx;
+  left: 40rpx;
+  animation-delay: 0s;
+}
+
+.bubble-2 {
+  width: 20rpx;
+  height: 20rpx;
+  top: 60rpx;
+  left: 100rpx;
+  animation-delay: 1s;
+}
+
+.bubble-3 {
+  width: 28rpx;
+  height: 28rpx;
+  top: 30rpx;
+  right: 60rpx;
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-15rpx) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* 波浪装饰 */
+.wave-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60rpx;
+  overflow: hidden;
+}
+
+.wave-line {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f5f5f5' fill-opacity='1' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+  background-size: 50% 100%;
+  animation: waveFlow 6s linear infinite;
+}
+
+.wave-line:nth-child(2) {
+  opacity: 0.5;
+  animation: waveFlow 8s linear infinite reverse;
+  bottom: 5rpx;
+}
+
+@keyframes waveFlow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 页面标题 */
+.page-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #1565c0;
+  display: block;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 12rpx;
+}
+
+.page-subtitle {
+  font-size: 26rpx;
+  color: #64b5f6;
+  display: block;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* 设置入口卡片 */
 .settings-entry {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: white;
-  border-radius: 16rpx;
-  padding: 32rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid #e3f2fd;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.settings-entry::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rpx;
+  height: 0;
+  background: linear-gradient(180deg, #42a5f5 0%, #1976d2 100%);
+  border-radius: 0 3rpx 3rpx 0;
+  transition: height 0.3s ease;
+}
+
+.settings-entry:active {
+  background-color: #f5f5f5;
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 24rpx rgba(25, 118, 210, 0.1);
+}
+
+.settings-entry:active::before {
+  height: 60%;
 }
 
 .settings-entry-text {
+  font-size: 30rpx;
+  color: #1976d2;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.settings-entry-text::before {
+  content: '⚙️';
+  margin-right: 12rpx;
   font-size: 28rpx;
-  color: #333;
-  font-weight: 500;
 }
 
 .settings-entry-icon {
-  font-size: 40rpx;
-  color: #999;
+  font-size: 44rpx;
+  color: #90caf9;
   font-weight: 300;
+  transition: all 0.3s ease;
 }
 
+.settings-entry:active .settings-entry-icon {
+  transform: translateX(8rpx);
+  color: #1976d2;
+}
+
+/* 统计卡片 */
+.card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid #e3f2fd;
+}
+
+/* 日期信息 */
 .month-info {
   text-align: center;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1565c0;
+  margin-bottom: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.month-info::before {
+  content: '📅';
+  margin-right: 12rpx;
   font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10rpx;
 }
 
 .week-info {
   text-align: center;
   font-size: 28rpx;
-  color: #666;
-  margin-bottom: 20rpx;
+  color: #90caf9;
+  margin-bottom: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.week-info::before {
+  content: '📊';
+  margin-right: 8rpx;
+  font-size: 26rpx;
+}
+
+/* 统计数字卡片 */
 .stat-cards {
   display: flex;
   justify-content: space-between;
-  margin: 20rpx 0;
+  margin: 32rpx 0;
+  gap: 24rpx;
 }
 
 .stat-card {
-  background-color: #e3f2fd;
-  border-radius: 8px;
-  padding: 20rpx;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+  border-radius: 20rpx;
+  padding: 32rpx 24rpx;
   text-align: center;
   flex: 1;
-  margin: 0 10rpx;
+  border: 2rpx solid #e3f2fd;
+  transition: all 0.3s ease;
+}
+
+.stat-card:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 24rpx rgba(25, 118, 210, 0.15);
 }
 
 .stat-value {
-  font-size: 48rpx;
-  font-weight: bold;
+  font-size: 56rpx;
+  font-weight: 700;
   color: #1976d2;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
+  display: block;
 }
 
 .stat-label {
-  font-size: 24rpx;
-  color: #666;
+  font-size: 26rpx;
+  color: #64b5f6;
+  display: block;
 }
 
+/* 进度条区域 */
 .progress-section {
-  margin: 30rpx 0;
+  margin: 40rpx 0;
+  padding: 24rpx;
+  background: #f5f5f5;
+  border-radius: 16rpx;
+  border: 2rpx solid #e3f2fd;
 }
 
 .progress-title {
   font-size: 28rpx;
-  color: #333;
-  margin-bottom: 10rpx;
+  color: #1976d2;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+}
+
+.progress-title::before {
+  content: '';
+  display: inline-block;
+  width: 6rpx;
+  height: 24rpx;
+  background: linear-gradient(180deg, #42a5f5 0%, #1976d2 100%);
+  border-radius: 3rpx;
+  margin-right: 12rpx;
 }
 
 .progress-bar {
   width: 100%;
-  height: 20rpx;
+  height: 24rpx;
   background-color: #e0e0e0;
-  border-radius: 10rpx;
+  border-radius: 12rpx;
   overflow: hidden;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
+  box-shadow: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #1976d2;
-  border-radius: 10rpx;
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+  border-radius: 12rpx;
+  transition: width 0.5s ease;
+  box-shadow: 0 2rpx 8rpx rgba(25, 118, 210, 0.3);
 }
 
 .progress-text {
   text-align: right;
-  font-size: 24rpx;
-  color: #666;
+  font-size: 28rpx;
+  color: #1976d2;
+  font-weight: 600;
 }
 
+/* 统计信息 */
 .stat-info {
-  margin-top: 20rpx;
+  margin-top: 32rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #f0f0f0;
   text-align: center;
 }
 
 .stat-desc {
   font-size: 28rpx;
-  color: #666;
+  color: #64b5f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-desc::before {
+  content: '💪';
+  margin-right: 8rpx;
+  font-size: 26rpx;
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+  .container {
+    padding: 48rpx;
+  }
+  
+  .header {
+    margin: -48rpx -48rpx 48rpx -48rpx;
+    padding: 64rpx 48rpx 80rpx;
+  }
+  
+  .settings-entry,
+  .card {
+    max-width: 720rpx;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
