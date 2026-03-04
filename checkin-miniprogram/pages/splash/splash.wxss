@@ -1,0 +1,152 @@
+/* 开屏界面容器 */
+.splash-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 品牌标识区域 */
+.brand-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 64rpx;
+  animation: fadeInUp 1s ease-out;
+}
+
+/* Logo样式 */
+.logo {
+  width: 160rpx;
+  height: 160rpx;
+  margin-bottom: 32rpx;
+  animation: scaleIn 1.2s ease-out;
+}
+
+/* 应用名称 */
+.app-name {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #1565c0;
+  margin-bottom: 16rpx;
+  background: linear-gradient(135deg, #1565c0 0%, #42a5f5 50%, #1565c0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* text-shadow: 1rpx 1rpx 0 rgba(255, 215, 0, 0.3); */
+  animation: fadeIn 1.5s ease-out;
+}
+
+/* 标语 */
+.slogan {
+  font-size: 28rpx;
+  color: #64b5f6;
+  text-align: center;
+  margin-top: 16rpx;
+  animation: fadeIn 2s ease-out;
+}
+
+/* 加载状态区域 */
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 2.5s ease-out;
+}
+
+/* 加载动画 */
+.loading-spinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-top: 4rpx solid #1565c0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16rpx;
+}
+
+/* 加载文本 */
+.loading-text {
+  font-size: 24rpx;
+  color: #1565c0;
+}
+
+/* 版本信息 */
+.version {
+  position: absolute;
+  bottom: 40rpx;
+  font-size: 20rpx;
+  color: rgba(21, 101, 192, 0.6);
+  animation: fadeIn 3s ease-out;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+  .logo {
+    width: 200rpx;
+    height: 200rpx;
+  }
+  
+  .app-name {
+    font-size: 56rpx;
+  }
+  
+  .slogan {
+    font-size: 32rpx;
+  }
+  
+  .loading-spinner {
+    width: 56rpx;
+    height: 56rpx;
+  }
+  
+  .loading-text {
+    font-size: 28rpx;
+  }
+}
+
+/* 防止闪屏 */
+page {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+}
+

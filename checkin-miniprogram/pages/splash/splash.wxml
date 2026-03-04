@@ -1,0 +1,24 @@
+<view class="splash-container">
+
+  <view class="star star1"></view>
+  <view class="star star2"></view>
+  <view class="star star3"></view>
+  <view class="star star4"></view>
+  <view class="star star5"></view>
+  <view class="star star6"></view>
+  <view class="star star7"></view>
+  <view class="star star8"></view>
+  <!-- 品牌标识 -->
+  <view class="brand-section">
+    <image class="logo" src="../../icons/logo.png" mode="aspectFit"></image>
+    <text class="app-name">欢迎来到南港听夏～</text>
+    <text class="slogan">慢慢来，没关系，我们一起数星星</text>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view class="loading-section">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+</view>

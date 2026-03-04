@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/splash/splash",
     "pages/square/square",
     "pages/login/login",
     "pages/records/records",
@@ -11,7 +12,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "蓝港听夏",
+    "navigationBarTitleText": "南港听夏",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
