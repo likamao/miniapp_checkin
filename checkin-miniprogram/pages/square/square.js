@@ -8,7 +8,9 @@ Page({
     showCheckinModal: false,
     newTopic: {
       title: '',
-      description: ''
+      description: '',
+      durationUnit: 'week',
+      durationDays: 7
     },
     titleInputHeight: 80, // 标题输入框初始高度
     descriptionInputHeight: 200, // 描述输入框初始高度
@@ -152,11 +154,11 @@ Page({
     });
   },
 
-  // 加载打卡主题列表
+  // 加载打卡主题列表（仅有效主题）
   checkinLoadTopics() {
     const token = this.data.token;
     wx.request({
-      url: apiConfig.API_BASE_URL + '/api/checkin/topics',
+      url: apiConfig.API_BASE_URL + '/api/checkin/topics/active',
       method: 'GET',
       header: {
         'Authorization': 'Bearer ' + token
@@ -385,13 +387,15 @@ Page({
                 const currentUserId = userRes.data.user.user.id;
                 const hasAdminRole = userRes.data.user.roles && userRes.data.user.roles.includes('ADMIN');
                 
-                // 为每个主题检查用户是否具有查看报告的权限
+                // 为每个主题检查用户是否具有查看报告的权限，并检测是否过期
                 const topicsWithPermission = res.data.topics.map(topic => {
                   const isTopicCreator = topic.createdBy === currentUserId;
                   const canViewReport = hasAdminRole || isTopicCreator;
+                  const isExpired = this.checkTopicExpired(topic.endDatetime);
                   return {
                     ...topic,
-                    canViewReport
+                    canViewReport,
+                    isExpired
                   };
                 });
                 
@@ -400,11 +404,25 @@ Page({
                   hasReportPermission: hasAdminRole || topicsWithPermission.some(topic => topic.canViewReport)
                 });
               } else {
-                this.setData({ topics: res.data.topics });
+                // 添加过期检测
+                const topicsWithExpired = res.data.topics.map(topic => {
+                  return {
+                    ...topic,
+                    isExpired: this.checkTopicExpired(topic.endDatetime)
+                  };
+                });
+                this.setData({ topics: topicsWithExpired });
               }
             },
             fail: () => {
-              this.setData({ topics: res.data.topics });
+              // 添加过期检测
+              const topicsWithExpired = res.data.topics.map(topic => {
+                return {
+                  ...topic,
+                  isExpired: this.checkTopicExpired(topic.endDatetime)
+                };
+              });
+              this.setData({ topics: topicsWithExpired });
             }
           });
         }
@@ -415,6 +433,14 @@ Page({
         console.error('获取主题列表失败:', err);
       }
     });
+  },
+
+  // 检查主题是否过期
+  checkTopicExpired(endDatetimeStr) {
+    const endTime = new Date(endDatetimeStr).getTime();
+    const currentTime = new Date().getTime();
+    
+    return currentTime > endTime;
   },
 
   // 导航到主题详情页面
@@ -431,7 +457,9 @@ Page({
       showPublishModal: true,
       newTopic: {
         title: '',
-        description: ''
+        description: '',
+        durationUnit: 'week',
+        durationDays: 7
       }
     });
   },
@@ -470,6 +498,16 @@ Page({
     this.calculateInputHeight(value, 'description');
   },
 
+  // 选择有效期
+  selectDuration(e) {
+    const durationUnit = e.currentTarget.dataset.duration;
+    const durationDays = parseInt(e.currentTarget.dataset.days);
+    this.setData({
+      'newTopic.durationUnit': durationUnit,
+      'newTopic.durationDays': durationDays
+    });
+  },
+
   // 计算输入框高度
   calculateInputHeight(value, type) {
     // 创建一个临时的text元素来计算文本高度
@@ -500,7 +538,7 @@ Page({
 
   // 发布主题
   publishTopic() {
-    const { title, description } = this.data.newTopic;
+    const { title, description, durationDays } = this.data.newTopic;
     
     // 表单验证
     if (!title) {
@@ -509,18 +547,18 @@ Page({
     }
     
     if (title.length < 10) {
-      wx.showToast({ title: '主题标题至少需要10个字符', icon: 'none' });
+      wx.showToast({ title: '主题标题至少需要 10 个字符', icon: 'none' });
       return;
     }
     
     if (title.length > 100) {
-      wx.showToast({ title: '主题标题不能超过100个字符', icon: 'none' });
+      wx.showToast({ title: '主题标题不能超过 100 个字符', icon: 'none' });
       return;
     }
     
     wx.showLoading({ title: '发布中...' });
     
-    // 调用后端API发布主题
+    // 调用后端 API 发布主题
     const token = this.data.token;
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/topics',
@@ -532,7 +570,7 @@ Page({
       data: {
         title,
         description,
-        durationDays: 7
+        durationDays
       },
       success: (res) => {
         wx.hideLoading();

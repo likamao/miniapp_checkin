@@ -273,6 +273,16 @@ public class CheckinService {
     }
 
     /**
+     * 获取所有有效主题（未过期的主题）
+     * 
+     * @return 有效主题列表
+     */
+    public List<CheckinTopic> getAllActiveTopics() {
+        // 使用当前时间查询在有效期内的主题
+        return checkinTopicRepository.findActiveTopics(new Date());
+    }
+
+    /**
      * 根据ID获取主题
      * 
      * @param topicId 主题ID

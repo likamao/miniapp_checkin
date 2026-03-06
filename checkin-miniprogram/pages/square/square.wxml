@@ -18,16 +18,18 @@
 
   <!-- 主题列表 -->
   <view class="topic-list" wx:if="{{topics.length > 0}}">
-    <view wx:for="{{topics}}" wx:key="id" class="topic-card" bindtap="navigateToTopicDetail" data-topic-id="{{item.id}}">
+    <view wx:for="{{topics}}" wx:key="id" class="topic-card {{item.isExpired ? 'expired' : ''}}" bindtap="navigateToTopicDetail" data-topic-id="{{item.id}}">
       <view class="topic-header">
-        <text class="topic-title">{{item.title}}</text>
+        <view class="topic-title-wrapper">
+          <text class="topic-title">{{item.title}}</text>
+        </view>
         <text class="topic-date">{{item.startDatetime}} 至 {{item.endDatetime}}</text>
       </view>
       <view class="topic-description">{{item.description}}</view>
       <view class="topic-footer">
         <text class="checkin-count">{{item.checkinCount}}人已打卡</text>
-        <text class="checkin-status {{item.hasCheckedInToday ? '' : 'not-checked'}}">
-          {{item.hasCheckedInToday ? '今日已打卡' : '今日未打卡'}}
+        <text class="checkin-status {{item.hasCheckedInToday ? '' : 'not-checked'}} {{item.isExpired ? 'expired-status' : ''}}">
+          {{item.isExpired ? '已过期' : (item.hasCheckedInToday ? '今日已打卡' : '今日未打卡')}}
         </text>
       </view>
     </view>
@@ -104,6 +106,46 @@
           </view>
           <text class="form-hint">{{newTopic.description.length}}/500</text>
         </view>
+        
+        <view class="form-item">
+          <text class="form-label">主题有效期</text>
+          <view class="duration-selector">
+            <view 
+              class="duration-option {{newTopic.durationUnit === 'week' ? 'active' : ''}}" 
+              bindtap="selectDuration" 
+              data-duration="week"
+              data-days="7"
+            >
+              <view class="duration-radio">
+                <view class="duration-radio-inner" wx:if="{{newTopic.durationUnit === 'week'}}"></view>
+              </view>
+              <text class="duration-label">周</text>
+            </view>
+            <view 
+              class="duration-option {{newTopic.durationUnit === 'month' ? 'active' : ''}}" 
+              bindtap="selectDuration" 
+              data-duration="month"
+              data-days="30"
+            >
+              <view class="duration-radio">
+                <view class="duration-radio-inner" wx:if="{{newTopic.durationUnit === 'month'}}"></view>
+              </view>
+              <text class="duration-label">月</text>
+            </view>
+            <view 
+              class="duration-option {{newTopic.durationUnit === 'year' ? 'active' : ''}}" 
+              bindtap="selectDuration" 
+              data-duration="year"
+              data-days="365"
+            >
+              <view class="duration-radio">
+                <view class="duration-radio-inner" wx:if="{{newTopic.durationUnit === 'year'}}"></view>
+              </view>
+              <text class="duration-label">年</text>
+            </view>
+          </view>
+          <text class="form-hint">当前选择：{{newTopic.durationDays}}天</text>
+        </view>
       </view>
       
       <view class="modal-footer">
@@ -141,11 +183,14 @@
             <view class="checkin-form-item">
               <text>选择主题</text>
               <view class="checkin-topic-selector">
-                <view wx:for="{{checkinTopics}}" wx:key="id" class="checkin-topic-item" bindtap="checkinSelectTopic" data-topic-id="{{item.id}}">
-                  <view class="checkin-topic-item-content {{checkinSelectedTopicId === item.id ? 'active' : ''}}">
-                    <text>{{item.title}}</text>
+                <block wx:if="{{checkinTopics.length > 0}}">
+                  <view wx:for="{{checkinTopics}}" wx:key="id" class="checkin-topic-item" bindtap="checkinSelectTopic" data-topic-id="{{item.id}}">
+                    <view class="checkin-topic-item-content {{checkinSelectedTopicId === item.id ? 'active' : ''}}">
+                      <text>{{item.title}}</text>
+                    </view>
                   </view>
-                </view>
+                </block>
+                <view wx:else class="empty-topics">暂无有效主题</view>
               </view>
             </view>
             <view class="checkin-form-item">

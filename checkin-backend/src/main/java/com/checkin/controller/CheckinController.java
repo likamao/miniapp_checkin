@@ -163,7 +163,7 @@ public class CheckinController {
     }
 
     /**
-     * 获取所有主题列表
+     * 获取所有主题列表（包括过期主题，用于广场页面展示）
      * 
      * @param user 当前登录用户信息
      * @return 包含主题列表的响应
@@ -187,6 +187,44 @@ public class CheckinController {
             topicMap.put("endDatetime", checkinService.formatDateTime(topic.getEndDatetime()));
             topicMap.put("durationDays", topic.getDurationDays());
             topicMap.put("status", topic.getStatus());
+            topicMap.put("createdBy", topic.getCreatedBy());
+            topicMap.put("checkinCount", checkinService.getTopicCheckinCount(topic.getId()));
+            topicMap.put("hasCheckedInToday", checkinService.hasUserCheckedInTopicToday(user, topic.getId()));
+            return topicMap;
+        }).toList();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("topics", topics);
+
+        return response;
+    }
+
+    /**
+     * 获取所有有效主题列表（仅未过期的主题，用于打卡功能）
+     * 
+     * @param user 当前登录用户信息
+     * @return 包含有效主题列表的响应
+     * @throws RuntimeException 权限不足时抛出
+     */
+    @GetMapping("/topics/active")
+    public Map<String, Object> getActiveTopics(@RequestAttribute("user") User user) {
+        // 检查用户是否有打卡查询权限
+        if (!permissionService.hasPermission(user, "checkin:read")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "权限不足：没有打卡查询权限");
+            return errorResponse;
+        }
+
+        List<Map<String, Object>> topics = checkinService.getAllActiveTopics().stream().map(topic -> {
+            Map<String, Object> topicMap = new HashMap<>();
+            topicMap.put("id", topic.getId());
+            topicMap.put("title", topic.getTitle());
+            topicMap.put("description", topic.getDescription());
+            topicMap.put("startDatetime", checkinService.formatDateTime(topic.getStartDatetime()));
+            topicMap.put("endDatetime", checkinService.formatDateTime(topic.getEndDatetime()));
+            topicMap.put("durationDays", topic.getDurationDays());
+            topicMap.put("status", topic.getStatus());
+            topicMap.put("createdBy", topic.getCreatedBy());
             topicMap.put("checkinCount", checkinService.getTopicCheckinCount(topic.getId()));
             topicMap.put("hasCheckedInToday", checkinService.hasUserCheckedInTopicToday(user, topic.getId()));
             return topicMap;
@@ -230,6 +268,7 @@ public class CheckinController {
         topicMap.put("endDatetime", checkinService.formatDateTime(topic.getEndDatetime()));
         topicMap.put("durationDays", topic.getDurationDays());
         topicMap.put("status", topic.getStatus());
+        topicMap.put("createdBy", topic.getCreatedBy());
         topicMap.put("checkinCount", checkinService.getTopicCheckinCount(topic.getId()));
         topicMap.put("hasCheckedInToday", checkinService.hasUserCheckedInTopicToday(user, topic.getId()));
         topicMap.put("remainingTime", checkinService.getTopicRemainingTime(topic.getId()));
@@ -283,6 +322,7 @@ public class CheckinController {
         topicMap.put("startDatetime", checkinService.formatDateTime(topic.getStartDatetime()));
         topicMap.put("endDatetime", checkinService.formatDateTime(topic.getEndDatetime()));
         topicMap.put("durationDays", topic.getDurationDays());
+        topicMap.put("createdBy", topic.getCreatedBy());
         response.put("topic", topicMap);
 
         return response;
