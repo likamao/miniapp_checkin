@@ -521,6 +521,7 @@
   box-sizing: border-box;
   background: #ffffff;
   line-height: 1.5;
+  padding: 10rpx ;
 }
 
 .form-input::placeholder,

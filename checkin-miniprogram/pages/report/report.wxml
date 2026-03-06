@@ -24,12 +24,51 @@
   <!-- 主题选择 -->
   <view class="topic-selector">
     <text class="selector-label">选择主题</text>
-    <picker bindchange="bindTopicChange" value="{{selectedTopicIndex}}" range="{{topics}}" range-key="title">
-      <view class="picker">
-        <text class="picker-text">{{selectedTopic ? selectedTopic.title : '请选择主题'}}</text>
-        <text class="picker-arrow">›</text>
+    <view class="picker" bindtap="showTopicFilterModal">
+      <text class="picker-text">{{selectedTopic ? selectedTopic.title : '请选择主题'}}</text>
+      <text class="picker-arrow">›</text>
+    </view>
+  </view>
+  
+  <!-- 主题筛选弹框 -->
+  <view wx:if="{{showTopicFilterModal}}" class="topic-filter-overlay" catchtap="hideTopicFilterModal">
+    <view class="topic-filter-content" catchtap="stopPropagation">
+      <!-- 弹框头部 -->
+      <view class="topic-filter-header">
+        <view class="topic-filter-bubble bubble-1"></view>
+        <view class="topic-filter-bubble bubble-2"></view>
+        <view class="topic-filter-bubble bubble-3"></view>
+        
+        <view class="topic-filter-close" bindtap="hideTopicFilterModal">×</view>
+        
+        <text class="topic-filter-title">选择主题</text>
+        
+        <view class="topic-filter-wave">
+          <view class="topic-filter-wave-line"></view>
+          <view class="topic-filter-wave-line"></view>
+        </view>
       </view>
-    </picker>
+      
+      <!-- 弹框内容 - 可滚动 -->
+      <scroll-view class="topic-filter-scroll" scroll-y="true" enhanced="true" show-scrollbar="{{true}}">
+        <view class="topic-filter-list">
+          <view wx:for="{{topics}}" wx:key="id" class="topic-filter-item {{tempSelectedTopicIndex === index ? 'active' : ''}}" bindtap="selectTopic" data-index="{{index}}">
+            <view class="topic-filter-item-content">
+              <text class="topic-filter-item-text">{{item.title}}</text>
+              <view wx:if="{{tempSelectedTopicIndex === index}}" class="topic-filter-item-check">
+                <text>✓</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+      
+      <!-- 弹框底部 -->
+      <view class="topic-filter-footer">
+        <button class="topic-filter-btn cancel" bindtap="hideTopicFilterModal">取消</button>
+        <button class="topic-filter-btn confirm" bindtap="confirmTopicSelection">确定</button>
+      </view>
+    </view>
   </view>
   
   <!-- 加载状态 -->

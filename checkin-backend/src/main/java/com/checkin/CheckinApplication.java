@@ -58,10 +58,13 @@ public class CheckinApplication {
 
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
-                // 添加权限拦截器，拦截所有API请求
+                // 添加权限拦截器，拦截所有 API 请求
                 registry.addInterceptor(permissionInterceptor)
                         .addPathPatterns("/api/**")
-                        .excludePathPatterns("/api/auth/login"); // 登录接口不需要权限验证
+                        .excludePathPatterns(
+                            "/api/auth/login",  // 登录接口不需要权限验证
+                            "/api/test/**"      // 测试接口不需要权限验证
+                        );
             }
         };
     }

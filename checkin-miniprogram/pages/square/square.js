@@ -108,6 +108,8 @@ Page({
   // 显示打卡弹框
   showCheckinModal() {
     this.setData({ showCheckinModal: true, checkinIsLoading: true });
+    // 禁止背景滚动
+    wx.pageScrollTo({ scrollTop: 0 });
     // 检查打卡状态
     this.checkinCheckTodayCheckin();
     // 加载主题列表

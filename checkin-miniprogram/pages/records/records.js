@@ -11,7 +11,15 @@ Page({
     page: 1,
     pageSize: 10,
     showDetailModal: false,
-    selectedRecord: {}
+    selectedRecord: {},
+    // 时间筛选弹框
+    showTimeFilterModal: false,
+    yearList: [],
+    monthList: [],
+    selectedYear: 0,
+    selectedMonth: 0,
+    tempSelectedYear: 0,
+    tempSelectedMonth: 0
   },
   onLoad: function() {
     // 检查是否已登录
@@ -26,7 +34,14 @@ Page({
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const defaultDate = `${year}-${month}`;
-    this.setData({ selectedDate: defaultDate });
+    this.setData({ 
+      selectedDate: defaultDate,
+      selectedYear: year,
+      selectedMonth: parseInt(month)
+    });
+    
+    // 生成年份和月份列表
+    this.generateYearAndMonthLists();
     
     // 加载记录
     this.loadRecords(true);
@@ -56,6 +71,86 @@ Page({
     const date = e.detail.value;
     this.setData({ 
       selectedDate: date,
+      page: 1,
+      hasMoreData: true
+    });
+    this.loadRecords(true);
+  },
+
+  // 生成年份和月份列表
+  generateYearAndMonthLists: function() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    
+    // 生成年份列表（前后各 5 年）
+    const yearList = [];
+    for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+      yearList.push({
+        label: `${i}年`,
+        value: i
+      });
+    }
+    
+    // 生成月份列表
+    const monthList = [];
+    for (let i = 1; i <= 12; i++) {
+      monthList.push({
+        label: `${i.toString().padStart(2, '0')}月`,
+        value: i
+      });
+    }
+    
+    this.setData({
+      yearList: yearList,
+      monthList: monthList
+    });
+  },
+
+  // 显示时间筛选弹框
+  showTimeFilterModal: function() {
+    this.setData({
+      showTimeFilterModal: true,
+      tempSelectedYear: this.data.selectedYear,
+      tempSelectedMonth: this.data.selectedMonth
+    });
+  },
+
+  // 隐藏时间筛选弹框
+  hideTimeFilterModal: function() {
+    this.setData({
+      showTimeFilterModal: false
+    });
+  },
+
+  // 选择年份
+  selectYear: function(e) {
+    const year = e.currentTarget.dataset.year;
+    console.log('选择年份:', year);
+    this.setData({
+      tempSelectedYear: year
+    });
+  },
+
+  // 选择月份
+  selectMonth: function(e) {
+    const month = e.currentTarget.dataset.month;
+    console.log('选择月份:', month);
+    this.setData({
+      tempSelectedMonth: month
+    });
+  },
+
+  // 确认时间选择
+  confirmTimeSelection: function() {
+    const year = this.data.tempSelectedYear;
+    const month = this.data.tempSelectedMonth;
+    const date = `${year}-${month.toString().padStart(2, '0')}`;
+    
+    this.setData({
+      selectedDate: date,
+      selectedYear: year,
+      selectedMonth: month,
+      showTimeFilterModal: false,
       page: 1,
       hasMoreData: true
     });

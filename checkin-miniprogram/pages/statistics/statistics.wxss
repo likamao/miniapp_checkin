@@ -89,30 +89,6 @@
   100% { transform: translateX(-50%); }
 }
 
-/* 页面标题 */
-.page-title {
-  font-size: 44rpx;
-  font-weight: 700;
-  display: block;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  margin-bottom: 16rpx;
-  background: linear-gradient(135deg, #1565c0 0%, #42a5f5 50%, #1565c0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.page-subtitle {
-  font-size: 32rpx;
-  color: #64b5f6;
-  display: block;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  line-height: 1.4;
-}
-
 /* 设置入口卡片 */
 .settings-entry {
   display: flex;

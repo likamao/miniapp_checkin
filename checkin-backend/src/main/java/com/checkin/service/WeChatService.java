@@ -31,7 +31,6 @@ public class WeChatService {
      * 微信登录
      * 
      * @param code 微信登录码
-     * @param nickname 用户昵称
      * @return 用户信息
      * @throws RuntimeException 登录失败时抛出
      */

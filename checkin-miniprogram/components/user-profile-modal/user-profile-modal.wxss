@@ -172,7 +172,7 @@
 
 .nickname-input {
   width: 100%;
-  padding: 28rpx 32rpx;
+  padding-left: 10rpx;
   background: #ffffff;
   border: none;
   border-radius: 14rpx;

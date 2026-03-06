@@ -89,30 +89,6 @@
   100% { transform: translateX(-50%); }
 }
 
-/* 页面标题 */
-.page-title {
-  font-size: 44rpx;
-  font-weight: 700;
-  display: block;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  margin-bottom: 16rpx;
-  background: linear-gradient(135deg, #1565c0 0%, #42a5f5 50%, #1565c0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.page-subtitle {
-  font-size: 32rpx;
-  color: #64b5f6;
-  display: block;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  line-height: 1.4;
-}
-
 /* 筛选卡片 */
 .filter-card {
   background: #ffffff;
@@ -179,6 +155,285 @@
 .picker::after {
   content: '📅';
   font-size: 32rpx;
+}
+
+/* 时间筛选弹框 - 海浪风格 */
+.time-filter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(227, 242, 253, 0.95) 0%, rgba(187, 222, 251, 0.9) 50%, rgba(144, 202, 249, 0.85) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 40rpx;
+  box-sizing: border-box;
+  animation: fadeIn 0.4s ease;
+  overflow: hidden;
+}
+
+.time-filter-content {
+  width: 100%;
+  max-width: 640rpx;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+  border-radius: 32rpx;
+  box-shadow: 0 20rpx 60rpx rgba(25, 118, 210, 0.15), 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  animation: waveSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.time-filter-header {
+  position: relative;
+  padding: 48rpx 32rpx 80rpx;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.time-filter-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(187, 222, 251, 0.3));
+  animation: float 4s ease-in-out infinite;
+}
+
+.time-filter-bubble-1,
+.bubble-1 {
+  width: 28rpx;
+  height: 28rpx;
+  top: 16rpx;
+  left: 30rpx;
+  animation-delay: 0s;
+}
+
+.time-filter-bubble-2,
+.bubble-2 {
+  width: 18rpx;
+  height: 18rpx;
+  top: 50rpx;
+  left: 80rpx;
+  animation-delay: 1s;
+}
+
+.time-filter-bubble-3,
+.bubble-3 {
+  width: 24rpx;
+  height: 24rpx;
+  top: 30rpx;
+  right: 50rpx;
+  animation-delay: 2s;
+}
+
+.time-filter-close {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: #1976d2;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  line-height: 1;
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.time-filter-close:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 1);
+}
+
+.time-filter-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1565c0;
+  position: relative;
+  z-index: 1;
+  padding-right: 60rpx;
+  display: block;
+  text-align: center;
+}
+
+.time-filter-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50rpx;
+  overflow: hidden;
+}
+
+.time-filter-wave-line {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+  background-size: 50% 100%;
+  animation: waveFlow 6s linear infinite;
+}
+
+.time-filter-wave-line:nth-child(2) {
+  opacity: 0.5;
+  animation: waveFlow 8s linear infinite reverse;
+  bottom: 5rpx;
+}
+
+.time-filter-body {
+  display: flex;
+  background: #ffffff;
+  flex: 1;
+  overflow: hidden;
+}
+
+.time-filter-column {
+  flex: 1;
+  max-height: 50vh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+  padding: 16rpx 0;
+}
+
+.time-filter-year-list,
+.time-filter-month-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx;
+  margin: 8rpx 16rpx;
+  background: #f5f5f5;
+  border: 2rpx solid #e3f2fd;
+  border-radius: 14rpx;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.time-filter-item:active {
+  background: #e3f2fd;
+  transform: scale(0.98);
+  border-color: #90caf9;
+}
+
+.time-filter-item-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #64b5f6;
+  font-weight: 500;
+}
+
+.time-filter-item-check {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.time-filter-item-check text {
+  font-size: 32rpx;
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.time-filter-item.active {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+  border-color: #1976d2;
+}
+
+.time-filter-item.active .time-filter-item-text {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.time-filter-divider {
+  width: 2rpx;
+  background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 50%, #e3f2fd 100%);
+  margin: 8rpx 0;
+}
+
+.time-filter-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 24rpx 32rpx 32rpx;
+  background: #ffffff;
+  gap: 24rpx;
+  flex-shrink: 0;
+}
+
+.time-filter-btn {
+  flex: 1;
+  padding: 28rpx 0;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.time-filter-btn::after {
+  border: none;
+}
+
+.time-filter-btn.cancel {
+  background-color: #f5f5f5;
+  color: #90caf9;
+}
+
+.time-filter-btn.cancel:active {
+  background-color: #e0e0e0;
+}
+
+.time-filter-btn.confirm {
+  background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+  color: white;
+  box-shadow: 0 4rpx 16rpx rgba(25, 118, 210, 0.3);
+}
+
+.time-filter-btn.confirm:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(25, 118, 210, 0.2);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes waveSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* 记录列表卡片 */

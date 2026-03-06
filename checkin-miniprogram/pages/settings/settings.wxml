@@ -6,7 +6,9 @@
     <view class="header-bubble bubble-2"></view>
     <view class="header-bubble bubble-3"></view>
     
-    <text class="title">设置</text>
+    <!-- wxml -->
+    <text class="page-title">悄悄改改？(つ´ω`)つ</text>
+    <!-- <text class="page-subtitle">不管今天怎样，你来过就闪闪发光✨</text> -->
     
     <!-- 波浪装饰 - 与弹框一致 -->
     <view class="wave-decoration">
@@ -29,8 +31,8 @@
     <!-- 隐私开关 -->
     <view class="setting-item">
       <view class="setting-info">
-        <text class="setting-title">允许周/月报展示我的信息</text>
-        <text class="setting-desc">开启后，您的昵称和打卡记录将在周报和月报中显示</text>
+        <text class="setting-title">匿名化</text>
+        <text class="setting-desc">开启后，您的打卡数据将匿名纳入整体统计（仅显示总数、平均值等，不含任何个人信息）</text>
       </view>
       <switch 
         class="setting-switch" 
@@ -48,6 +50,7 @@
       <text class="tips-text">{{item.text}}</text>
     </block>
   </view>
+
   
   <!-- 个人信息修改弹框 -->
   <user-profile-modal 
@@ -57,4 +60,5 @@
     bind:close="onProfileModalClose"
     bind:confirm="onProfileModalConfirm"
   ></user-profile-modal>
+  <view class="wave-footer"></view>
 </view>

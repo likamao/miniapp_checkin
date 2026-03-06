@@ -249,9 +249,10 @@ public class CheckinService {
      * @return 格式化后的日期时间字符串
      */
     public String formatDateTime(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(date);
     }
+
 
     /**
      * 获取所有活跃的主题

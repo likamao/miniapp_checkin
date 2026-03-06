@@ -13,10 +13,13 @@ Page({
     dateRange: '',
     shareImageUrl: '',
     shareTopicId: '',
-    // 用户详情展开状态映射：key为userId，value为boolean
+    // 用户详情展开状态映射：key 为 userId，value 为 boolean
     expandedUsers: {},
     // 全局展开/收起所有用户详情
-    expandAllUsers: false
+    expandAllUsers: false,
+    // 主题筛选弹框
+    showTopicFilterModal: false,
+    tempSelectedTopicIndex: 0
   },
 
   onLoad: function(options) {
@@ -167,10 +170,64 @@ Page({
     this.loadReportData();
   },
 
+  // 显示主题筛选弹框
+  showTopicFilterModal: function() {
+    this.setData({
+      showTopicFilterModal: true,
+      tempSelectedTopicIndex: this.data.selectedTopicIndex
+    });
+  },
+
+  // 隐藏主题筛选弹框
+  hideTopicFilterModal: function() {
+    this.setData({
+      showTopicFilterModal: false
+    });
+  },
+
+  // 阻止事件冒泡
+  stopPropagation: function() {
+  },
+
+  // 选择主题
+  selectTopic: function(e) {
+    const index = e.currentTarget.dataset.index;
+    this.setData({
+      tempSelectedTopicIndex: index
+    });
+  },
+
+  // 确认主题选择
+  confirmTopicSelection: function() {
+    const index = this.data.tempSelectedTopicIndex;
+    const selectedTopic = this.data.topics[index];
+    
+    console.log('确认选择主题:', selectedTopic.title, '索引:', index);
+    
+    this.setData({
+      selectedTopicIndex: index,
+      selectedTopic: selectedTopic,
+      showTopicFilterModal: false,
+      reportData: null,
+      expandedUsers: {}, // 重置展开状态
+      expandAllUsers: false // 重置全局开关
+    });
+    
+    // 确保在 setData 之后加载数据
+    setTimeout(() => {
+      this.loadReportData();
+    }, 100);
+  },
+
   // 加载报告数据
   loadReportData: function() {
-    if (!this.data.selectedTopic) return;
+    if (!this.data.selectedTopic) {
+      console.error('没有选中的主题，无法加载报告数据');
+      return;
+    }
 
+    console.log('开始加载主题报告:', this.data.selectedTopic.title, '类型:', this.data.reportType);
+    
     this.setData({
       loading: true,
       error: null,
@@ -185,6 +242,8 @@ Page({
       ? `/api/checkin/topics/${topicId}/weekly-report` 
       : `/api/checkin/topics/${topicId}/monthly-report`;
 
+    console.log('请求接口:', endpoint);
+    
     wx.request({
       url: apiConfig.API_BASE_URL + endpoint,
       method: 'GET',
@@ -192,6 +251,7 @@ Page({
         'Authorization': 'Bearer ' + token
       },
       success: (res) => {
+        console.log('报告数据响应:', res.data);
         if (res.data && res.data.error) {
           // 处理权限错误
           if (res.data.error.includes('权限不足')) {

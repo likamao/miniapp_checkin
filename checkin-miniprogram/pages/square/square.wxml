@@ -39,7 +39,7 @@
   <!-- 悬浮按钮组 -->
   <view class="buttons-container">
     <!-- 发布主题按钮 -->
-    <view class="action-button publish-button" bindtap="showPublishModal">
+    <view wx:if="{{hasReportPermission && token}}" class="action-button publish-button" bindtap="showPublishModal">
       <text class="action-button-text">发布主题</text>
     </view>
     <!-- 打卡按钮 -->
@@ -136,27 +136,31 @@
       <!-- 打卡表单 -->
       <view wx:else class="checkin-card">
         <view class="checkin-title">今日打卡</view>
-        <form bindsubmit="checkinSubmitCheckin">
-          <view class="checkin-form-item">
-            <text>选择主题</text>
-            <view class="checkin-topic-selector">
-              <view wx:for="{{checkinTopics}}" wx:key="id" class="checkin-topic-item" bindtap="checkinSelectTopic" data-topic-id="{{item.id}}">
-                <view class="checkin-topic-item-content {{checkinSelectedTopicId === item.id ? 'active' : ''}}">
-                  <text>{{item.title}}</text>
+        <scroll-view class="checkin-scroll-view" scroll-y="true" enhanced="true" show-scrollbar="{{true}}">
+          <form bindsubmit="checkinSubmitCheckin">
+            <view class="checkin-form-item">
+              <text>选择主题</text>
+              <view class="checkin-topic-selector">
+                <view wx:for="{{checkinTopics}}" wx:key="id" class="checkin-topic-item" bindtap="checkinSelectTopic" data-topic-id="{{item.id}}">
+                  <view class="checkin-topic-item-content {{checkinSelectedTopicId === item.id ? 'active' : ''}}">
+                    <text>{{item.title}}</text>
+                  </view>
                 </view>
               </view>
             </view>
-          </view>
-          <view class="checkin-form-item">
-            <text>打卡标题</text>
-            <input class="checkin-input" name="title" placeholder="请输入打卡标题" maxlength="50"/>
-          </view>
-          <view class="checkin-form-item">
-            <text>打卡内容</text>
-            <textarea class="textarea" name="content" placeholder="请输入打卡内容" maxlength="500" bindinput="checkinOnContentInput"/>
-          </view>
-          <button class="btn btn-primary" form-type="submit">提交打卡</button>
-        </form>
+            <view class="checkin-form-item">
+              <text>打卡标题</text>
+              <input class="checkin-input" name="title" placeholder="请输入打卡标题" maxlength="50"/>
+            </view>
+            <view class="checkin-form-item">
+              <text>打卡内容</text>
+              <textarea class="textarea" name="content" placeholder="请输入打卡内容" maxlength="500" bindinput="checkinOnContentInput"/>
+            </view>
+            <view class="checkin-button-container">
+              <button class="btn btn-primary" form-type="submit">提交打卡</button>
+            </view>
+          </form>
+        </scroll-view>
       </view>
     </view>
   </view>

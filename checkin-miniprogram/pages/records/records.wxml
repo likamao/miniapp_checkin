@@ -23,12 +23,67 @@
         <button class="filter-btn {{filterMode === 'year' ? 'active' : ''}}" bindtap="switchFilterMode" data-mode="year">年视图</button>
         <button class="filter-btn {{filterMode === 'month' ? 'active' : ''}}" bindtap="switchFilterMode" data-mode="month">月视图</button>
       </view>
-      <view class="date-picker">
-        <picker mode="date" fields="{{filterMode === 'year' ? 'year' : 'month'}}" start="2026-03" bindchange="bindDateChange" value="{{selectedDate}}">
-          <view class="picker">
-            {{selectedDate}} 打卡记录
+      <view class="date-picker" bindtap="showTimeFilterModal">
+        <view class="picker">
+          {{selectedDate}} 打卡记录
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 时间筛选弹框 -->
+  <view wx:if="{{showTimeFilterModal}}" class="time-filter-overlay" catchtap="hideTimeFilterModal">
+    <view class="time-filter-content" catchtap="stopPropagation">
+      <!-- 弹框头部 -->
+      <view class="time-filter-header">
+        <!-- 气泡装饰 -->
+        <view class="time-filter-bubble bubble-1"></view>
+        <view class="time-filter-bubble bubble-2"></view>
+        <view class="time-filter-bubble bubble-3"></view>
+        
+        <!-- 关闭按钮 -->
+        <view class="time-filter-close" bindtap="hideTimeFilterModal">×</view>
+        
+        <text class="time-filter-title">选择时间</text>
+        
+        <!-- 波浪装饰 -->
+        <view class="time-filter-wave">
+          <view class="time-filter-wave-line"></view>
+          <view class="time-filter-wave-line"></view>
+        </view>
+      </view>
+      
+      <!-- 弹框内容 - 双列滚动 -->
+      <view class="time-filter-body">
+        <scroll-view class="time-filter-column" scroll-y="true" enhanced="true" show-scrollbar="{{true}}">
+          <view class="time-filter-year-list">
+            <view wx:for="{{yearList}}" wx:key="value" class="time-filter-item {{tempSelectedYear === item.value ? 'active' : ''}}" catchtap="selectYear" data-year="{{item.value}}">
+              <text class="time-filter-item-text">{{item.label}}</text>
+              <view wx:if="{{tempSelectedYear === item.value}}" class="time-filter-item-check">
+                <text>✓</text>
+              </view>
+            </view>
           </view>
-        </picker>
+        </scroll-view>
+        
+        <view class="time-filter-divider"></view>
+        
+        <scroll-view class="time-filter-column" scroll-y="true" enhanced="true" show-scrollbar="{{true}}">
+          <view class="time-filter-month-list">
+            <view wx:for="{{monthList}}" wx:key="value" class="time-filter-item {{tempSelectedMonth === item.value ? 'active' : ''}}" catchtap="selectMonth" data-month="{{item.value}}">
+              <text class="time-filter-item-text">{{item.label}}</text>
+              <view wx:if="{{tempSelectedMonth === item.value}}" class="time-filter-item-check">
+                <text>✓</text>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+      
+      <!-- 弹框底部 -->
+      <view class="time-filter-footer">
+        <button class="time-filter-btn cancel" bindtap="hideTimeFilterModal">取消</button>
+        <button class="time-filter-btn confirm" bindtap="confirmTimeSelection">确定</button>
       </view>
     </view>
   </view>

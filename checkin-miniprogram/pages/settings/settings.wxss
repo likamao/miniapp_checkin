@@ -92,17 +92,6 @@
   }
 }
 
-/* 页面标题 */
-.title {
-  font-size: 44rpx;
-  font-weight: 700;
-  color: #1565c0;
-  display: block;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-
 /* 设置列表容器 */
 .settings-list {
   background: #ffffff;
@@ -167,7 +156,7 @@
 /* 设置描述 */
 .setting-desc {
   font-size: 26rpx;
-  color: #90caf9;
+  color: #64b5f6;
   display: block;
   line-height: 1.5;
 }
@@ -241,7 +230,7 @@
   font-size: 26rpx;
   color: #64b5f6;
   display: block;
-  line-height: 1.8;
+  line-height: 2;
   margin-bottom: 16rpx;
   padding-left: 20rpx;
   position: relative;
@@ -275,4 +264,13 @@
     margin-left: auto;
     margin-right: auto;
   }
+}
+.wave-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100rpx;
+  background: linear-gradient(to top, rgba(166, 216, 255, 0.3), transparent);
+  box-shadow: 0 -10rpx 30rpx rgba(66, 165, 245, 0.15) inset;
 }
