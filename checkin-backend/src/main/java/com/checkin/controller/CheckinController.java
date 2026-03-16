@@ -4,6 +4,7 @@ import com.checkin.entity.CheckinRecord;
 import com.checkin.entity.CheckinTopic;
 import com.checkin.entity.CheckinTopicRecord;
 import com.checkin.entity.User;
+import com.checkin.repository.CheckinRecordRepository;
 import com.checkin.service.CheckinService;
 import com.checkin.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/checkin")
@@ -25,6 +27,9 @@ public class CheckinController {
 
     @Autowired
     private PermissionService permissionService;
+
+    @Autowired
+    private CheckinRecordRepository checkinRecordRepository;
 
     /**
      * 创建打卡记录
@@ -139,6 +144,29 @@ public class CheckinController {
     }
 
     /**
+     * 获取用户可以查看报告的主题列表
+     * 包括：1) 自己创建的所有主题 2) 曾经打过卡的所有主题
+     */
+    @GetMapping("/topics/report-list")
+    public Map<String, Object> getReportTopics(@RequestAttribute("user") User user) {
+        List<CheckinTopic> topics = checkinService.getReportTopics(user);
+        
+        List<Map<String, Object>> topicList = topics.stream().map(topic -> {
+            Map<String, Object> topicMap = new HashMap<>();
+            topicMap.put("id", topic.getId());
+            topicMap.put("title", topic.getTitle());
+            topicMap.put("createdBy", topic.getCreatedBy());
+            topicMap.put("visibility", topic.getVisibility());
+            return topicMap;
+        }).toList();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("topics", topicList);
+
+        return response;
+    }
+
+    /**
      * 检查今日是否已打卡
      * 
      * @param user 当前登录用户信息
@@ -170,33 +198,58 @@ public class CheckinController {
      * @throws RuntimeException 权限不足时抛出
      */
     @GetMapping("/topics")
-    public Map<String, Object> getTopics(@RequestAttribute("user") User user) {
-        // 检查用户是否有打卡查询权限
-        if (!permissionService.hasPermission(user, "checkin:read")) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "权限不足：没有打卡查询权限");
-            return errorResponse;
+    public Map<String, Object> getTopics(@RequestAttribute(value = "user", required = false) User user) {
+        // 未登录用户：查询管理员发布的主题（公开主题）
+        // 已登录用户：根据用户角色获取可见的主题列表
+        List<Map<String, Object>> topics;
+        
+        if (user == null) {
+            // 未登录，查询管理员发布的主题
+            topics = checkinService.getAdminTopics().stream().map(topic -> {
+                return buildTopicMap(topic, null);
+            }).toList();
+        } else {
+            // 已登录，检查用户是否有打卡查询权限
+            if (!permissionService.hasPermission(user, "checkin:read")) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "权限不足：没有打卡查询权限");
+                return errorResponse;
+            }
+            
+            topics = checkinService.getVisibleTopics(user).stream().map(topic -> {
+                return buildTopicMap(topic, user);
+            }).toList();
         }
-
-        List<Map<String, Object>> topics = checkinService.getAllTopics().stream().map(topic -> {
-            Map<String, Object> topicMap = new HashMap<>();
-            topicMap.put("id", topic.getId());
-            topicMap.put("title", topic.getTitle());
-            topicMap.put("description", topic.getDescription());
-            topicMap.put("startDatetime", checkinService.formatDateTime(topic.getStartDatetime()));
-            topicMap.put("endDatetime", checkinService.formatDateTime(topic.getEndDatetime()));
-            topicMap.put("durationDays", topic.getDurationDays());
-            topicMap.put("status", topic.getStatus());
-            topicMap.put("createdBy", topic.getCreatedBy());
-            topicMap.put("checkinCount", checkinService.getTopicCheckinCount(topic.getId()));
-            topicMap.put("hasCheckedInToday", checkinService.hasUserCheckedInTopicToday(user, topic.getId()));
-            return topicMap;
-        }).toList();
 
         Map<String, Object> response = new HashMap<>();
         response.put("topics", topics);
 
         return response;
+    }
+
+    /**
+     * 构建主题 Map
+     */
+    private Map<String, Object> buildTopicMap(CheckinTopic topic, User user) {
+        Map<String, Object> topicMap = new HashMap<>();
+        topicMap.put("id", topic.getId());
+        topicMap.put("title", topic.getTitle());
+        topicMap.put("description", topic.getDescription());
+        topicMap.put("startDatetime", checkinService.formatDateTime(topic.getStartDatetime()));
+        topicMap.put("endDatetime", checkinService.formatDateTime(topic.getEndDatetime()));
+        topicMap.put("durationDays", topic.getDurationDays());
+        topicMap.put("status", topic.getStatus());
+        topicMap.put("createdBy", topic.getCreatedBy());
+        topicMap.put("visibility", topic.getVisibility());
+        topicMap.put("checkinCount", checkinService.getTopicCheckinCount(topic.getId()));
+        
+        if (user != null) {
+            topicMap.put("hasCheckedInToday", checkinService.hasUserCheckedInTopicToday(user, topic.getId()));
+        } else {
+            topicMap.put("hasCheckedInToday", false);
+        }
+        
+        return topicMap;
     }
 
     /**
@@ -215,7 +268,8 @@ public class CheckinController {
             return errorResponse;
         }
 
-        List<Map<String, Object>> topics = checkinService.getAllActiveTopics().stream().map(topic -> {
+        // 根据用户角色获取可见的有效主题列表
+        List<Map<String, Object>> topics = checkinService.getActiveVisibleTopics(user).stream().map(topic -> {
             Map<String, Object> topicMap = new HashMap<>();
             topicMap.put("id", topic.getId());
             topicMap.put("title", topic.getTitle());
@@ -225,6 +279,7 @@ public class CheckinController {
             topicMap.put("durationDays", topic.getDurationDays());
             topicMap.put("status", topic.getStatus());
             topicMap.put("createdBy", topic.getCreatedBy());
+            topicMap.put("visibility", topic.getVisibility());
             topicMap.put("checkinCount", checkinService.getTopicCheckinCount(topic.getId()));
             topicMap.put("hasCheckedInToday", checkinService.hasUserCheckedInTopicToday(user, topic.getId()));
             return topicMap;
@@ -245,14 +300,8 @@ public class CheckinController {
      * @throws RuntimeException 权限不足时抛出
      */
     @GetMapping("/topics/{topicId}")
-    public Map<String, Object> getTopicDetail(@PathVariable Long topicId, @RequestAttribute("user") User user) {
-        // 检查用户是否有打卡查询权限
-        if (!permissionService.hasPermission(user, "checkin:read")) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "权限不足：没有打卡查询权限");
-            return errorResponse;
-        }
-
+    public Map<String, Object> getTopicDetail(@PathVariable Long topicId, @RequestAttribute(value = "user", required = false) User user) {
+        // 获取主题
         CheckinTopic topic = checkinService.getTopicById(topicId);
         if (topic == null) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -260,6 +309,46 @@ public class CheckinController {
             return errorResponse;
         }
 
+        // 未登录用户：只能查看公开主题
+        if (user == null) {
+            if (!"public".equals(topic.getVisibility())) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "无权查看此主题");
+                return errorResponse;
+            }
+            
+            // 返回公开主题的基本信息
+            Map<String, Object> topicMap = buildTopicMapForPublic(topic);
+            Map<String, Object> response = new HashMap<>();
+            response.put("topic", topicMap);
+            return response;
+        }
+
+        // 已登录用户：检查用户是否有打卡查询权限
+        if (!permissionService.hasPermission(user, "checkin:read")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "权限不足：没有打卡查询权限");
+            return errorResponse;
+        }
+
+        // 检查用户是否有权限查看此主题
+        boolean isAdmin = permissionService.hasRole(user, "ADMIN");
+        if (!checkinService.canViewTopic(topic, user.getId(), isAdmin)) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "无权查看此主题");
+            return errorResponse;
+        }
+
+        Map<String, Object> topicMap = buildTopicMap(topic, user);
+        Map<String, Object> response = new HashMap<>();
+        response.put("topic", topicMap);
+        return response;
+    }
+
+    /**
+     * 构建公开主题的 Map（未登录用户）
+     */
+    private Map<String, Object> buildTopicMapForPublic(CheckinTopic topic) {
         Map<String, Object> topicMap = new HashMap<>();
         topicMap.put("id", topic.getId());
         topicMap.put("title", topic.getTitle());
@@ -269,14 +358,11 @@ public class CheckinController {
         topicMap.put("durationDays", topic.getDurationDays());
         topicMap.put("status", topic.getStatus());
         topicMap.put("createdBy", topic.getCreatedBy());
+        topicMap.put("visibility", topic.getVisibility());
         topicMap.put("checkinCount", checkinService.getTopicCheckinCount(topic.getId()));
-        topicMap.put("hasCheckedInToday", checkinService.hasUserCheckedInTopicToday(user, topic.getId()));
+        topicMap.put("hasCheckedInToday", false);
         topicMap.put("remainingTime", checkinService.getTopicRemainingTime(topic.getId()));
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("topic", topicMap);
-
-        return response;
+        return topicMap;
     }
 
     /**
@@ -378,6 +464,8 @@ public class CheckinController {
         topicMap.put("startDatetime", checkinService.formatDateTime(topic.getStartDatetime()));
         topicMap.put("endDatetime", checkinService.formatDateTime(topic.getEndDatetime()));
         topicMap.put("durationDays", topic.getDurationDays());
+        topicMap.put("createdBy", topic.getCreatedBy());
+        topicMap.put("visibility", topic.getVisibility());
         response.put("topic", topicMap);
 
         return response;
@@ -475,17 +563,64 @@ public class CheckinController {
             @PathVariable Long topicId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int pageSize,
-            @RequestAttribute("user") User user) {
-        // 检查用户是否有打卡查询权限
-        if (!permissionService.hasPermission(user, "checkin:read")) {
+            @RequestAttribute(value = "user", required = false) User user) {
+        
+        // 获取主题
+        CheckinTopic topic = checkinService.getTopicById(topicId);
+        if (topic == null) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "权限不足：没有打卡查询权限");
+            errorResponse.put("error", "主题不存在");
+            return errorResponse;
+        }
+
+        // 未登录用户：只能查看公开主题的打卡记录（空列表）
+        if (user == null) {
+            if (!"public".equals(topic.getVisibility())) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "无权查看此主题的打卡记录");
+                return errorResponse;
+            }
+            
+            // 返回空列表
+            Map<String, Object> response = new HashMap<>();
+            response.put("records", List.of());
+            response.put("pagination", Map.of(
+                    "total", 0,
+                    "totalPages", 0,
+                    "currentPage", page,
+                    "pageSize", pageSize
+            ));
+            return response;
+        }
+
+        // 检查用户是否有打卡查询权限
+        boolean hasCheckinRead = permissionService.hasPermission(user, "checkin:read");
+        boolean hasViewDetails = permissionService.hasPermission(user, "checkin:view-details");
+        boolean isAdmin = permissionService.hasRole(user, "ADMIN");
+        boolean isPublisher = permissionService.hasRole(user, "PUBLISHER");
+        
+        // 判断用户是否可以查看此主题的打卡记录
+        boolean canViewRecords = false;
+        if (isAdmin || isPublisher) {
+            // 管理员和发布者可以查看所有主题
+            canViewRecords = true;
+        } else if (hasCheckinRead && "public".equals(topic.getVisibility())) {
+            // VIEWER 角色可以查看公开主题
+            canViewRecords = true;
+        }
+        
+        if (!canViewRecords) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "无权查看此主题的打卡记录");
             return errorResponse;
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         // 获取主题的所有打卡记录
         Page<CheckinTopicRecord> recordPage = checkinService.getTopicCheckinRecords(topicId, pageable);
+
+        // 根据权限决定是否返回打卡标题和内容
+        boolean canViewFullDetails = hasViewDetails || isAdmin || isPublisher;
 
         List<Map<String, Object>> records = recordPage.getContent().stream().map(record -> {
             Map<String, Object> recordMap = new HashMap<>();
@@ -500,6 +635,17 @@ public class CheckinController {
             recordMap.put("checkinDate", record.getCheckinDate());
             recordMap.put("checkinDatetime", checkinService.formatDateTime(record.getCheckinDatetime()));
             recordMap.put("consecutiveDays", record.getConsecutiveDays());
+            
+//            // 仅当有查看详情权限时返回标题和内容
+//            if (canViewFullDetails && record.getCheckinRecordId() != null) {
+//                Optional<CheckinRecord> checkinRecordOpt = checkinRecordRepository.findById(record.getCheckinRecordId());
+//                if (checkinRecordOpt.isPresent()) {
+//                    CheckinRecord checkinRecord = checkinRecordOpt.get();
+//                    recordMap.put("title", checkinRecord.getTitle());
+//                    recordMap.put("content", checkinRecord.getContent());
+//                }
+//            }
+            
             return recordMap;
         }).toList();
 
@@ -527,7 +673,7 @@ public class CheckinController {
     public Map<String, Object> getWeeklyReport(
             @PathVariable Long topicId,
             @RequestAttribute("user") User user) {
-        // 检查用户是否有管理员权限或是否是主题发布者
+        // 检查用户是否有查看报告的权限
         CheckinTopic topic = checkinService.getTopicById(topicId);
         if (topic == null) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -536,11 +682,31 @@ public class CheckinController {
         }
 
         boolean isAdmin = permissionService.hasRole(user, "ADMIN");
+        boolean isPublisher = permissionService.hasRole(user, "PUBLISHER");
+        boolean isViewer = permissionService.hasRole(user, "VIEWER");
         boolean isTopicCreator = topic.getCreatedBy() != null && topic.getCreatedBy().equals(user.getId());
         
-        if (!isAdmin && !isTopicCreator) {
+        // 检查用户是否有权限查看此主题的报告
+        // 管理员/发布者：可以查看所有主题的报告
+        // VIEWER/普通用户：只能查看自己创建的主题或曾经打卡的主题的报告
+        boolean canViewReport = false;
+        
+        if (isAdmin || isPublisher) {
+            canViewReport = true;
+        } else if (isTopicCreator) {
+            // 自己创建的主题
+            canViewReport = true;
+        } else {
+            // 检查是否曾在此主题打过卡
+            List<Long> checkedTopicIds = checkinService.getCheckedTopicIds(user.getId());
+            if (checkedTopicIds != null && checkedTopicIds.contains(topicId)) {
+                canViewReport = true;
+            }
+        }
+        
+        if (!canViewReport) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "权限不足：只有管理员或主题发布者才能查看报告");
+            errorResponse.put("error", "无权查看此主题的报告");
             return errorResponse;
         }
 
@@ -561,7 +727,7 @@ public class CheckinController {
     public Map<String, Object> getMonthlyReport(
             @PathVariable Long topicId,
             @RequestAttribute("user") User user) {
-        // 检查用户是否有管理员权限或是否是主题发布者
+        // 检查用户是否有查看报告的权限
         CheckinTopic topic = checkinService.getTopicById(topicId);
         if (topic == null) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -570,11 +736,31 @@ public class CheckinController {
         }
 
         boolean isAdmin = permissionService.hasRole(user, "ADMIN");
+        boolean isPublisher = permissionService.hasRole(user, "PUBLISHER");
+        boolean isViewer = permissionService.hasRole(user, "VIEWER");
         boolean isTopicCreator = topic.getCreatedBy() != null && topic.getCreatedBy().equals(user.getId());
         
-        if (!isAdmin && !isTopicCreator) {
+        // 检查用户是否有权限查看此主题的报告
+        // 管理员/发布者：可以查看所有主题的报告
+        // VIEWER/普通用户：只能查看自己创建的主题或曾经打卡的主题的报告
+        boolean canViewReport = false;
+        
+        if (isAdmin || isPublisher) {
+            canViewReport = true;
+        } else if (isTopicCreator) {
+            // 自己创建的主题
+            canViewReport = true;
+        } else {
+            // 检查是否曾在此主题打过卡
+            List<Long> checkedTopicIds = checkinService.getCheckedTopicIds(user.getId());
+            if (checkedTopicIds != null && checkedTopicIds.contains(topicId)) {
+                canViewReport = true;
+            }
+        }
+        
+        if (!canViewReport) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "权限不足：只有管理员或主题发布者才能查看报告");
+            errorResponse.put("error", "无权查看此主题的报告");
             return errorResponse;
         }
 

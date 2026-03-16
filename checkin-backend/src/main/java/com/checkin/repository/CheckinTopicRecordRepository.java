@@ -62,4 +62,7 @@ public interface CheckinTopicRecordRepository extends JpaRepository<CheckinTopic
             @Param("topicId") Long topicId, 
             @Param("startDate") Date startDate, 
             @Param("endDate") Date endDate);
+
+    @Query("SELECT DISTINCT r.topicId FROM CheckinTopicRecord r WHERE r.userId = :userId")
+    List<Long> findDistinctTopicIdsByUserId(@Param("userId") Long userId);
 }

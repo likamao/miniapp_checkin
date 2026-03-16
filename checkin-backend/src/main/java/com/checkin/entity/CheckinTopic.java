@@ -34,6 +34,9 @@ public class CheckinTopic {
     @Column(name = "created_by")
     private Long createdBy;
 
+    @Column(name = "visibility", length = 20)
+    private String visibility = "private";  // 可见性：private-私有(仅自己和管理员可见), public-公开(全员可见)
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -115,6 +118,14 @@ public class CheckinTopic {
 
     public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 
     public Date getCreatedAt() {

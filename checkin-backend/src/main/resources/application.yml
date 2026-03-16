@@ -1,4 +1,4 @@
 # 主配置文件
 spring:
   profiles:
-    active: pro  # 默认使用开发环境
+    active: dev  # 默认使用开发环境

@@ -56,8 +56,8 @@ Page({
 
       // 根据 profileSetupCompleted 判断是否弹出昵称框
       if (result.user && result.user.profileSetupCompleted) {
-        // 资料已完善，直接进入广场页面
-        wx.switchTab({ url: '/pages/square/square' });
+        // 资料已完善，返回原页面或进入广场页面
+        this.navigateBackOrSquare();
       } else {
         // 需要完善资料，弹出昵称框
         this.setData({
@@ -90,7 +90,7 @@ Page({
     wx.showLoading({ title: '保存中...' });
 
     const app = getApp();
-    const token = app.globalData.token;
+    const token = wx.getStorageSync('token');
 
     // 调用更新用户资料接口
     wx.request({
@@ -109,8 +109,8 @@ Page({
           app.globalData.userInfo = res.data.user;
           wx.setStorageSync('userInfo', res.data.user);
 
-          // 进入广场页面
-          wx.switchTab({ url: '/pages/square/square' });
+          // 返回原页面或进入广场页面
+          this.navigateBackOrSquare();
         } else {
           wx.showToast({ title: '保存失败', icon: 'none' });
         }
@@ -120,5 +120,23 @@ Page({
         wx.showToast({ title: '网络错误', icon: 'none' });
       }
     });
+  },
+
+  // 返回原页面或进入广场页面
+  navigateBackOrSquare: function() {
+    // 检查是否有待执行的回调
+    const app = getApp();
+    if (app.pendingCallback) {
+      // 执行回调
+      const callback = app.pendingCallback;
+      app.pendingCallback = null;
+      callback();
+      
+      // 返回上一页
+      wx.navigateBack({ delta: 1 });
+    } else {
+      // 没有回调，进入广场页面
+      wx.switchTab({ url: '/pages/square/square' });
+    }
   }
 });

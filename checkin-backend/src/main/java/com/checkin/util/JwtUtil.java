@@ -3,6 +3,9 @@ package com.checkin.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -37,12 +40,26 @@ public class JwtUtil {
     }
 
     public Long getUserIdFromToken(String token) {
-        Claims claims = parseToken(token);
-        return Long.parseLong(claims.getSubject());
+        try {
+            Claims claims = parseToken(token);
+            return Long.parseLong(claims.getSubject());
+        } catch (ExpiredJwtException e) {
+            // Token 已过期
+            return null;
+        } catch (Exception e) {
+            // 其他解析错误
+            return null;
+        }
     }
 
     public boolean isTokenExpired(String token) {
-        Claims claims = parseToken(token);
-        return claims.getExpiration().before(new Date());
+        try {
+            Claims claims = parseToken(token);
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (Exception e) {
+            return true;
+        }
     }
 }

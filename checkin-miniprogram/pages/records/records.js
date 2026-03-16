@@ -25,7 +25,25 @@ Page({
     // 检查是否已登录
     const app = getApp();
     if (!app.checkLogin()) {
-      wx.redirectTo({ url: '/pages/login/login' });
+      // 未登录，弹出登录提示
+      wx.showModal({
+        title: '提示',
+        content: '请先登录以查看打卡记录',
+        confirmText: '去登录',
+        success: (res) => {
+          if (res.confirm) {
+            // 跳转到登录页面，登录成功后返回记录页面
+            wx.navigateTo({
+              url: '/pages/login/login'
+            });
+          } else {
+            // 用户取消，返回打卡页面
+            wx.switchTab({
+              url: '/pages/square/square'
+            });
+          }
+        }
+      });
       return;
     }
     
@@ -47,6 +65,29 @@ Page({
     this.loadRecords(true);
   },
   onShow: function() {
+    // 每次显示页面时检查登录状态
+    const app = getApp();
+    if (!app.checkLogin()) {
+      // 未登录，弹出登录提示
+      wx.showModal({
+        title: '提示',
+        content: '请先登录以查看打卡记录',
+        confirmText: '去登录',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: '/pages/login/login'
+            });
+          } else {
+            wx.switchTab({
+              url: '/pages/square/square'
+            });
+          }
+        }
+      });
+      return;
+    }
+    
     // 页面显示时重新加载记录
     this.loadRecords(true);
   },
@@ -184,7 +225,7 @@ Page({
       url: url,
       method: 'GET',
       header: {
-        'Authorization': 'Bearer ' + app.globalData.token
+        'Authorization': 'Bearer ' + wx.getStorageSync('token')
       },
       success: (res) => {
         if (reset) {

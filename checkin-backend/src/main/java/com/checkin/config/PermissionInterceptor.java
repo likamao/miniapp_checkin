@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -27,8 +29,37 @@ public class PermissionInterceptor implements HandlerInterceptor {
     @Autowired
     private PermissionService permissionService;
 
+    // 无需登录即可访问的路径白名单（前缀匹配）
+    private static final List<String> WHITE_LIST = Arrays.asList(
+            "/api/checkin/topics",
+            "/api/test/generate-token"
+    );
+
+    // 需要精确匹配的白名单路径
+    private static final List<String> EXACT_WHITE_LIST = Arrays.asList(
+    );
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String requestURI = request.getRequestURI();
+        
+        // 检查是否在白名单中
+        if (isWhiteListed(requestURI) || isExactWhiteListed(requestURI)) {
+            // 白名单路径也尝试解析 token（如果有的话），以便获取用户信息
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.replace("Bearer ", "");
+                Long userId = jwtUtil.getUserIdFromToken(token);
+                if (userId != null) {
+                    User user = userRepository.findById(userId).orElse(null);
+                    if (user != null) {
+                        request.setAttribute("user", user);
+                    }
+                }
+            }
+            return true;
+        }
+
         // 获取Authorization头
         String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
@@ -40,7 +71,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
         token = token.replace("Bearer ", "");
         Long userId = jwtUtil.getUserIdFromToken(token);
         if (userId == null) {
-            sendErrorResponse(response, "Unauthorized: Invalid token");
+            sendErrorResponse(response, "Unauthorized: Token expired or invalid");
             return false;
         }
 
@@ -52,7 +83,6 @@ public class PermissionInterceptor implements HandlerInterceptor {
         }
 
         // 检查权限
-        String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
         // 定义权限映射
@@ -75,6 +105,19 @@ public class PermissionInterceptor implements HandlerInterceptor {
         // 将用户信息存储到请求中，以便后续使用
         request.setAttribute("user", user);
         return true;
+    }
+
+    private boolean isWhiteListed(String requestURI) {
+        for (String path : WHITE_LIST) {
+            if (requestURI.startsWith(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isExactWhiteListed(String requestURI) {
+        return EXACT_WHITE_LIST.contains(requestURI);
     }
 
     private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {

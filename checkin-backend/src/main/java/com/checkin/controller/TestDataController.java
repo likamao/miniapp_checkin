@@ -8,6 +8,7 @@ import com.checkin.repository.CheckinRecordRepository;
 import com.checkin.repository.CheckinTopicRecordRepository;
 import com.checkin.repository.CheckinTopicRepository;
 import com.checkin.repository.UserRepository;
+import com.checkin.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class TestDataController {
 
     @Autowired
     private CheckinTopicRecordRepository checkinTopicRecordRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -346,6 +350,41 @@ public class TestDataController {
             logger.error("检查数据库状态失败", e);
             response.put("success", false);
             response.put("error", "检查数据库状态失败：" + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    /**
+     * 生成测试 Token（仅用于开发测试）
+     * GET /api/test/generate-token/{userId}
+     */
+    @GetMapping("/generate-token/{userId}")
+    public ResponseEntity<Map<String, Object>> generateToken(@PathVariable Long userId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (!userOpt.isPresent()) {
+                response.put("success", false);
+                response.put("error", "用户不存在，userId: " + userId);
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            User user = userOpt.get();
+            String token = jwtUtil.generateToken(userId);
+
+            response.put("success", true);
+            response.put("message", "生成 Token 成功");
+            response.put("userId", userId);
+            response.put("nickname", user.getNickname());
+            response.put("token", token);
+
+            logger.info("生成测试 Token，用户ID: {}, 昵称: {}", userId, user.getNickname());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("生成 Token 失败", e);
+            response.put("success", false);
+            response.put("error", "生成 Token 失败：" + e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
     }

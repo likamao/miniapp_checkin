@@ -55,7 +55,7 @@
       
       <!-- 弹框内容 - 双列滚动 -->
       <view class="time-filter-body">
-        <scroll-view class="time-filter-column" scroll-y="true" enhanced="true" show-scrollbar="{{true}}">
+        <scroll-view class="time-filter-column" scroll-y="true" enhanced="true" show-scrollbar="{{false}}">
           <view class="time-filter-year-list">
             <view wx:for="{{yearList}}" wx:key="value" class="time-filter-item {{tempSelectedYear === item.value ? 'active' : ''}}" catchtap="selectYear" data-year="{{item.value}}">
               <text class="time-filter-item-text">{{item.label}}</text>
@@ -68,7 +68,7 @@
         
         <view class="time-filter-divider"></view>
         
-        <scroll-view class="time-filter-column" scroll-y="true" enhanced="true" show-scrollbar="{{true}}">
+        <scroll-view class="time-filter-column" scroll-y="true" enhanced="true" show-scrollbar="{{false}}">
           <view class="time-filter-month-list">
             <view wx:for="{{monthList}}" wx:key="value" class="time-filter-item {{tempSelectedMonth === item.value ? 'active' : ''}}" catchtap="selectMonth" data-month="{{item.value}}">
               <text class="time-filter-item-text">{{item.label}}</text>

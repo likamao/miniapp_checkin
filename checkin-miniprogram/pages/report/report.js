@@ -78,42 +78,28 @@ Page({
   loadTopics: function() {
     const token = wx.getStorageSync('token');
     wx.request({
-      url: apiConfig.API_BASE_URL + '/api/checkin/topics',
+      url: apiConfig.API_BASE_URL + '/api/checkin/topics/report-list',
       method: 'GET',
       header: {
         'Authorization': 'Bearer ' + token
       },
       success: (res) => {
         if (res.data && res.data.topics) {
-          // 为每个主题检查用户是否具有查看报告的权限
-          const topicsWithPermission = res.data.topics.map(topic => {
-            const currentUserId = this.data.user.user.id;
-            const hasAdminRole = this.data.user.roles && this.data.user.roles.includes('ADMIN');
-            const isTopicCreator = topic.createdBy === currentUserId;
-            const canViewReport = hasAdminRole || isTopicCreator;
-            return {
-              ...topic,
-              canViewReport
-            };
-          });
-          
-          // 过滤出用户有权限查看的主题
-          const accessibleTopics = topicsWithPermission.filter(topic => topic.canViewReport);
-          
+          // 后端已过滤出用户有权限查看的主题列表
           this.setData({
-            topics: accessibleTopics
+            topics: res.data.topics
           });
           
-          if (accessibleTopics.length > 0) {
-            let selectedTopic = accessibleTopics[0];
+          if (res.data.topics.length > 0) {
+            let selectedTopic = res.data.topics[0];
             let selectedIndex = 0;
             
             // 如果有分享的topicId，尝试选择对应的主题
             if (this.data.shareTopicId) {
-              const sharedTopic = accessibleTopics.find(topic => topic.id == this.data.shareTopicId);
+              const sharedTopic = res.data.topics.find(topic => topic.id == this.data.shareTopicId);
               if (sharedTopic) {
                 selectedTopic = sharedTopic;
-                selectedIndex = accessibleTopics.indexOf(sharedTopic);
+                selectedIndex = res.data.topics.indexOf(sharedTopic);
               }
             }
             

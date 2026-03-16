@@ -21,4 +21,16 @@ public interface CheckinTopicRepository extends JpaRepository<CheckinTopic, Long
 
     @Query("SELECT t FROM CheckinTopic t WHERE t.status = 0 ORDER BY t.updatedAt DESC")
     List<CheckinTopic> findAllExpiredTopics();
+
+    @Query("SELECT t FROM CheckinTopic t WHERE t.visibility = 'public' OR t.createdBy = :userId ORDER BY t.createdAt DESC")
+    List<CheckinTopic> findVisibleTopics(@Param("userId") Long userId);
+
+    @Query("SELECT t FROM CheckinTopic t WHERE (t.visibility = 'public' OR t.createdBy = :userId) AND t.startDatetime <= :date AND t.endDatetime >= :date AND t.status = 1 ORDER BY t.createdAt DESC")
+    List<CheckinTopic> findActiveVisibleTopics(@Param("userId") Long userId, @Param("date") Date date);
+
+    @Query("SELECT t FROM CheckinTopic t WHERE t.visibility = 'public' ORDER BY t.createdAt DESC")
+    List<CheckinTopic> findAdminTopics();
+
+    @Query("SELECT t FROM CheckinTopic t WHERE t.createdBy = :userId ORDER BY t.createdAt DESC")
+    List<CheckinTopic> findByCreatedBy(@Param("userId") Long userId);
 }

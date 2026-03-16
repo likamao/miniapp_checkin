@@ -45,6 +45,9 @@ public class CheckinService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PermissionService permissionService;
+
 
 
     /**
@@ -59,7 +62,8 @@ public class CheckinService {
         CheckinRecord record = new CheckinRecord();
         record.setUser(user);
         record.setTitle(title);
-        record.setContent(content);
+        // 确保 content 不为 null，如果为空则设置为空字符串
+        record.setContent(content != null ? content : "");
         record.setCheckinTime(new Date());
         record.setCreatedAt(new Date());
         record.setUpdatedAt(new Date());
@@ -273,6 +277,114 @@ public class CheckinService {
     }
 
     /**
+     * 获取管理员发布的主题（公开主题）
+     * 
+     * @return 管理员发布的主题列表
+     */
+    public List<CheckinTopic> getAdminTopics() {
+        return checkinTopicRepository.findAdminTopics();
+    }
+
+    /**
+     * 根据用户获取可见的主题列表（带权限过滤）
+     * 
+     * @param user 当前用户
+     * @return 可见的主题列表
+     */
+    public List<CheckinTopic> getVisibleTopics(User user) {
+        boolean isAdmin = permissionService.hasRole(user, "ADMIN");
+        boolean isPublisher = permissionService.hasRole(user, "PUBLISHER");
+        
+        // 管理员和发布者可以看到所有主题
+        if (isAdmin || isPublisher) {
+            return checkinTopicRepository.findAllOrderByCreatedAtDesc();
+        }
+        
+        // 普通用户只能看到公开主题和自己创建的私有主题
+        return checkinTopicRepository.findVisibleTopics(user.getId());
+    }
+
+    /**
+     * 获取用户可以查看报告的主题列表
+     * 包含：1) 自己创建的所有主题 2) 曾经打过卡的所有主题
+     * 
+     * @param user 当前用户
+     * @return 可以查看报告的主题列表
+     */
+    public List<CheckinTopic> getReportTopics(User user) {
+        Long userId = user.getId();
+        
+        // 获取用户创建的主题ID列表
+        List<CheckinTopic> createdTopics = checkinTopicRepository.findByCreatedBy(userId);
+        
+        // 获取用户打过卡的主题ID列表
+        List<Long> checkedTopicIds = checkinTopicRecordRepository.findDistinctTopicIdsByUserId(userId);
+        List<CheckinTopic> checkedTopics = new java.util.ArrayList<>();
+        if (checkedTopicIds != null && !checkedTopicIds.isEmpty()) {
+            checkedTopics = checkinTopicRepository.findAllById(checkedTopicIds);
+        }
+        
+        // 合并去重
+        java.util.Set<Long> mergedIds = new java.util.HashSet<>();
+        List<CheckinTopic> result = new java.util.ArrayList<>();
+        
+        for (CheckinTopic topic : createdTopics) {
+            if (mergedIds.add(topic.getId())) {
+                result.add(topic);
+            }
+        }
+        
+        for (CheckinTopic topic : checkedTopics) {
+            if (mergedIds.add(topic.getId())) {
+                result.add(topic);
+            }
+        }
+        
+        // 按创建时间倒序排列
+        result.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+        
+        return result;
+    }
+
+    /**
+     * 判断用户是否有权限查看指定主题
+     * 
+     * @param topic 主题对象
+     * @param userId 当前用户ID
+     * @param isAdmin 当前用户是否是管理员
+     * @return 是否可见
+     */
+    public boolean canViewTopic(CheckinTopic topic, Long userId, boolean isAdmin) {
+        // 1. 管理员始终可见
+        if (isAdmin) {
+            return true;
+        }
+        
+        // 2. 主题创建者始终可见
+        if (topic.getCreatedBy() != null && topic.getCreatedBy().equals(userId)) {
+            return true;
+        }
+        
+        // 3. 公开主题全员可见
+        if ("public".equals(topic.getVisibility())) {
+            return true;
+        }
+        
+        // 4. 私有主题仅创建者和管理员可见
+        return false;
+    }
+
+    /**
+     * 获取用户曾经打卡过的主题ID列表
+     * 
+     * @param userId 用户ID
+     * @return 打卡过的主题ID列表
+     */
+    public List<Long> getCheckedTopicIds(Long userId) {
+        return checkinTopicRecordRepository.findDistinctTopicIdsByUserId(userId);
+    }
+
+    /**
      * 获取所有有效主题（未过期的主题）
      * 
      * @return 有效主题列表
@@ -280,6 +392,25 @@ public class CheckinService {
     public List<CheckinTopic> getAllActiveTopics() {
         // 使用当前时间查询在有效期内的主题
         return checkinTopicRepository.findActiveTopics(new Date());
+    }
+
+    /**
+     * 根据用户获取可见的有效主题列表（带权限过滤）
+     * 
+     * @param user 当前用户
+     * @return 可见的有效主题列表
+     */
+    public List<CheckinTopic> getActiveVisibleTopics(User user) {
+        boolean isAdmin = permissionService.hasRole(user, "ADMIN");
+        boolean isPublisher = permissionService.hasRole(user, "PUBLISHER");
+        
+        // 管理员和发布者可以看到所有有效主题
+        if (isAdmin || isPublisher) {
+            return checkinTopicRepository.findActiveTopics(new Date());
+        }
+        
+        // 普通用户只能看到公开主题和自己创建的私有主题
+        return checkinTopicRepository.findActiveVisibleTopics(user.getId(), new Date());
     }
 
     /**
@@ -322,6 +453,15 @@ public class CheckinService {
         topic.setDurationDays(durationDays);
         topic.setStatus(1);
         topic.setCreatedBy(creator.getId());
+        
+        // 根据用户角色设置主题可见性
+        boolean isAdmin = permissionService.hasRole(creator, "ADMIN");
+        boolean isPublisher = permissionService.hasRole(creator, "PUBLISHER");
+        if (isAdmin || isPublisher) {
+            topic.setVisibility("public");  // 管理员或发布者创建的主题默认为公开
+        } else {
+            topic.setVisibility("private"); // 普通用户创建的主题默认为私有
+        }
         
         // 设置主题的开始和结束时间
         Calendar calendar = Calendar.getInstance();

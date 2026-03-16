@@ -3,7 +3,7 @@
 const dev = 'http://localhost:30100';
 
 const pro = 'https://summer.likamao.top';
-const API_BASE_URL = dev;
+const API_BASE_URL = pro;
 
 module.exports = {
   API_BASE_URL

@@ -38,10 +38,10 @@
   <!-- 空状态 -->
   <view wx:if="{{topics.length === 0}}" class="empty">暂无主题</view>
 
-  <!-- 悬浮按钮组 -->
+  <!-- 主题列表 -->
   <view class="buttons-container">
     <!-- 发布主题按钮 -->
-    <view wx:if="{{hasReportPermission && token}}" class="action-button publish-button" bindtap="showPublishModal">
+    <view wx:if="{{hasPublishPermission && token}}" class="action-button publish-button" bindtap="showPublishModal">
       <text class="action-button-text">发布主题</text>
     </view>
     <!-- 打卡按钮 -->
@@ -68,6 +68,12 @@
         <view class="modal-close" bindtap="hidePublishModal">×</view>
         
         <view class="modal-title">发布主题</view>
+        
+        <!-- 私密提示 - 仅 USER/VIEWER 角色可见 -->
+        <view wx:if="{{isPrivateTopic}}" class="private-tip">
+          <text class="private-tip-icon">🔒</text>
+          <text class="private-tip-text">您创建的主题仅自己可见</text>
+        </view>
         
         <!-- 波浪装饰 -->
         <view class="modal-wave-decoration">
@@ -178,7 +184,7 @@
       <!-- 打卡表单 -->
       <view wx:else class="checkin-card">
         <view class="checkin-title">今日打卡</view>
-        <scroll-view class="checkin-scroll-view" scroll-y="true" enhanced="true" show-scrollbar="{{true}}">
+        <scroll-view class="checkin-scroll-view" scroll-y="true" enhanced="true" show-scrollbar="{{false}}" enable-flex="{{true}}">
           <form bindsubmit="checkinSubmitCheckin">
             <view class="checkin-form-item">
               <text>选择主题</text>

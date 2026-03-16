@@ -40,12 +40,11 @@ Page({
   },
 
   getCurrentUserInfo() {
-    const app = getApp();
     wx.request({
       url: `${API_BASE_URL}/api/users/me`,
       method: 'GET',
       header: {
-        'Authorization': 'Bearer ' + app.globalData.token
+        'Authorization': 'Bearer ' + wx.getStorageSync('token')
       },
       success: (res) => {
         if (res.data && res.data.user) {
@@ -61,12 +60,11 @@ Page({
   },
 
   loadTopicDetail() {
-    const app = getApp();
     wx.request({
       url: `${API_BASE_URL}/api/checkin/topics/${this.data.topicId}`,
       method: 'GET',
       header: {
-        'Authorization': 'Bearer ' + app.globalData.token
+        'Authorization': 'Bearer ' + wx.getStorageSync('token')
       },
       success: (res) => {
         if (res.data && res.data.topic) {
@@ -102,12 +100,11 @@ Page({
   },
 
   loadCheckinRecords() {
-    const app = getApp();
     wx.request({
       url: `${API_BASE_URL}/api/checkin/topics/${this.data.topicId}/checkin-records`,
       method: 'GET',
       header: {
-        'Authorization': 'Bearer ' + app.globalData.token
+        'Authorization': 'Bearer ' + wx.getStorageSync('token')
       },
       data: {
         page: 1,
@@ -178,12 +175,11 @@ Page({
 
     wx.showLoading({ title: '提交中...' });
 
-    const app = getApp();
     wx.request({
       url: `${API_BASE_URL}/api/checkin/topics/${this.data.topicId}/checkin`,
       method: 'POST',
       header: {
-        'Authorization': 'Bearer ' + app.globalData.token,
+        'Authorization': 'Bearer ' + wx.getStorageSync('token'),
         'Content-Type': 'application/json'
       },
       data: {
@@ -267,12 +263,11 @@ Page({
 
     wx.showLoading({ title: '保存中...' });
 
-    const app = getApp();
     wx.request({
       url: `${API_BASE_URL}/api/checkin/topics/${this.data.topicId}`,
       method: 'PUT',
       header: {
-        'Authorization': 'Bearer ' + app.globalData.token,
+        'Authorization': 'Bearer ' + wx.getStorageSync('token'),
         'Content-Type': 'application/json'
       },
       data: {

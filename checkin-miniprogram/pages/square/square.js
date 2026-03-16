@@ -18,6 +18,7 @@ Page({
     maxDescriptionInputHeight: 400, // 描述输入框最大高度
     hasPublishPermission: false, // 是否有发布权限
     hasReportPermission: false, // 是否有报告查看权限
+    isPrivateTopic: false, // 是否创建的是私有主题（USER/VIEWER角色）
     // 打卡相关数据
     checkinIsLoading: false,
     checkinHasCheckedInToday: false,
@@ -32,9 +33,11 @@ Page({
   },
 
   onLoad() {
-    // 获取存储的token
+    // 获取存储的token并同步到globalData
+    const app = getApp();
     const token = wx.getStorageSync('token');
     this.setData({ token });
+    app.globalData.token = token;
     
     // 检查用户权限
     this.checkUserPermissions();
@@ -78,7 +81,7 @@ Page({
 
   // 检查用户权限
   checkUserPermissions() {
-    const token = this.data.token;
+    const token = wx.getStorageSync('token');
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/users/me',
       method: 'GET',
@@ -87,21 +90,28 @@ Page({
       },
       success: (res) => {
         if (res.data && res.data.user) {
-          // 检查用户是否有管理员角色
+          // 检查用户角色
           console.log(res.data.user);
-          const hasAdminRole = res.data.user.roles && res.data.user.roles.includes('ADMIN');
+          const roles = res.data.user.roles || [];
+          const hasAdminRole = roles.includes('ADMIN');
+          const isPublisher = roles.includes('PUBLISHER');
+          
+          // USER 和 VIEWER 角色创建的主题默认为私有
+          const isPrivateTopic = !hasAdminRole && !isPublisher;
           
           this.setData({
-            hasPublishPermission: true, // 暂时默认所有登录用户都有发布权限
-            hasReportPermission: hasAdminRole
+            hasPublishPermission: true, // 后端已支持所有用户创建主题（USER创建默认为私有）
+            hasReportPermission: hasAdminRole,
+            isPrivateTopic: isPrivateTopic
           });
         }
       },
       fail: (err) => {
         console.error('获取用户权限失败:', err);
         this.setData({
-          hasPublishPermission: true,
-          hasReportPermission: false
+          hasPublishPermission: false,
+          hasReportPermission: false,
+          isPrivateTopic: false
         });
       }
     });
@@ -109,6 +119,11 @@ Page({
 
   // 显示打卡弹框
   showCheckinModal() {
+    // 检查登录状态
+    if (!this.checkLoginStatus()) {
+      return;
+    }
+    
     this.setData({ showCheckinModal: true, checkinIsLoading: true });
     // 禁止背景滚动
     wx.pageScrollTo({ scrollTop: 0 });
@@ -125,7 +140,7 @@ Page({
 
   // 检查今日打卡状态
   checkinCheckTodayCheckin() {
-    const token = this.data.token;
+    const token = wx.getStorageSync('token');
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/check-today',
       method: 'GET',
@@ -156,7 +171,7 @@ Page({
 
   // 加载打卡主题列表（仅有效主题）
   checkinLoadTopics() {
-    const token = this.data.token;
+    const token = wx.getStorageSync('token');
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/topics/active',
       method: 'GET',
@@ -220,19 +235,24 @@ Page({
     const { title, content } = e.detail.value;
     const topicId = this.data.checkinSelectedTopicId;
     
-    // 表单验证
-    if (!title || !content) {
-      wx.showToast({ title: '请填写完整信息', icon: 'none' });
+    // 再次检查登录状态（防止登录过期）
+    if (!this.checkLoginStatus()) {
+      return;
+    }
+    
+    // 表单验证：标题必填，内容选填
+    if (!title || title.trim() === '') {
+      wx.showToast({ title: '请填写打卡标题', icon: 'none' });
       return;
     }
     
     if (title.length > 50) {
-      wx.showToast({ title: '标题不能超过50字', icon: 'none' });
+      wx.showToast({ title: '标题不能超过 50 字', icon: 'none' });
       return;
     }
     
-    if (content.length > 500) {
-      wx.showToast({ title: '内容不能超过500字', icon: 'none' });
+    if (content && content.length > 500) {
+      wx.showToast({ title: '内容不能超过 500 字', icon: 'none' });
       return;
     }
     
@@ -244,7 +264,7 @@ Page({
     wx.showLoading({ title: '提交中...' });
     
     // 调用后端API提交打卡数据
-    const token = this.data.token;
+    const token = wx.getStorageSync('token');
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/topics/' + topicId + '/checkin',
       method: 'POST',
@@ -365,17 +385,19 @@ Page({
   loadTopics() {
     wx.showLoading({ title: '加载中...' });
     
+    // 从 storage 获取 token，确保获取最新值
+    const token = wx.getStorageSync('token');
+    
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/topics',
       method: 'GET',
       header: {
-        'Authorization': 'Bearer ' + this.data.token
+        'Authorization': 'Bearer ' + token
       },
       success: (res) => {
         wx.hideLoading();
         if (res.data && res.data.topics) {
           // 获取当前用户信息
-          const token = this.data.token;
           wx.request({
             url: apiConfig.API_BASE_URL + '/api/users/me',
             method: 'GET',
@@ -386,6 +408,7 @@ Page({
               if (userRes.data && userRes.data.user) {
                 const currentUserId = userRes.data.user.user.id;
                 const hasAdminRole = userRes.data.user.roles && userRes.data.user.roles.includes('ADMIN');
+                const isPublisher = userRes.data.user.roles && userRes.data.user.roles.includes('PUBLISHER');
                 
                 // 为每个主题检查用户是否具有查看报告的权限，并检测是否过期
                 const topicsWithPermission = res.data.topics.map(topic => {
@@ -448,6 +471,40 @@ Page({
     const topicId = e.currentTarget.dataset.topicId;
     wx.navigateTo({
       url: '/pages/topic-detail/topic-detail?topicId=' + topicId
+    });
+  },
+
+  // 检查登录状态，未登录时弹出登录提示
+  checkLoginStatus(callback) {
+    const app = getApp();
+    if (app.checkLogin()) {
+      // 已登录，执行回调
+      if (callback) callback();
+      return true;
+    } else {
+      // 未登录，显示登录提示
+      this.showLoginRequired(callback);
+      return false;
+    }
+  },
+
+  // 显示登录提示弹窗
+  showLoginRequired(callback) {
+    wx.showModal({
+      title: '提示',
+      content: '请先登录以使用此功能',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          // 保存回调函数到全局，登录成功后调用
+          const app = getApp();
+          app.pendingCallback = callback;
+          // 跳转到登录页面
+          wx.navigateTo({
+            url: '/pages/login/login'
+          });
+        }
+      }
     });
   },
 
@@ -559,7 +616,7 @@ Page({
     wx.showLoading({ title: '发布中...' });
     
     // 调用后端 API 发布主题
-    const token = this.data.token;
+    const token = wx.getStorageSync('token');
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/topics',
       method: 'POST',
@@ -594,8 +651,14 @@ Page({
 
   // 跳转到报告页面
   navigateToReport() {
+    // 检查登录状态
+    if (!this.checkLoginStatus()) {
+      return;
+    }
+    
     // 前端权限验证
-    if (!this.data.token || !this.data.hasReportPermission) {
+    const token = wx.getStorageSync('token');
+    if (!token || !this.data.hasReportPermission) {
       wx.showToast({ title: '权限不足', icon: 'none' });
       return;
     }
