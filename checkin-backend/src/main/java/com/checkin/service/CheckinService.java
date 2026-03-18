@@ -209,7 +209,11 @@ public class CheckinService {
      * @param pageable 分页参数
      * @return 分页的打卡记录
      */
-    public Page<CheckinRecord> getCheckinRecordsByYearAndMonth(User user, int year, Integer month, Pageable pageable) {
+    public Page<CheckinRecord> getCheckinRecordsByYearAndMonth(User user, Integer year, Integer month, Pageable pageable) {
+        if (year == null) {
+            return getCheckinRecords(user, pageable);
+        }
+        
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         
@@ -439,10 +443,11 @@ public class CheckinService {
      * @param title 主题标题
      * @param description 主题描述
      * @param durationDays 持续天数，可为null（默认7天）
+     * @param isPrivate 是否私有，可为null（默认根据用户角色设置）
      * @param creator 创建者信息
      * @return 创建的主题
      */
-    public CheckinTopic createTopic(String title, String description, Integer durationDays, User creator) {
+    public CheckinTopic createTopic(String title, String description, Integer durationDays, Boolean isPrivate, User creator) {
         CheckinTopic topic = new CheckinTopic();
         topic.setTitle(title);
         topic.setDescription(description);
@@ -454,13 +459,19 @@ public class CheckinService {
         topic.setStatus(1);
         topic.setCreatedBy(creator.getId());
         
-        // 根据用户角色设置主题可见性
-        boolean isAdmin = permissionService.hasRole(creator, "ADMIN");
-        boolean isPublisher = permissionService.hasRole(creator, "PUBLISHER");
-        if (isAdmin || isPublisher) {
-            topic.setVisibility("public");  // 管理员或发布者创建的主题默认为公开
+        // 设置主题可见性
+        if (isPrivate != null) {
+            // 如果前端指定了可见性，则使用前端指定的值
+            topic.setVisibility(isPrivate ? "private" : "public");
         } else {
-            topic.setVisibility("private"); // 普通用户创建的主题默认为私有
+            // 否则根据用户角色设置主题可见性
+            boolean isAdmin = permissionService.hasRole(creator, "ADMIN");
+            boolean isPublisher = permissionService.hasRole(creator, "PUBLISHER");
+            if (isAdmin || isPublisher) {
+                topic.setVisibility("public");  // 管理员或发布者创建的主题默认为公开
+            } else {
+                topic.setVisibility("private"); // 普通用户创建的主题默认为私有
+            }
         }
         
         // 设置主题的开始和结束时间

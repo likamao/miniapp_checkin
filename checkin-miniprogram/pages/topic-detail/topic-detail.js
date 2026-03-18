@@ -1,4 +1,5 @@
 const { API_BASE_URL } = require('../../utils/apiConfig');
+const { getValidToken, validateCheckinForm, cleanObject } = require('../../utils/validate');
 
 Page({
   data: {
@@ -40,16 +41,21 @@ Page({
   },
 
   getCurrentUserInfo() {
+    const token = wx.getStorageSync('token');
+    if (!token) {
+      return;
+    }
+    
     wx.request({
       url: `${API_BASE_URL}/api/users/me`,
       method: 'GET',
       header: {
-        'Authorization': 'Bearer ' + wx.getStorageSync('token')
+        'Authorization': 'Bearer ' + token
       },
       success: (res) => {
         if (res.data && res.data.user) {
           this.setData({
-            currentUserId: res.data.user.user.id
+            currentUserId: res.data.user.user?.id
           });
         }
       },
@@ -60,12 +66,19 @@ Page({
   },
 
   loadTopicDetail() {
+    // 获取有效的 token
+    const token = getValidToken();
+    
+    // 构建请求头
+    const header = {};
+    if (token) {
+      header['Authorization'] = 'Bearer ' + token;
+    }
+    
     wx.request({
       url: `${API_BASE_URL}/api/checkin/topics/${this.data.topicId}`,
       method: 'GET',
-      header: {
-        'Authorization': 'Bearer ' + wx.getStorageSync('token')
-      },
+      header: header,
       success: (res) => {
         if (res.data && res.data.topic) {
           const topic = res.data.topic;
@@ -100,12 +113,19 @@ Page({
   },
 
   loadCheckinRecords() {
+    // 获取有效的 token
+    const token = getValidToken();
+    
+    // 构建请求头
+    const header = {};
+    if (token) {
+      header['Authorization'] = 'Bearer ' + token;
+    }
+    
     wx.request({
       url: `${API_BASE_URL}/api/checkin/topics/${this.data.topicId}/checkin-records`,
       method: 'GET',
-      header: {
-        'Authorization': 'Bearer ' + wx.getStorageSync('token')
-      },
+      header: header,
       data: {
         page: 1,
         pageSize: 20
@@ -122,6 +142,22 @@ Page({
   },
 
   showCheckinModal() {
+    // 检查登录状态
+    const app = getApp();
+    if (!app.checkLogin()) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录以使用此功能',
+        confirmText: '去登录',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({ url: '/pages/login/login' });
+          }
+        }
+      });
+      return;
+    }
+    
     this.setData({
       showCheckinModal: true,
       checkinForm: {
@@ -153,39 +189,35 @@ Page({
   submitCheckin() {
     const { title, content } = this.data.checkinForm;
 
-    if (!title) {
-      wx.showToast({ title: '请输入打卡标题', icon: 'none' });
-      return;
-    }
-
-    if (title.length > 50) {
-      wx.showToast({ title: '标题不能超过50字', icon: 'none' });
-      return;
-    }
-
-    if (!content) {
-      wx.showToast({ title: '请输入打卡内容', icon: 'none' });
-      return;
-    }
-
-    if (content.length > 500) {
-      wx.showToast({ title: '内容不能超过500字', icon: 'none' });
+    // 表单验证
+    const formData = { title, content };
+    const validationResult = validateCheckinForm(formData);
+    if (!validationResult.isValid) {
+      wx.showToast({ title: validationResult.error, icon: 'none' });
       return;
     }
 
     wx.showLoading({ title: '提交中...' });
 
+    // 获取有效的 token
+    const token = getValidToken();
+    if (!token) {
+      wx.hideLoading();
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    // 清理数据，确保不会发送无效参数
+    const cleanedData = cleanObject({ title, content });
+
     wx.request({
       url: `${API_BASE_URL}/api/checkin/topics/${this.data.topicId}/checkin`,
       method: 'POST',
       header: {
-        'Authorization': 'Bearer ' + wx.getStorageSync('token'),
+        'Authorization': 'Bearer ' + token,
         'Content-Type': 'application/json'
       },
-      data: {
-        title,
-        content
-      },
+      data: cleanedData,
       success: (res) => {
         wx.hideLoading();
         if (res.data && res.data.error) {

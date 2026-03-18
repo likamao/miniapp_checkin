@@ -9,36 +9,8 @@ Page({
     currentWeekInfo: ''
   },
   onLoad: function() {
-    // 检查是否已登录
-    const app = getApp();
-    if (!app.checkLogin()) {
-      // 未登录，弹出登录提示
-      wx.showModal({
-        title: '提示',
-        content: '请先登录以查看统计数据',
-        confirmText: '去登录',
-        success: (res) => {
-          if (res.confirm) {
-            // 跳转到登录页面，登录成功后返回统计页面
-            wx.navigateTo({
-              url: '/pages/login/login'
-            });
-          } else {
-            // 用户取消，返回打卡页面
-            wx.switchTab({
-              url: '/pages/square/square'
-            });
-          }
-        }
-      });
-      return;
-    }
-    
     // 计算当前月份和周信息
     this.calculateDateInfo();
-    
-    // 加载统计数据
-    this.loadStatistics();
   },
   onShow: function() {
     // 每次显示页面时检查登录状态
@@ -51,13 +23,13 @@ Page({
         confirmText: '去登录',
         success: (res) => {
           if (res.confirm) {
-            wx.navigateTo({
-              url: '/pages/login/login'
-            });
+            // 保存回调函数，登录成功后返回统计页面
+            app.pendingCallback = () => {
+              this.loadStatistics();
+            };
+            wx.navigateTo({ url: '/pages/login/login' });
           } else {
-            wx.switchTab({
-              url: '/pages/square/square'
-            });
+            wx.switchTab({ url: '/pages/square/square' });
           }
         }
       });

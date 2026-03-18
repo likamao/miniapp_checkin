@@ -385,6 +385,7 @@ public class CheckinController {
         String title = (String) request.get("title");
         String description = (String) request.get("description");
         Integer durationDays = request.get("durationDays") != null ? Integer.valueOf(request.get("durationDays").toString()) : null;
+        Boolean isPrivate = request.get("isPrivate") != null ? Boolean.valueOf(request.get("isPrivate").toString()) : null;
 
         if (title == null || title.isEmpty()) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -398,7 +399,7 @@ public class CheckinController {
             return errorResponse;
         }
 
-        CheckinTopic topic = checkinService.createTopic(title, description, durationDays, user);
+        CheckinTopic topic = checkinService.createTopic(title, description, durationDays, isPrivate, user);
 
         Map<String, Object> response = new HashMap<>();
         Map<String, Object> topicMap = new HashMap<>();

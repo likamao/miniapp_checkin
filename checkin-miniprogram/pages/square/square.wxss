@@ -442,7 +442,7 @@
 /* 弹窗头部 - 海浪风格 */
 .modal-header {
   position: relative;
-  padding: 48rpx 32rpx 80rpx;
+  padding: 80rpx 32rpx 80rpx;
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
   overflow: hidden;
 }
@@ -544,9 +544,9 @@
   justify-content: center;
   margin-top: 16rpx;
   padding: 12rpx 20rpx;
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   border-radius: 8rpx;
-  border: 1rpx solid #ffcc80;
+  border: 2rpx solid #90caf9;
 }
 
 .private-tip-icon {
@@ -556,8 +556,141 @@
 
 .private-tip-text {
   font-size: 24rpx;
-  color: #e65100;
+  color: #1565c0;
+  font-weight: 600;
+}
+
+/* 可见性选择器样式 */
+.visibility-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 0;
+  margin: 0 0 24rpx 0;
+  background: #f5f5f5;
+  border: 2rpx solid #e3f2fd;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.visibility-options {
+  display: flex;
+  gap: 48rpx;
+  width: 100%;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.visibility-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: #ffffff;
+  border: 2rpx solid #e3f2fd;
+  border-radius: 14rpx;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+  min-width: 120rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.visibility-option::before {
+  display: none;
+}
+
+.visibility-option:active {
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(25, 118, 210, 0.1);
+}
+
+.visibility-option.active {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-color: #1976d2;
+  box-shadow: 0 4rpx 16rpx rgba(25, 118, 210, 0.2);
+  transform: translateY(-2rpx);
+}
+
+.visibility-radio {
+  width: 32rpx;
+  height: 32rpx;
+  border: 3rpx solid #90caf9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.visibility-option.active .visibility-radio {
+  border-color: #1976d2;
+  background: #1976d2;
+  animation: pulse 0.4s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.visibility-radio-inner {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.visibility-option.active .visibility-radio-inner {
+  opacity: 1;
+  transform: scale(1);
+  animation: fadeInScale 0.2s ease;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.visibility-label-text {
+  font-size: 28rpx;
+  color: #64b5f6;
   font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.visibility-option.active .visibility-label-text {
+  color: #1976d2;
+  font-weight: 600;
+  text-shadow: 0 1rpx 2rpx rgba(25, 118, 210, 0.2);
 }
 
 .modal-body {
@@ -841,7 +974,7 @@
   font-size: 28rpx;
   color: #1976d2;
   font-weight: 600;
-  padding-left: 12rpx;
+  padding-left: 16rpx;
   position: relative;
 }
 
@@ -851,10 +984,10 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 4rpx;
+  width: 6rpx;
   height: 24rpx;
   background: linear-gradient(180deg, #42a5f5 0%, #1976d2 100%);
-  border-radius: 2rpx;
+  border-radius: 3rpx;
 }
 
 .checkin-input,

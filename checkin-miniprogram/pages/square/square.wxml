@@ -83,6 +83,32 @@
       </view>
       
       <view class="modal-body">
+        <!-- 可见性选择 - 仅 PUBLISHER/ADMIN 角色可见 -->
+        <view wx:if="{{canSelectVisibility}}" class="visibility-selector">
+          <view class="visibility-options">
+            <view 
+              class="visibility-option {{!newTopic.isPrivate ? 'active' : ''}}" 
+              bindtap="toggleVisibility" 
+              data-private="false"
+            >
+              <view class="visibility-radio">
+                <view class="visibility-radio-inner" wx:if="{{!newTopic.isPrivate}}"></view>
+              </view>
+              <text class="visibility-label-text">公开</text>
+            </view>
+            <view 
+              class="visibility-option {{newTopic.isPrivate ? 'active' : ''}}" 
+              bindtap="toggleVisibility" 
+              data-private="true"
+            >
+              <view class="visibility-radio">
+                <view class="visibility-radio-inner" wx:if="{{newTopic.isPrivate}}"></view>
+              </view>
+              <text class="visibility-label-text">私有</text>
+            </view>
+          </view>
+        </view>
+        
         <view class="form-item">
           <text class="form-label">主题标题</text>
           <view class="input-container">

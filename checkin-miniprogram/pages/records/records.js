@@ -1,4 +1,5 @@
 const { API_BASE_URL } = require('../../utils/apiConfig');
+const { buildQueryString, getValidToken } = require('../../utils/validate');
 
 Page({
   data: {
@@ -22,31 +23,6 @@ Page({
     tempSelectedMonth: 0
   },
   onLoad: function() {
-    // 检查是否已登录
-    const app = getApp();
-    if (!app.checkLogin()) {
-      // 未登录，弹出登录提示
-      wx.showModal({
-        title: '提示',
-        content: '请先登录以查看打卡记录',
-        confirmText: '去登录',
-        success: (res) => {
-          if (res.confirm) {
-            // 跳转到登录页面，登录成功后返回记录页面
-            wx.navigateTo({
-              url: '/pages/login/login'
-            });
-          } else {
-            // 用户取消，返回打卡页面
-            wx.switchTab({
-              url: '/pages/square/square'
-            });
-          }
-        }
-      });
-      return;
-    }
-    
     // 设置默认日期为当前月份
     const now = new Date();
     const year = now.getFullYear();
@@ -60,9 +36,6 @@ Page({
     
     // 生成年份和月份列表
     this.generateYearAndMonthLists();
-    
-    // 加载记录
-    this.loadRecords(true);
   },
   onShow: function() {
     // 每次显示页面时检查登录状态
@@ -75,13 +48,13 @@ Page({
         confirmText: '去登录',
         success: (res) => {
           if (res.confirm) {
-            wx.navigateTo({
-              url: '/pages/login/login'
-            });
+            // 保存回调函数，登录成功后返回记录页面
+            app.pendingCallback = () => {
+              this.loadRecords(true);
+            };
+            wx.navigateTo({ url: '/pages/login/login' });
           } else {
-            wx.switchTab({
-              url: '/pages/square/square'
-            });
+            wx.switchTab({ url: '/pages/square/square' });
           }
         }
       });
@@ -211,21 +184,41 @@ Page({
     
     // 构建请求参数
     let url = `${API_BASE_URL}/api/checkin/records`;
+    const params = {
+      page: page,
+      pageSize: pageSize
+    };
+    
     if (filterMode === 'month') {
       const [year, month] = selectedDate.split('-');
-      url += `?year=${year}&month=${month}`;
+      if (year) params.year = year;
+      if (month) params.month = month;
     } else {
       // 提取年份部分
       const year = selectedDate.split('-')[0];
-      url += `?year=${year}`;
+      if (year) params.year = year;
     }
-    url += `&page=${page}&pageSize=${pageSize}`;
+    
+    // 使用构建查询字符串函数，自动过滤无效参数
+    const queryString = buildQueryString(params);
+    url += queryString;
+    
+    const token = getValidToken();
+    if (!token) {
+      if (reset) {
+        wx.hideLoading();
+      } else {
+        this.setData({ loadingMore: false });
+      }
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
     
     wx.request({
       url: url,
       method: 'GET',
       header: {
-        'Authorization': 'Bearer ' + wx.getStorageSync('token')
+        'Authorization': 'Bearer ' + token
       },
       success: (res) => {
         if (reset) {

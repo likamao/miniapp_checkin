@@ -1,0 +1,29 @@
+2026-03-16 22:29:15.024  INFO 23500 --- [main] com.checkin.CheckinApplication           : Starting CheckinApplication using Java 17.0.12 on DESKTOP-K7VS5HU with PID 23500 (C:\Users\echo\Documents\trae_projects\card\checkin-backend\target\classes started by echo in C:\Users\echo\Documents\trae_projects\card\checkin-backend)
+2026-03-16 22:29:15.025 DEBUG 23500 --- [main] com.checkin.CheckinApplication           : Running with Spring Boot v2.6.3, Spring v5.3.15
+2026-03-16 22:29:15.026  INFO 23500 --- [main] com.checkin.CheckinApplication           : The following profiles are active: pro
+2026-03-16 22:29:17.725 DEBUG 23500 --- [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-03-16 22:29:17.775 DEBUG 23500 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 33 mappings in 'requestMappingHandlerMapping'
+2026-03-16 22:29:17.791 DEBUG 23500 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2026-03-16 22:29:17.796 DEBUG 23500 --- [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-03-16 22:29:17.874 ERROR 23500 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 30100 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 30100 or configure this application to listen on another port.
+
+2026-03-16 22:29:57.219  INFO 20492 --- [main] com.checkin.CheckinApplication           : Starting CheckinApplication using Java 17.0.12 on DESKTOP-K7VS5HU with PID 20492 (C:\Users\echo\Documents\trae_projects\card\checkin-backend\target\classes started by echo in C:\Users\echo\Documents\trae_projects\card\checkin-backend)
+2026-03-16 22:29:57.220 DEBUG 20492 --- [main] com.checkin.CheckinApplication           : Running with Spring Boot v2.6.3, Spring v5.3.15
+2026-03-16 22:29:57.221  INFO 20492 --- [main] com.checkin.CheckinApplication           : The following profiles are active: pro
+2026-03-16 22:29:59.757 DEBUG 20492 --- [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-03-16 22:29:59.801 DEBUG 20492 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 33 mappings in 'requestMappingHandlerMapping'
+2026-03-16 22:29:59.818 DEBUG 20492 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2026-03-16 22:29:59.822 DEBUG 20492 --- [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-03-16 22:29:59.939  INFO 20492 --- [main] com.checkin.CheckinApplication           : Started CheckinApplication in 2.972 seconds (JVM running for 3.193)

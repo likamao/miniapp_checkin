@@ -52,7 +52,7 @@ class CheckinServiceTests {
         // 尝试获取第一个主题，如果没有则创建
         testTopic = checkinService.getActiveTopics().stream().findFirst().orElse(null);
         if (testTopic == null) {
-            testTopic = checkinService.createTopic("测试主题", "测试主题描述", 7, testUser);
+            testTopic = checkinService.createTopic("测试主题", "测试主题描述", 7, null, testUser);
         }
     }
 

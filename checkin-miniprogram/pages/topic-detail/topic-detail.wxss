@@ -574,27 +574,41 @@
   box-shadow: 0 8rpx 24rpx rgba(25, 118, 210, 0.15);
 }
 
-.form-input,
-.form-textarea {
+.form-input {
   width: 100%;
   border: none;
   border-radius: 14rpx;
-  font-size: 25rpx;
+  font-size: 28rpx;
   color: #333;
   box-sizing: border-box;
   background: #ffffff;
   line-height: 1.5;
-  padding: 10rpx ;
+  padding: 20rpx;
+  min-height: 80rpx;
+}
+
+.form-textarea {
+  width: 100%;
+  border: none;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+  background: #ffffff;
+  line-height: 1.5;
+  padding: 20rpx;
+  min-height: 200rpx;
+  height: auto;
 }
 
 .form-input::placeholder,
 .form-textarea::placeholder {
   color: #b0bec5;
+  font-size: 28rpx;
+  line-height: 1.5;
 }
 
-.form-textarea {
-  min-height: 200rpx;
-}
+
 
 .modal-footer {
   display: flex;
