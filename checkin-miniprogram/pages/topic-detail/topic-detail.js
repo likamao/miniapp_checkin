@@ -21,7 +21,9 @@ Page({
     checkinResult: {},
     currentUserId: null,
     isTopicCreator: false,
-    isTopicExpired: false
+    isTopicExpired: false,
+    shareImagePath: '',
+    isGeneratingPoster: false
   },
 
   onLoad(options) {
@@ -30,6 +32,8 @@ Page({
       this.getCurrentUserInfo();
       this.loadTopicDetail();
       this.loadCheckinRecords();
+      // 配置分享菜单
+      this.setupShareMenu();
     }
   },
 
@@ -94,6 +98,9 @@ Page({
             isTopicCreator: isTopicCreator,
             isTopicExpired: isExpired
           });
+          
+          // 预先生成分享图片
+          this.generateSharePoster();
         }
       },
       fail: (err) => {
@@ -322,5 +329,98 @@ Page({
         console.error('保存主题失败:', err);
       }
     });
+  },
+
+  // 配置分享菜单
+  setupShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline'],
+      success: () => {
+        console.log('分享菜单配置成功');
+      },
+      fail: (err) => {
+        console.error('分享菜单配置失败:', err);
+      }
+    });
+  },
+
+  // 页面分享回调
+  onShareAppMessage() {
+    const topic = this.data.topic;
+    return {
+      title: `邀请你参加主题：${topic.title}`,
+      path: `/pages/topic-detail/topic-detail?topicId=${this.data.topicId}`,
+      success: function() {
+        wx.showToast({ title: '分享成功', icon: 'success' });
+      },
+      fail: function() {
+        wx.showToast({ title: '分享失败', icon: 'none' });
+      }
+    };
+  },
+
+  // 生成分享海报
+  generateSharePoster() {
+    if (this.data.isGeneratingPoster) return;
+    
+    this.setData({ isGeneratingPoster: true });
+    
+    setTimeout(() => {
+      const posterComponent = this.selectComponent('#sharePoster');
+      if (posterComponent) {
+        posterComponent.generatePoster().catch((err) => {
+          console.error('生成分享海报失败:', err);
+          this.setData({ isGeneratingPoster: false });
+        });
+      }
+    }, 500);
+  },
+
+  // 海报生成成功回调
+  onPosterGenerated(e) {
+    this.setData({
+      shareImagePath: e.detail.imagePath,
+      isGeneratingPoster: false
+    });
+    console.log('分享海报生成成功:', e.detail.imagePath);
+  },
+
+  // 海报生成失败回调
+  onPosterFailed(e) {
+    console.error('分享海报生成失败:', e.detail.error);
+    this.setData({ isGeneratingPoster: false });
+  },
+
+  // 页面分享回调
+  onShareAppMessage() {
+    const topic = this.data.topic;
+    const shareData = {
+      title: `邀请你参加主题：${topic.title}`,
+      path: `/pages/topic-detail/topic-detail?topicId=${this.data.topicId}`
+    };
+    
+    // 如果有生成好的分享图片，使用自定义图片
+    if (this.data.shareImagePath) {
+      shareData.imageUrl = this.data.shareImagePath;
+    }
+    
+    return shareData;
+  },
+
+  // 朋友圈分享回调
+  onShareTimeline() {
+    const topic = this.data.topic;
+    const shareData = {
+      title: `邀请你参加主题：${topic.title}`,
+      query: `topicId=${this.data.topicId}`
+    };
+    
+    // 如果有生成好的分享图片，使用自定义图片
+    if (this.data.shareImagePath) {
+      shareData.imageUrl = this.data.shareImagePath;
+    }
+    
+    return shareData;
   }
 });

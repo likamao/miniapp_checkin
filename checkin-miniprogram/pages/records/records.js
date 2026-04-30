@@ -186,7 +186,8 @@ Page({
     let url = `${API_BASE_URL}/api/checkin/records`;
     const params = {
       page: page,
-      pageSize: pageSize
+      pageSize: pageSize,
+      sort: 'desc' // 添加排序参数，按时间降序排列
     };
     
     if (filterMode === 'month') {
@@ -231,6 +232,8 @@ Page({
           wx.showToast({ title: res.data.error, icon: 'none' });
         } else {
           let newRecords = res.data.records || [];
+          // 确保记录按时间降序排列
+          newRecords.sort((a, b) => new Date(b.checkinTime) - new Date(a.checkinTime));
           if (reset) {
             this.setData({ records: newRecords });
           } else {
@@ -303,5 +306,53 @@ Page({
   // 阻止事件冒泡
   stopPropagation: function() {
     // 空方法，用于阻止事件冒泡
+  },
+  
+  // 分享打卡记录
+  shareRecord: function() {
+    const record = this.data.selectedRecord;
+    if (!record) return;
+    
+    // 显示分享菜单
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    });
+  },
+  
+  // 分享到微信好友
+  onShareAppMessage: function() {
+    const record = this.data.selectedRecord;
+    if (!record) return;
+    
+    return {
+      title: record.title || '我的打卡记录',
+      path: `/pages/records/records`,
+      imageUrl: '',
+      success: function(res) {
+        console.log('分享成功', res);
+      },
+      fail: function(res) {
+        console.log('分享失败', res);
+      }
+    };
+  },
+  
+  // 分享到朋友圈
+  onShareTimeline: function() {
+    const record = this.data.selectedRecord;
+    if (!record) return;
+    
+    return {
+      title: record.title || '我的打卡记录',
+      path: `/pages/records/records`,
+      imageUrl: '',
+      success: function(res) {
+        console.log('分享到朋友圈成功', res);
+      },
+      fail: function(res) {
+        console.log('分享到朋友圈失败', res);
+      }
+    };
   }
 })

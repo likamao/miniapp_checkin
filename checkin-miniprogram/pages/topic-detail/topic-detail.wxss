@@ -78,6 +78,46 @@
   flex: 1;
 }
 
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.share-button {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 20rpx;
+  border: 2rpx solid #90caf9;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  line-height: 1;
+  margin: 0;
+}
+
+.share-button::after {
+  border: none;
+}
+
+.share-button:active {
+  transform: scale(0.95);
+  background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+}
+
+.share-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.share-text {
+  font-size: 26rpx;
+  color: #1976d2;
+  font-weight: 600;
+}
+
 .edit-button {
   display: flex;
   align-items: center;
@@ -86,7 +126,6 @@
   border-radius: 20rpx;
   border: 2rpx solid #90caf9;
   transition: all 0.3s ease;
-  margin-left: 20rpx;
   flex-shrink: 0;
 }
 

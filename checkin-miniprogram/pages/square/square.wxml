@@ -249,5 +249,30 @@
     </view>
   </view>
 
+  <!-- 分享弹窗 -->
+  <view wx:if="{{showShareModal}}" class="share-modal-overlay" catchtap="hideShareModal">
+    <view class="share-modal-content" catchtap="stopPropagation">
+      <view class="share-modal-header">
+        <view class="share-modal-title">分享打卡</view>
+        <view class="share-modal-close" bindtap="hideShareModal">×</view>
+      </view>
+      <view class="share-modal-body">
+        <view class="share-options">
+          <view class="share-option" bindtap="shareToWechat">
+            <view class="share-option-icon">👥</view>
+            <view class="share-option-text">微信好友</view>
+          </view>
+          <view class="share-option" bindtap="shareToMoments">
+            <view class="share-option-icon">📢</view>
+            <view class="share-option-text">朋友圈</view>
+          </view>
+          <view class="share-option" bindtap="copyShareLink">
+            <view class="share-option-icon">🔗</view>
+            <view class="share-option-text">复制链接</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
 
 </view>

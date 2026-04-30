@@ -1,0 +1,9 @@
+<view class="share-poster-container">
+  <canvas 
+    class="poster-canvas" 
+    canvas-id="posterCanvas" 
+    type="2d"
+    id="posterCanvas"
+    style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+  ></canvas>
+</view>

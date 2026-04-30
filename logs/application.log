@@ -1,112 +1,216 @@
-2026-03-18 09:00:14.725  INFO 17092 --- [main] com.checkin.CheckinApplication           : Starting CheckinApplication using Java 17.0.12 on DESKTOP-K7VS5HU with PID 17092 (C:\Users\echo\Documents\trae_projects\card\checkin-backend\target\classes started by echo in C:\Users\echo\Documents\trae_projects\card)
-2026-03-18 09:00:14.732 DEBUG 17092 --- [main] com.checkin.CheckinApplication           : Running with Spring Boot v2.6.3, Spring v5.3.15
-2026-03-18 09:00:14.732  INFO 17092 --- [main] com.checkin.CheckinApplication           : The following profiles are active: pro
-2026-03-18 09:00:18.377 DEBUG 17092 --- [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2026-03-18 09:00:18.446 DEBUG 17092 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 33 mappings in 'requestMappingHandlerMapping'
-2026-03-18 09:00:18.467 DEBUG 17092 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2026-03-18 09:00:18.474 DEBUG 17092 --- [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-03-18 09:00:18.607  INFO 17092 --- [main] com.checkin.CheckinApplication           : Started CheckinApplication in 4.283 seconds (JVM running for 5.758)
-2026-03-18 09:00:24.554  INFO 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-03-18 09:00:24.554 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
-2026-03-18 09:00:24.554 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
-2026-03-18 09:00:24.554 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
-2026-03-18 09:00:24.556 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@374bf34b
-2026-03-18 09:00:24.557 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@7ef7faa9
-2026-03-18 09:00:24.558 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
-2026-03-18 09:00:24.558  INFO 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
-2026-03-18 09:00:24.569 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
-2026-03-18 09:00:24.569 DEBUG 17092 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:00:24.575 DEBUG 17092 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:00:24.575 DEBUG 17092 --- [http-nio-30100-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
-2026-03-18 09:00:25.014 DEBUG 17092 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:25.015 DEBUG 17092 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@738e5bca}]
-2026-03-18 09:00:25.062 DEBUG 17092 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:25.064 DEBUG 17092 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:00:25.064 DEBUG 17092 --- [http-nio-30100-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:00:25.336 DEBUG 17092 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:25.337 DEBUG 17092 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@3402e9f9}]
-2026-03-18 09:00:25.338 DEBUG 17092 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:25.664 DEBUG 17092 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:25.664 DEBUG 17092 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
-2026-03-18 09:00:25.667 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:25.669 DEBUG 17092 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
-2026-03-18 09:00:25.669 DEBUG 17092 --- [http-nio-30100-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
-2026-03-18 09:00:25.680 DEBUG 17092 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:00:25.680 DEBUG 17092 --- [http-nio-30100-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:00:25.944 DEBUG 17092 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:25.945 DEBUG 17092 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@ebca2cb}]
-2026-03-18 09:00:25.946 DEBUG 17092 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:26.521 DEBUG 17092 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:26.522 DEBUG 17092 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
-2026-03-18 09:00:26.523 DEBUG 17092 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:26.542 DEBUG 17092 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:00:26.542 DEBUG 17092 --- [http-nio-30100-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:00:26.743 DEBUG 17092 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:26.743 DEBUG 17092 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@75386908}]
-2026-03-18 09:00:26.744 DEBUG 17092 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:36.359 DEBUG 17092 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/records?page=1&pageSize=10&year=2026&month=03", parameters={masked}
-2026-03-18 09:00:36.360 DEBUG 17092 --- [http-nio-30100-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getCheckinRecords(User, Integer, Integer, int, int)
-2026-03-18 09:00:36.784 DEBUG 17092 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:36.784 DEBUG 17092 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={totalPages=1, currentPage=1, pageSize=10, total=3}, records=[{createdAt=2026-03-16, che (truncated)...]
-2026-03-18 09:00:36.785 DEBUG 17092 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:44.370 DEBUG 17092 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
-2026-03-18 09:00:44.371 DEBUG 17092 --- [http-nio-30100-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
-2026-03-18 09:00:44.375 DEBUG 17092 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:00:44.376 DEBUG 17092 --- [http-nio-30100-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:00:44.676 DEBUG 17092 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:44.677 DEBUG 17092 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@a90c082}]
-2026-03-18 09:00:44.678 DEBUG 17092 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:45.246 DEBUG 17092 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:45.247 DEBUG 17092 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
-2026-03-18 09:00:45.248 DEBUG 17092 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:45.274 DEBUG 17092 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:00:45.274 DEBUG 17092 --- [http-nio-30100-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:00:45.471 DEBUG 17092 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:45.471 DEBUG 17092 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@4e6a9a3a}]
-2026-03-18 09:00:45.472 DEBUG 17092 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:49.649 DEBUG 17092 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:00:49.649 DEBUG 17092 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:00:49.650 DEBUG 17092 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/12", parameters={}
-2026-03-18 09:00:49.651 DEBUG 17092 --- [http-nio-30100-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
-2026-03-18 09:00:49.651 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/12/checkin-records?page=1&pageSize=20", parameters={masked}
-2026-03-18 09:00:49.652 DEBUG 17092 --- [http-nio-30100-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
-2026-03-18 09:00:49.949 DEBUG 17092 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:49.949 DEBUG 17092 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@5a2406cd}]
-2026-03-18 09:00:49.950 DEBUG 17092 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:50.250 DEBUG 17092 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:50.250 DEBUG 17092 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibilit (truncated)...]
-2026-03-18 09:00:50.251 DEBUG 17092 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:50.253 DEBUG 17092 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/12", parameters={}
-2026-03-18 09:00:50.254 DEBUG 17092 --- [http-nio-30100-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
-2026-03-18 09:00:50.618 DEBUG 17092 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:50.618 DEBUG 17092 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={totalPages=0, currentPage=1, pageSize=20, total=0}, records=[]}]
-2026-03-18 09:00:50.619 DEBUG 17092 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:50.620 DEBUG 17092 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/12/checkin-records?page=1&pageSize=20", parameters={masked}
-2026-03-18 09:00:50.621 DEBUG 17092 --- [http-nio-30100-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
-2026-03-18 09:00:51.015 DEBUG 17092 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:51.015 DEBUG 17092 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibilit (truncated)...]
-2026-03-18 09:00:51.017 DEBUG 17092 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:00:51.427 DEBUG 17092 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:00:51.427 DEBUG 17092 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={totalPages=0, currentPage=1, pageSize=20, total=0}, records=[]}]
-2026-03-18 09:00:51.428 DEBUG 17092 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:13:56.100 DEBUG 17092 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
-2026-03-18 09:13:56.101 DEBUG 17092 --- [http-nio-30100-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
-2026-03-18 09:13:56.107 DEBUG 17092 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:13:56.107 DEBUG 17092 --- [http-nio-30100-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:13:59.127  WARN 17092 --- [http-nio-30100-exec-10] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@78594639 (Communications link failure
-
-The last packet successfully received from the server was 788,103 milliseconds ago. The last packet sent successfully to the server was 788,132 milliseconds ago.). Possibly consider using a shorter maxLifetime value.
-2026-03-18 09:13:59.127  WARN 17092 --- [http-nio-30100-exec-8] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@13803a94 (Communications link failure
-
-The last packet successfully received from the server was 787,691 milliseconds ago. The last packet sent successfully to the server was 787,713 milliseconds ago.). Possibly consider using a shorter maxLifetime value.
-2026-03-18 09:13:59.676 DEBUG 17092 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:13:59.677 DEBUG 17092 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@526be933}]
-2026-03-18 09:13:59.678 DEBUG 17092 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:14:00.638 DEBUG 17092 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:14:00.638 DEBUG 17092 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
-2026-03-18 09:14:00.639 DEBUG 17092 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-03-18 09:14:00.656 DEBUG 17092 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
-2026-03-18 09:14:00.656 DEBUG 17092 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
-2026-03-18 09:14:00.897 DEBUG 17092 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
-2026-03-18 09:14:00.897 DEBUG 17092 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@63aff62f}]
-2026-03-18 09:14:00.898 DEBUG 17092 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:47:42.780  INFO 22840 --- [main] com.checkin.CheckinApplication           : Starting CheckinApplication using Java 17.0.12 on DESKTOP-K7VS5HU with PID 22840 (C:\Users\echo\Documents\trae_projects\card\checkin-backend\target\classes started by echo in C:\Users\echo\Documents\trae_projects\card)
+2026-04-04 22:47:42.787 DEBUG 22840 --- [main] com.checkin.CheckinApplication           : Running with Spring Boot v2.6.3, Spring v5.3.15
+2026-04-04 22:47:42.787  INFO 22840 --- [main] com.checkin.CheckinApplication           : The following profiles are active: pro
+2026-04-04 22:47:47.843 DEBUG 22840 --- [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-04-04 22:47:47.898 DEBUG 22840 --- [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 33 mappings in 'requestMappingHandlerMapping'
+2026-04-04 22:47:47.915 DEBUG 22840 --- [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2026-04-04 22:47:47.921 DEBUG 22840 --- [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-04-04 22:47:48.020  INFO 22840 --- [main] com.checkin.CheckinApplication           : Started CheckinApplication in 5.642 seconds (JVM running for 7.268)
+2026-04-04 22:48:44.558  INFO 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-04 22:48:44.558 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2026-04-04 22:48:44.559 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2026-04-04 22:48:44.559 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2026-04-04 22:48:44.559 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@25c06894
+2026-04-04 22:48:44.559 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@56887c8f
+2026-04-04 22:48:44.559 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-04-04 22:48:44.559  INFO 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-04-04 22:48:44.566 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:48:44.569 DEBUG 22840 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:48:44.861 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:48:44.862 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:48:44.882 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:48:44.884 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:48:44.884 DEBUG 22840 --- [http-nio-30100-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:48:45.085 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:48:45.086 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:48:45.087 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:48:48.122 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:48:48.122 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:48:48.123 DEBUG 22840 --- [http-nio-30100-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:48:48.123 DEBUG 22840 --- [http-nio-30100-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:48:48.320 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:48:48.320 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:48:48.321 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:48:48.323 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:48:48.324 DEBUG 22840 --- [http-nio-30100-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:48:48.466 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:48:48.467 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:48:48.467 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:48:48.469 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:48:48.470 DEBUG 22840 --- [http-nio-30100-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:48:48.474 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:48:48.474 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:48:48.475 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:48:48.774 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:48:48.774 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:48:48.775 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:49:46.624 DEBUG 22840 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:49:46.626 DEBUG 22840 --- [http-nio-30100-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:49:46.849 DEBUG 22840 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:49:46.850 DEBUG 22840 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:49:46.851 DEBUG 22840 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:49:48.040 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/8", parameters={}
+2026-04-04 22:49:48.040 DEBUG 22840 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/8/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:49:48.041 DEBUG 22840 --- [http-nio-30100-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:49:48.042 DEBUG 22840 --- [http-nio-30100-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:49:48.206 DEBUG 22840 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:49:48.206 DEBUG 22840 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:49:48.207 DEBUG 22840 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:49:48.208 DEBUG 22840 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/8/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:49:48.209 DEBUG 22840 --- [http-nio-30100-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:49:48.350 DEBUG 22840 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:49:48.351 DEBUG 22840 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:49:48.352 DEBUG 22840 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:49:48.475 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:49:48.476 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:49:48.476 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:49:48.477 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/8", parameters={}
+2026-04-04 22:49:48.478 DEBUG 22840 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:49:48.780 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:49:48.780 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:49:48.781 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:49:50.318 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:49:50.318 DEBUG 22840 --- [http-nio-30100-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:49:50.535 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:49:50.535 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:49:50.536 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:50:22.372 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/2", parameters={}
+2026-04-04 22:50:22.372 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/2/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:50:22.373 DEBUG 22840 --- [http-nio-30100-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:50:22.373 DEBUG 22840 --- [http-nio-30100-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:50:22.539 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:50:22.539 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:50:22.540 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:50:22.541 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/2/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:50:22.541 DEBUG 22840 --- [http-nio-30100-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:50:22.682 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:50:22.682 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:50:22.682 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:50:22.727 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:50:22.728 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:50:22.728 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:50:22.730 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/2", parameters={}
+2026-04-04 22:50:22.731 DEBUG 22840 --- [http-nio-30100-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:50:23.032 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:50:23.032 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:50:23.034 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:22.507 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:52:22.508 DEBUG 22840 --- [http-nio-30100-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:52:22.798 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:22.799 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:52:22.799 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:22.801 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:52:22.801 DEBUG 22840 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:52:23.076 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:23.076 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:52:23.077 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:25.080 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:52:25.080 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:52:25.080 DEBUG 22840 --- [http-nio-30100-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:52:25.080 DEBUG 22840 --- [http-nio-30100-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:52:25.264 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:25.264 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:52:25.265 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:25.267 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:52:25.267 DEBUG 22840 --- [http-nio-30100-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:52:25.423 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:25.423 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:52:25.424 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:25.425 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:25.425 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=0, total=0, pageSize=20}, records=[]}]
+2026-04-04 22:52:25.425 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:25.425 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:52:25.425 DEBUG 22840 --- [http-nio-30100-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:52:25.764 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:25.764 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:52:25.764 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:30.321 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : POST "/api/auth/login", parameters={}
+2026-04-04 22:52:30.321 DEBUG 22840 --- [http-nio-30100-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.AuthController#login(Map)
+2026-04-04 22:52:30.342 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [{code=0d11BZFa1TWkuL0SSwFa1mow7V31BZFg}]
+2026-04-04 22:52:30.451 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.client.RestTemplate              : HTTP GET https://api.weixin.qq.com/sns/jscode2session?appid=wxbb7f4d7433ef8b4b&secret=5aa3de373844a5958d2444ce5b74eb72&js_code=0d11BZFa1TWkuL0SSwFa1mow7V31BZFg&grant_type=authorization_code
+2026-04-04 22:52:30.452 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.client.RestTemplate              : Accept=[text/plain, application/json, application/*+json, */*]
+2026-04-04 22:52:30.871 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.client.RestTemplate              : Response 200 OK
+2026-04-04 22:52:30.872 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.client.RestTemplate              : Reading to [java.lang.String] as "text/plain"
+2026-04-04 22:52:31.140 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:31.141 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user={profileSetupCompleted=true, createdAt=2026-03-16 20:17:42.0, allowStatsDisplay=false, unionid (truncated)...]
+2026-04-04 22:52:31.146 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:31.200 DEBUG 22840 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:52:31.200 DEBUG 22840 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
+2026-04-04 22:52:31.201 DEBUG 22840 --- [http-nio-30100-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
+2026-04-04 22:52:31.201 DEBUG 22840 --- [http-nio-30100-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:52:31.431 DEBUG 22840 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:31.431 DEBUG 22840 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@75dc623}]
+2026-04-04 22:52:31.438 DEBUG 22840 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:32.237 DEBUG 22840 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:32.238 DEBUG 22840 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:52:32.239 DEBUG 22840 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:32.255 DEBUG 22840 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
+2026-04-04 22:52:32.256 DEBUG 22840 --- [http-nio-30100-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
+2026-04-04 22:52:32.491 DEBUG 22840 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:32.491 DEBUG 22840 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@7e9e55f9}]
+2026-04-04 22:52:32.492 DEBUG 22840 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:33.321 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
+2026-04-04 22:52:33.321 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:52:33.322 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:52:33.323 DEBUG 22840 --- [http-nio-30100-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:52:33.323 DEBUG 22840 --- [http-nio-30100-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
+2026-04-04 22:52:33.323 DEBUG 22840 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:52:33.608 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:33.608 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@66144dc3}]
+2026-04-04 22:52:33.608 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:33.956 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:33.956 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:52:33.957 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:33.958 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:52:33.958 DEBUG 22840 --- [http-nio-30100-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:52:34.435 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:34.435 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=1, total=1, pageSize=20}, records=[{checkinDatetime=2026-03-1 (truncated)...]
+2026-04-04 22:52:34.436 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:34.437 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:52:34.437 DEBUG 22840 --- [http-nio-30100-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:52:34.562 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:34.562 DEBUG 22840 --- [http-nio-30100-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:52:34.562 DEBUG 22840 --- [http-nio-30100-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:35.516 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:35.516 DEBUG 22840 --- [http-nio-30100-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=1, total=1, pageSize=20}, records=[{checkinDatetime=2026-03-1 (truncated)...]
+2026-04-04 22:52:35.516 DEBUG 22840 --- [http-nio-30100-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:37.993 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
+2026-04-04 22:52:37.993 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics", parameters={}
+2026-04-04 22:52:37.993 DEBUG 22840 --- [http-nio-30100-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
+2026-04-04 22:52:37.994 DEBUG 22840 --- [http-nio-30100-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopics(User)
+2026-04-04 22:52:38.228 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:38.228 DEBUG 22840 --- [http-nio-30100-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@3282daed}]
+2026-04-04 22:52:38.228 DEBUG 22840 --- [http-nio-30100-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:38.978 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:38.978 DEBUG 22840 --- [http-nio-30100-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topics=[{startDatetime=2026-03-17, durationDays=7, hasCheckedInToday=false, checkinCount=0, visibil (truncated)...]
+2026-04-04 22:52:38.979 DEBUG 22840 --- [http-nio-30100-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:39.000 DEBUG 22840 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
+2026-04-04 22:52:39.000 DEBUG 22840 --- [http-nio-30100-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
+2026-04-04 22:52:39.233 DEBUG 22840 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:39.234 DEBUG 22840 --- [http-nio-30100-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@2e6a8946}]
+2026-04-04 22:52:39.234 DEBUG 22840 --- [http-nio-30100-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:39.827 DEBUG 22840 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/users/me", parameters={}
+2026-04-04 22:52:39.828 DEBUG 22840 --- [http-nio-30100-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.UserController#getCurrentUser(User)
+2026-04-04 22:52:39.829 DEBUG 22840 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:52:39.829 DEBUG 22840 --- [http-nio-30100-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:52:39.830 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:52:39.830 DEBUG 22840 --- [http-nio-30100-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:52:40.074 DEBUG 22840 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:40.074 DEBUG 22840 --- [http-nio-30100-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{user=com.checkin.entity.UserWithPermissions@56e342e5}]
+2026-04-04 22:52:40.075 DEBUG 22840 --- [http-nio-30100-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:40.457 DEBUG 22840 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:40.458 DEBUG 22840 --- [http-nio-30100-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:52:40.458 DEBUG 22840 --- [http-nio-30100-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:40.459 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1", parameters={}
+2026-04-04 22:52:40.459 DEBUG 22840 --- [http-nio-30100-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicDetail(Long, User)
+2026-04-04 22:52:40.914 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:40.914 DEBUG 22840 --- [http-nio-30100-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=1, total=1, pageSize=20}, records=[{checkinDatetime=2026-03-1 (truncated)...]
+2026-04-04 22:52:40.915 DEBUG 22840 --- [http-nio-30100-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:40.916 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/checkin/topics/1/checkin-records?page=1&pageSize=20", parameters={masked}
+2026-04-04 22:52:40.916 DEBUG 22840 --- [http-nio-30100-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.checkin.controller.CheckinController#getTopicCheckinRecords(Long, int, int, User)
+2026-04-04 22:52:41.062 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:41.063 DEBUG 22840 --- [http-nio-30100-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{topic={startDatetime=2026-01-01, durationDays=7, hasCheckedInToday=false, checkinCount=1, visibilit (truncated)...]
+2026-04-04 22:52:41.063 DEBUG 22840 --- [http-nio-30100-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-04 22:52:42.012 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2026-04-04 22:52:42.013 DEBUG 22840 --- [http-nio-30100-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{pagination={currentPage=1, totalPages=1, total=1, pageSize=20}, records=[{checkinDatetime=2026-03-1 (truncated)...]
+2026-04-04 22:52:42.013 DEBUG 22840 --- [http-nio-30100-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK

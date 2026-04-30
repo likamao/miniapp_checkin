@@ -99,6 +99,7 @@
         <view wx:for="{{item.records}}" wx:key="id" class="list-item" bindtap="showRecordDetail" data-record="{{item}}">
           <view class="record-time">{{item.checkinTime}}</view>
           <view class="record-title">{{item.title}}</view>
+          <view class="record-topic" wx:if="{{item.topicTitle}}">{{item.topicTitle}}</view>
           <view class="record-content">{{item.content}}</view>
         </view>
       </view>
@@ -109,6 +110,7 @@
       <view wx:for="{{records}}" wx:key="id" class="list-item" bindtap="showRecordDetail" data-record="{{item}}">
         <view class="record-time">{{item.checkinTime}}</view>
         <view class="record-title">{{item.title}}</view>
+        <view class="record-topic" wx:if="{{item.topicTitle}}">{{item.topicTitle}}</view>
         <view class="record-content">{{item.content}}</view>
       </view>
     </view>
@@ -143,6 +145,7 @@
         
         <view class="modal-title">{{selectedRecord.title}}</view>
         <view class="modal-time">{{selectedRecord.checkinTime}}</view>
+        <view class="modal-topic" wx:if="{{selectedRecord.topicTitle}}">{{selectedRecord.topicTitle}}</view>
         
         <!-- 波浪装饰 -->
         <view class="modal-wave-decoration">
@@ -153,6 +156,10 @@
       
       <view class="modal-body">
         <view class="modal-content-text">{{selectedRecord.content}}</view>
+        <view class="modal-share-button" bindtap="shareRecord">
+          <text class="modal-share-icon">📤</text>
+          <text class="modal-share-text">分享打卡</text>
+        </view>
       </view>
     </view>
   </view>

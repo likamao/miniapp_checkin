@@ -94,7 +94,7 @@ public class CheckinController {
             recordPage = checkinService.getCheckinRecords(user, pageable);
         }
 
-        // 处理记录，格式化时间
+        // 处理记录，格式化时间并添加主题信息
         List<Map<String, Object>> formattedRecords = recordPage.getContent().stream().map(record -> {
             Map<String, Object> formattedRecord = new HashMap<>();
             formattedRecord.put("id", record.getId());
@@ -103,6 +103,18 @@ public class CheckinController {
             formattedRecord.put("checkinTime", checkinService.formatDateTime(record.getCheckinTime()));
             formattedRecord.put("createdAt", checkinService.formatDateTime(record.getCreatedAt()));
             formattedRecord.put("updatedAt", checkinService.formatDateTime(record.getUpdatedAt()));
+            
+            // 查找对应的主题打卡记录，获取主题标题
+            Optional<CheckinTopicRecord> topicRecordOpt = checkinService.getTopicRecordByCheckinRecordId(record.getId());
+            if (topicRecordOpt.isPresent()) {
+                CheckinTopicRecord topicRecord = topicRecordOpt.get();
+                CheckinTopic topic = checkinService.getTopicById(topicRecord.getTopicId());
+                if (topic != null) {
+                    formattedRecord.put("topicTitle", topic.getTitle());
+                    formattedRecord.put("topicId", topic.getId());
+                }
+            }
+            
             return formattedRecord;
         }).toList();
 

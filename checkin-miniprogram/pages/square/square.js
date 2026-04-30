@@ -7,6 +7,8 @@ Page({
     token: '',
     showPublishModal: false,
     showCheckinModal: false,
+    showShareModal: false,
+    currentShareData: null,
     newTopic: {
       title: '',
       description: '',
@@ -30,6 +32,7 @@ Page({
     checkinEncouragementText: '感谢您的坚持，明天再来哦！',
     checkinTopics: [],
     checkinSelectedTopicId: null,
+    checkinResult: null,
     // 一言文本
     hitokotoText: '',
     hitokotoFrom: ''
@@ -98,6 +101,7 @@ Page({
       return;
     }
     
+    // 直接使用 wx.request，不使用 app.request，避免未登录时自动跳转到登录页
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/users/me',
       method: 'GET',
@@ -168,6 +172,7 @@ Page({
   // 检查今日打卡状态
   checkinCheckTodayCheckin() {
     const token = wx.getStorageSync('token');
+    // 直接使用 wx.request，不使用 app.request，避免未登录时自动跳转到登录页
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/check-today',
       method: 'GET',
@@ -429,6 +434,7 @@ Page({
       header['Authorization'] = 'Bearer ' + token;
     }
     
+    // 直接使用 wx.request，不使用 app.request，避免未登录时自动跳转到登录页
     wx.request({
       url: apiConfig.API_BASE_URL + '/api/checkin/topics',
       method: 'GET',
@@ -702,7 +708,30 @@ Page({
         if (res.data && res.data.error) {
           wx.showToast({ title: res.data.error, icon: 'none' });
         } else {
-          wx.showToast({ title: '发布成功', icon: 'success' });
+          wx.showModal({
+            title: '发布成功',
+            content: '是否分享此主题？',
+            success: (modalRes) => {
+              if (modalRes.confirm) {
+                // 分享主题
+                const topicId = res.data.topic.id;
+                const topicTitle = res.data.topic.title;
+                // 触发系统分享菜单
+                wx.showShareMenu({
+                  withShareTicket: true,
+                  menus: ['shareAppMessage', 'shareTimeline']
+                });
+                // 保存当前分享数据
+                this.setData({
+                  currentShareData: {
+                    title: `邀请你参加主题：${topicTitle}`,
+                    path: `/pages/topic-detail/topic-detail?topicId=${topicId}`,
+                    query: `topicId=${topicId}`
+                  }
+                });
+              }
+            }
+          });
           // 隐藏弹框
           this.hidePublishModal();
           // 重新加载主题列表
@@ -734,5 +763,108 @@ Page({
     wx.navigateTo({
       url: '/pages/report/report'
     });
+  },
+
+  // 显示分享弹窗
+  showShareModal() {
+    this.setData({ showShareModal: true });
+  },
+
+  // 隐藏分享弹窗
+  hideShareModal() {
+    this.setData({ showShareModal: false });
+  },
+
+  // 分享到微信好友
+  shareToWechat() {
+    const topicId = this.data.checkinSelectedTopicId;
+    // 触发系统分享菜单
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage']
+    });
+    // 保存当前分享数据
+    this.setData({
+      currentShareData: {
+        title: '我完成了打卡！',
+        path: `/pages/topic-detail/topic-detail?topicId=${topicId}`
+      }
+    });
+    this.hideShareModal();
+  },
+
+  // 分享到朋友圈
+  shareToMoments() {
+    const topicId = this.data.checkinSelectedTopicId;
+    // 触发系统分享菜单
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareTimeline']
+    });
+    // 保存当前分享数据
+    this.setData({
+      currentShareData: {
+        title: '我完成了打卡！',
+        query: `topicId=${topicId}`
+      }
+    });
+    this.hideShareModal();
+  },
+
+  // 复制分享链接
+  copyShareLink() {
+    const topicId = this.data.checkinSelectedTopicId;
+    const shareLink = `/pages/topic-detail/topic-detail?topicId=${topicId}`;
+    
+    wx.setClipboardData({
+      data: shareLink,
+      success: function() {
+        wx.showToast({ title: '链接已复制', icon: 'success' });
+      },
+      fail: function() {
+        wx.showToast({ title: '复制失败', icon: 'none' });
+      }
+    });
+    this.hideShareModal();
+  },
+
+  // 页面分享回调
+  onShareAppMessage() {
+    if (this.data.currentShareData) {
+      return {
+        title: this.data.currentShareData.title,
+        path: this.data.currentShareData.path,
+        success: function() {
+          wx.showToast({ title: '分享成功', icon: 'success' });
+        },
+        fail: function() {
+          wx.showToast({ title: '分享失败', icon: 'none' });
+        }
+      };
+    }
+    return {
+      title: '打卡系统',
+      path: '/pages/square/square'
+    };
+  },
+
+  // 朋友圈分享回调
+  onShareTimeline() {
+    if (this.data.currentShareData) {
+      return {
+        title: this.data.currentShareData.title,
+        query: this.data.currentShareData.query,
+        success: function() {
+          wx.showToast({ title: '分享成功', icon: 'success' });
+        },
+        fail: function() {
+          wx.showToast({ title: '分享失败', icon: 'none' });
+        }
+      };
+    }
+    return {
+      title: '打卡系统',
+      query: ''
+    };
   }
 });

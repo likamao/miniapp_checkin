@@ -8,9 +8,15 @@
     <view class="topic-header">
       <view class="topic-title-row">
         <view class="topic-title">{{topic.title}}</view>
-        <view wx:if="{{isTopicCreator}}" class="edit-button" bindtap="showEditModal">
-          <text class="edit-icon">✏️</text>
-          <text class="edit-text">编辑</text>
+        <view class="header-buttons">
+          <button class="share-button" open-type="share">
+            <text class="share-icon">📤</text>
+            <text class="share-text">分享</text>
+          </button>
+          <view wx:if="{{isTopicCreator}}" class="edit-button" bindtap="showEditModal">
+            <text class="edit-icon">✏️</text>
+            <text class="edit-text">编辑</text>
+          </view>
         </view>
       </view>
       <view class="topic-meta">
@@ -179,4 +185,13 @@
       </view>
     </view>
   </view>
+  
+  <!-- 分享海报组件 -->
+  <share-poster 
+    id="sharePoster" 
+    topic="{{topic}}" 
+    bind:posterGenerated="onPosterGenerated"
+    bind:posterFailed="onPosterFailed"
+  ></share-poster>
+  
 </view>

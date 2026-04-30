@@ -697,6 +697,17 @@ public class CheckinService {
             checkinTopicRepository.save(topic);
         }
     }
+    
+    /**
+     * 根据打卡记录ID获取主题打卡记录
+     * 
+     * @param checkinRecordId 打卡记录ID
+     * @return 主题打卡记录，不存在则返回Optional.empty()
+     */
+    public Optional<CheckinTopicRecord> getTopicRecordByCheckinRecordId(Long checkinRecordId) {
+        List<CheckinTopicRecord> records = checkinTopicRecordRepository.findByCheckinRecordId(checkinRecordId);
+        return records.isEmpty() ? Optional.empty() : Optional.of(records.get(0));
+    }
 
     /**
      * 获取主题剩余有效期

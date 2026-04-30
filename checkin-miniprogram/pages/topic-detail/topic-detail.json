@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "share-poster": "/components/share-poster/share-poster"
+  }
 }
